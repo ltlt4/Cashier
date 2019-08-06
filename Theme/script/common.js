@@ -202,11 +202,11 @@ var cashier = {
     1:保留整数 (四舍五入)
     2:保留整数 (舍弃小数)
     *************************************************************************************************************/
-    MoneyPrecision :function (val) {
+    MoneyPrecision: function (val) {
         val = val - 0;
-        var sysArgument= $.session.get("sysArgument") ? $.session.get("sysArgument") : null;
-        var t=0;
-        if(sysArgument!=null){
+        var sysArgument = $.session.get("sysArgument") ? $.session.get("sysArgument") : null;
+        var t = 0;
+        if (sysArgument != null) {
             t = sysArgument.MoneyPrecision;
         }
         if (t == 0) {
@@ -221,7 +221,20 @@ var cashier = {
             return changeThirdDecimal_f(val);
         }
         else return val;
-    }
+    },
+    staffInf: function (type, token, name = "") {
+        var param = {
+            StaffType: type,
+            StaffName: name
+        }
+        return new Promise(function (resolve) {
+            $.http.post(LuckVipsoft.api.getStaffList, param, token, function (res) {
+                if (res.status == 1) {
+                    resolve(res.data);
+                }
+            });
+        })
+    },
 }
 $.luck = {
     confirm: function (title, func) {
@@ -614,5 +627,36 @@ function accDiv(arg1, arg2) {//除
     }
 }
 
+//js获取页面参数
+function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return null;
+}
 
+//四舍五入丢精度问题 ->数字金额格式
+Number.prototype.toFixed = function (d) {
+    var s = this + "";
+    if (!d) d = 0;
+    if (s.indexOf(".") == -1) s += ".";
+    s += new Array(d + 1).join("0");
+    if (new RegExp("^(-|\\+)?(\\d+(\\.\\d{0," + (d + 1) + "})?)\\d*$").test(s)) {
+        var s = "0" + RegExp.$2, pm = RegExp.$1, a = RegExp.$3.length, b = true;
+        if (a == d + 2) {
+            a = s.match(/\d/g);
+            if (parseInt(a[a.length - 1]) > 4) {
+                for (var i = a.length - 2; i >= 0; i--) {
+                    a[i] = parseInt(a[i]) + 1;
+                    if (a[i] == 10) {
+                        a[i] = 0;
+                        b = i != 1;
+                    } else break;
+                }
+            }
+            s = a.join("").replace(new RegExp("(\\d+)(\\d{" + d + "})\\d$"), "$1.$2");
 
+        } if (b) s = s.substr(1);
+        return (pm + s).replace(/\.$/, "");
+    } return this + "";
+
+}

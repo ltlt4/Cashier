@@ -709,7 +709,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         // </div>
         //查询快递公司
         express: function (name) {
-            return new Promise(function (resolve, reject) { //做一些异步操作
+            return new Promise(function (resolve, reject) {
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -729,6 +729,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         },
         //查看物流
         logistics: function (ExpressNo, ExpressNo) {
+            console.log(ExpressNo)
             $.http.post(LuckVipsoft.api.GetExpressInfo, { ExpressNumber: ExpressNo, ExpressType: ExpressNo}, user.token, function (res) {
                 if (res.status == 1) {
                     var html = `<div><h2>${res.data[0].number}</h2></div>`

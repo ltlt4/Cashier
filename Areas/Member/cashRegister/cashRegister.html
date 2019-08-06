@@ -360,23 +360,28 @@
 		    <div class="layui-form">
 				<div class="layui-form-item">
 					<label class="layui-form-label">应收金额</label>
-					<div class="layui-form-mid layui-word-aux">¥2550.00</div>
+					<div class="layui-form-mid layui-word-aux" id="single_amount"> 00.00</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">优惠金额</label>
 					<div class="layui-input-inline">
-						<input name="" type="text" class="layui-input" />
+						<input name="" type="text" class="layui-input" id="single_discount_val" autocomplete ='off' />
 					</div>
 					<div class="layui-form-mid layui-word-aux" style="width:80px; padding:0!important;">
-						<select name="" class="yhhd">
-						    <option>%</option>
-							<option>元</option>
+						<select name="" class="yhhd" id="single_discount_mode" lay-filter="single_discount_money" >
+						    <option value="1">折</option>
+							<option value="2">元</option>
 						</select>
 					</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">优惠后金额</label>
-					<div class="layui-form-mid layui-word-aux">¥2050.00</div>
+					<div class="layui-input-inline">
+						<input name="" type="text" class="layui-input"  id='single_discount_money' autocomplete ='off' readonly />
+					</div>
+					<div class="layui-form-mid layui-word-aux" style="padding:0!important;">
+						<button class="submit-bt" id="single_cancel">取消优惠</button>
+					</div>
 				</div>
 		    </div>
 		</div>
@@ -598,6 +603,7 @@
 <script src="../../../Theme/script/common.js"></script>
 <script src="../../../Theme/script/keyboard.js"></script>
 <script src="../../../Scripts/linq.min.js"></script>
+<script src="../../../Scripts/math.min.js"></script>
 <script src="../../../Scripts/template-web.js"></script>
 <script src="../../../js/Member/cashRegister/cashRegister.js"></script>
 <script src="../../../Theme/script/payCompose.js"></script>
@@ -708,20 +714,27 @@
 <!--结算信息-->
 <script id="payInfoTmp" type="text/html">
 	<ul class="cashier-num-a">
-		<li><span>应收</span><b class="fl">¥{{amount}}</b><em>抹零</em></li>
+		<li><span class="inline">应收<em></em></span><b>¥{{amount}}</b></li>
 		<li><span>待收</span><b>¥{{paid}}</b></li>
 		<li><span>优惠</span><b>¥{{discount}}</b></li>
 	</ul>
 	<ul class="cashier-num-b">		
 		{{each payItem as item i}} 	
 			{{if item.code == curPayItem }}
-				<li data-code={{item.code}} class="active">
-					<span>{{item.name }}<b> <input value='{{item.amount}}' class='moneyInput'/></b></span>
+				<li data-code='{{item.code}}' class="active">
+					<span>{{item.name }}<b> 
+						{{if item.code =='999'}}
+						<input readonly="readonly" value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' /></b>
+						{{else}}
+						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}'/></b>
+						{{/if}}
+					</span>
 					{{@ item.code | fnPayItemAmount}}
 				</li>
 			{{else}}
 				<li data-code={{item.code}}>
-					<span>{{item.name }}<b> <input value='{{item.amount}}' class='moneyInput'/></b></span>
+					<span>{{item.name }}<b> 
+						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}'/></b></span>
 					{{@ item.code | fnPayItemAmount}}
 				</li>
 			{{/if}}

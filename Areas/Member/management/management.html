@@ -407,70 +407,32 @@
     <!-- 主体  end -->
     <!-- 功能弹出框 start-->
     <div>
-      <!--撤单 start-->
-      <div id="lomo-cd" class="lomo-gd order-cd hide">
-        <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>您确定要撤消此单</div>
-        <div class="order-cd-form">
-          <ul>
-            <li>
-              <em for="">应退金额：</em><span></span>
-            </li>
-            <li>
-              <em for="">支付宝：</em><span></span>
-            </li>
-            <li>
-              <em for="">微信：</em><span></span>
-            </li>
-            <form action="" class="layui-form">
-              <li class="layui-form-item"><em>超级密码：</em><span>
-                  <input name="" type="text" class="cd-form-input pw" />
-                </span></li>
-              <li class="layui-form-item"><em>撤单备注：</em><span>
-                  <textarea name="" class="cd-form-bz"></textarea>
-                </span></li>
-              <li style="text-align:right;">
-                <button type="button" class="submit-bt-clear" lay-submit="" lay-filter="de">取消</button>
-                <button type="reset" class="submit-bt">确认</button></li>
-            </form>
-          </ul>
-        </div>
-      </div>
-      <!--撤单 end-->
       <!--退货 start-->
       <div class="lomo-gd order-th hide">
-        <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>请填写退货数量并确认退货</div>
         <div class="order-cd-form">
           <ul>
             <li style="float: left;width: 50%;">
-              <em for="">产品名称：</em>
-              <div style='width:60%;display:inline-block;word-break: break-all;word-wrap: break-word;'>娃哈哈</div>
+              <em for="" >产品名称：</em>
+              <div  id="productName" style='width:60%;display:inline-block;word-break: break-all;word-wrap: break-word;height: 34px;line-height: 34px;'></div>
             </li>
             <li style="float: right">
-              <em for="">可退数量：</em><span>10</span>
+              <em for="">可退数量：</em><span id="productNumber"></span>
             </li>
-            <form action="" class="layui-form">
               <li class="layui-form-item" style="margin-bottom:10px;"><em>退货数量：</em><span>
-                  <input name="" type="text" class="cd-form-input pw" />
+                  <input name="returnNumber" type="text" class="cd-form-input pw" maxlength="8"  value="1" lay-verify="required|returnGoods|returnNumber"/>
                 </span>
               </li>
               <li class="cd-form-refund"></li>
               <li>
-                <em for="">应退金额：</em><span></span>
+                <em for="">应退金额：</em><span id="shouldRetire">0</span>
               </li>
-              <li style="float: left">
-                <em for="">支付宝：</em><span>12</span>
-              </li>
-              <li style="float: right">
-                <em for="">微信：</em><span>12</span>
-              </li>
-              <li class="layui-form-item" style="overflow:visible" id="refund">
+              <li class="layui-form-item hide" style="overflow:visible" id="refundGoods">
                 <em for="">退款至：</em>
                 <div class="layui-input-inline">
-                  <select name="PaymentCode" class="yhhd">
+                  <select name="PaymentCode2" class="yhhd">
                   </select>
                 </div>
               </li>
-            </form>
           </ul>
         </div>
       </div>
@@ -717,169 +679,69 @@
         </div>
       </div>
       <!-- 场地消费订单详情 end -->
-      <!-- 场地消费订单详情 start -->
-      <div class="lomo-gd order-cd cd-info hide" style="height:750px;">
-        <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>订单详情</div>
+      <div class="lomo-gd order-cd cd-info hide" style="margin: 0;width: 100%;height: 100%;" id="detailsBill">
         <div class="order-cd-info">
           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable"
             style="background: #F2F2F2;">
             <tr>
-              <td width="49%"><i>订单日期：</i><em>2019-6-20 12:48:27</em></td>
-              <td><i>获得积分：</i><em>200</em></td>
+              <td width="49%"><i>订单日期：</i><em id="CreateTime"></em></td>
+              <td><i>获得积分：</i><em id="integral"></em></td>
             </tr>
             <tr>
-              <td width="49%"><i>单据编号：</i><em>XF896578945212</em></td>
+              <td width="49%"><i>单据编号：</i><em id="BillCode"></em></td>
               <td></td>
             </tr>
             <tr>
-              <td><i>会员卡号：</i><em>5646548</em></td>
-              <td><i>会员姓名：</i><em>五湖散人</em></td>
+              <td><i>会员卡号：</i><em id="CardID"></em></td>
+              <td><i>会员姓名：</i><em id="CardName"></em></td>
             </tr>
             <tr>
-              <td><i>会员等级：</i><em>白金</em></td>
-              <td><i>所属门店：</i><em>总店</em></td>
+              <td><i>会员等级：</i><em id="LevelName"></em></td>
+              <td><i>所属门店：</i><em id="ShopName"></em></td>
             </tr>
             <tr>
-              <td><i>订单备注：</i><em>很棒</em></td>
+              <td><i>订单备注：</i><em id="Remark"></em></td>
               <td></td>
             </tr>
             <tr>
-              <td><i>撤单人：</i><em>五湖散人</em></td>
-              <td><i>撤单时间：</i><em>2019-6-20 12:48:27</em></td>
+              <td><i>撤单人：</i><em id="withdrawalPerson"></em></td>
+              <td><i>撤单时间：</i><em id="WithdrawalTime"></em></td>
             </tr>
             <tr>
-              <td><i>撤单备注：</i><em>不买了</em></td>
-              <td></td>
+              <td colspan="2"><i>撤单备注：</i><em id="withdrawalRemarks"></em></td>
             </tr>
           </table>
           <div class="lomo-xq-ksxf">
-            <div><span>实付金额：</span><span class="bold size-red">￥1354</span></div>
-            <div>
-              <span>现价支付：</span><span class="bold">￥464</span>
-              <span style="margin-left:40px;">微信支付：</span><span class="bold">￥654</span>
+            <div><span>实付金额：</span><span class="bold size-red" id="DiscountMoney"></span></div>
+            <div id="PaymentType">
             </div>
           </div>
-          <div class="order-cdTable2Sco">
+          <div class="order-cdTable2Sco hide" id="consumptionList">
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable2"
               style="margin-top:20px;">
-              <tr>
-                <th>区域</th>
-                <th>台名称</th>
-                <th>开台时间</th>
-                <th>结束时间</th>
-                <th>总时长</th>
-                <th>总金额</th>
-                <th>操作</th>
-              </tr>
-              <tr>
-                <td>029</td>
-                <td>95</td>
-                <td>2017-02-05 12:00:00</td>
-                <td>2017-02-05 18:00:00</td>
-                <td>6小时</td>
-                <td>12345.00</td>
-                <td class="size-red">退货</td>
-              </tr>
+              <thead>
+                <tr>
+                  <th>商品类型</th>
+                  <th>商品编号</th>
+                  <th>商品名称</th>
+                  <th>折后单价</th>
+                  <th>商品数量</th>
+                  <th>可退数量</th>
+                  <th>总金额</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
             </table>
-          </div>
-          <div class="order-cdTable2Sco">
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable2"
-              style="margin-top:20px;">
-              <tr>
-                <th>商品类型</th>
-                <th>商品编号</th>
-                <th>商品名称</th>
-                <th>折后单价</th>
-                <th>商品数量</th>
-                <th>可退数量</th>
-                <th>总金额</th>
-                <th>操作</th>
-              </tr>
-              <tr>
-                <td>服务产品</td>
-                <td>896578945212</td>
-                <td>按摩椅</td>
-                <td>2000.00</td>
-                <td>1222</td>
-                <td>3333</td>
-                <td>12345.00</td>
-                <td class="size-red">退货</td>
-              </tr>
-              <tr>
-                <td>普通产品</td>
-                <td>896578945212</td>
-                <td>按摩椅</td>
-                <td>2000.00</td>
-                <td>1222</td>
-                <td>3333</td>
-                <td>12334.00</td>
-                <td class="size-red">退货</td>
-              </tr>
-            </table>
-          </div>
-          <div class="order-inf">
-            <span>产品种类：</span><span>2</span>
-            <span style="margin-left:5px;">产品数量：</span><span>2</span>
-          </div>
-          <div class="order-inf-bt">
-            <button type="button" class="submit-bt" style="background: #FC4447">整单撤单</button>
-            <button type="button" class="submit-bt-clear">取消</button>
           </div>
         </div>
       </div>
-      <!-- 场地消费订单详情 end -->
-      <!--充值 start -->
-      <div id="rechargeDetails" class="hide">
-        <div class="lomo-gd order-cd cd-info" style="margin: 0;width: 100%;height: 100%;">
-          <div class="order-cd-info">
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable"
-              style="background: #F2F2F2;">
-              <tr>
-                <td width="49%"><i>订单日期：</i><em>2019-6-20 12:48:27</em></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td width="49%"><i>单据编号：</i><em>XF896578945212</em></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><i>会员卡号：</i><em>5646548</em></td>
-                <td><i>会员姓名：</i><em>五湖散人</em></td>
-              </tr>
-              <tr>
-                <td><i>会员等级：</i><em>白金</em></td>
-                <td><i>所属门店：</i><em>总店</em></td>
-              </tr>
-              <tr>
-                <td><i>订单备注：</i><em>很棒</em></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><i>撤单人：</i><em>五湖散人</em></td>
-                <td><i>撤单时间：</i><em>2019-6-20 12:48:27</em></td>
-              </tr>
-              <tr>
-                <td><i>撤单备注：</i><em>不买了</em></td>
-                <td></td>
-              </tr>
-            </table>
-            <div class="lomo-xq-czxq">
-              <div><span>实付金额：</span><span class="bold size-red">￥1354</span></div>
-              <div> <span>优惠活动：</span><span class="bold">满1000送100</span></div>
-              <div><span>实际到账：</span><span class="bold size-red">￥1354</span></div>
-              <div>
-                <span>现价支付：</span><span class="bold">￥464</span>
-                <span style="margin-left:40px;">微信支付：</span><span class="bold">￥654</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 充值 end -->
+      <!-- 功能弹出框 end-->
+
+
     </div>
-    <!-- 功能弹出框 end-->
-
-
   </div>
 </body>
 <script src="../../../Theme/script/jquery3.4.1.min.js"></script>

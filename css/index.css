@@ -1,4 +1,4 @@
-﻿@charset "utf-8";
+@charset "utf-8";
 
 /* CSS Document */
 
@@ -2505,16 +2505,26 @@
 }
 
 .cashier-num-a li em {
+	display: inline-block;
+	width: 41px;
+	height: 18px;
+	background: url(../Theme/images/moling_n.png) no-repeat;
 	float: right;
-	display: block;
-	font-size: 14px;
-	background: #41c060;
-	padding: 4px;
-	border-radius: 5px;
-	color: #fff;
-	margin-top: 10px;
+	margin: 2px 0 0 5px;
+	cursor: pointer;
 }
-
+.cashier-num-a li em.active{
+	background: url(../Theme/images/moling.png) no-repeat;
+}
+.cashier-num-a .inline{
+	display: inline-block;
+	margin: 0 auto;
+}
+#single_cancel{
+	height: 36px;
+	line-height: 36px;
+	padding: 0 10px;
+}
 .cashier-num-b {
 	overflow: hidden;
 	margin: 10px 6px 0 6px;
@@ -2568,7 +2578,9 @@
 .cashier-num-b li.active span{
 	border: #41C060 1px solid;
 }
-
+.cashier-num-b input{
+	text-align: right;
+}
 .cashier-keyboard {
 	overflow: hidden;
 }
@@ -2979,17 +2991,18 @@
 
 .ICset5 {
 	width: 510px;
-	height: 200px;
+	min-height: 200px;
 }
 
 .ICset-xtgx-set dt {
-	background: url(../Theme/images/jiazai.png) no-repeat 70px center;
+	/* background: url(../Theme/images/jiazai.png) no-repeat 70px center; */
 	font-size: 14px;
 	color: #41c060;
-	padding-left: 130px;
+	text-align: center;
+	/* padding-left: 130px; */
 	height: 50px;
 	line-height: 50px;
-	margin-bottom: 40px;
+	/* margin-bottom: 40px; */
 }
 
 .ICset-xtgx-set dd {
@@ -3219,8 +3232,8 @@
 }
 
 .order-th {
-	width: 800px;
-	height: 600px;
+	width: 100%;
+	height: 100%;
 }
 
 .order-th-form {
@@ -3237,9 +3250,8 @@
 }
 
 .order-cd-form ul li em {
-	display: block;
-	width: 90px;
-	float: left;
+	display: inline-block;
+	width: 70px;
 	font-size: 14px;
 	text-align: right;
 	margin: 0 10px;
@@ -3247,9 +3259,8 @@
 }
 
 .order-cd-form ul li span {
-	display: block;
-	width: 200px;
-	float: left;
+	display: inline-block;
+	width: 150px;
 	height: 34px;
 	line-height: 34px;
 }
@@ -3282,7 +3293,7 @@
 }
 
 .cd-form-refund {
-	border-top: 2px solid #000;
+	border-top: 2px solid #41c060;
 	width: 90%;
 	margin: 0 auto;
 }
@@ -3418,7 +3429,7 @@
 .lomo-xq-czxq,
 .lomo-xq-ksxf {
 	margin: 0 auto;
-	height: 148px;
+	height: auto;
 	margin: 10px 0;
 	background: #F2F2F2;
 	padding: 10px 28px;
@@ -3427,7 +3438,8 @@
 
 .lomo-xq-czxq div,
 .lomo-xq-ksxf div {
-	height: 30px;
+	min-height: 30px !important;
+	height:  auto !important;
 	line-height: 30px;
 }
 

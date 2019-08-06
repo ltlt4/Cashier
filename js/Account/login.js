@@ -1,4 +1,4 @@
-var netWork=new Array();
+var netWork = new Array();
 layui.use(['layer', 'jquery', "form"], function () {
     var layer = layui.layer, $ = layui.$, form = layui.form;
 
@@ -200,7 +200,7 @@ layui.use(['layer', 'jquery', "form"], function () {
             $('#editPass1').focus();
             return false;
         }
-        if(!verify.pwd[0].test(pwd1)){
+        if (!verify.pwd[0].test(pwd1)) {
             $('#editPass1').focus();
             layer.msg(verify.pwd[1]);
         }
@@ -297,7 +297,67 @@ layui.use(['layer', 'jquery', "form"], function () {
                 $.session.set('LoginMsg', param);
                 $.session.set('Cashier_Token', res.data.Token)
                 $.session.set('Cashier_User', res.data);
-                window.location.href="../../Views/home/index.html";
+                var MemberMethod = {
+                    start: function () {
+                        var _this = this
+                        _this.belongShop()
+                            .then(_this.staffClass())
+                            .then(_this.levelList())
+                            .then(_this.sysArgument())
+                            .then(function(){
+                                window.location.href = "../../Views/home/index.html";
+                            });
+                    },
+                    /*获取所属店铺信息*/
+                    belongShop: function () {
+                        return new Promise(function (resolve, reject) {
+                            $.http.post(LuckVipsoft.api.getShopList, {}, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    $.session.set('belongShop', res.data);
+                                    resolve(true);
+                                }
+                            });
+                        });
+                    },
+                    /*获取员工分类数据*/
+                    staffClass: function () {
+                        return new Promise(function (resolve, reject) {
+                            $.http.post(LuckVipsoft.api.getStaffClassList, {}, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    $.session.set('staffClass', res.data);
+                                    resolve(true);
+                                }
+                            });
+                        });
+                    },
+
+
+                    /*获取等级信息*/
+                    levelList: function () {
+                        return new Promise(function (resolve, reject) {
+                            $.http.post(LuckVipsoft.api.BindMemLevelList, {}, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    $.session.set('levelList', res.data);
+                                    resolve(true);
+                                }
+                            });
+                        });
+                    },
+
+                    /*获取系统参数*/
+                    sysArgument: function () {
+                        return new Promise(function (resolve, reject) {
+                            $.http.post(LuckVipsoft.api.GetSysArgument, {}, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    $.session.set('sysArgument', res.data);
+                                    resolve(true);
+                                }
+                            });
+                        });
+                    }
+                };
+                MemberMethod.start();
+
             } else {
                 layer.msg(res.msg);
             }
@@ -306,7 +366,7 @@ layui.use(['layer', 'jquery', "form"], function () {
 
     //网络设置
     $(".tool-web").on("click", function () {
-        netWork=new Array();
+        netWork = new Array();
         getNetWorks();
         layer.open({
             type: 1,
@@ -319,82 +379,82 @@ layui.use(['layer', 'jquery', "form"], function () {
             resize: false,//禁用调整大小
             area: ['90%', '80%'],
             skin: "lomo-ordinary",
-            content:$(".lomo-network-set")
+            content: $(".lomo-network-set")
         })
     });
     //检测线路
-    $("#checknetwork").on("click",function(){
-        $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data){
+    $("#checknetwork").on("click", function () {
+        $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data) {
             $("#networklist").html('');
-            netWork=new Array();
-            var html='<tr><th>线路地址</th><th>响应时间</th><th>响应速度</th><th>操作</th></tr>';
-            $.each(data,function(index,item){
-                var rTime=getNetWorkResponse(item);
-                item.ResponseTime=rTime+"ms";
-                item.ResponseSpeed=getResponseSpeed(rTime);
+            netWork = new Array();
+            var html = '<tr><th>线路地址</th><th>响应时间</th><th>响应速度</th><th>操作</th></tr>';
+            $.each(data, function (index, item) {
+                var rTime = getNetWorkResponse(item);
+                item.ResponseTime = rTime + "ms";
+                item.ResponseSpeed = getResponseSpeed(rTime);
                 netWork.push(item);
-                html+=' <tr>'
-                html+='<td>'+item.NetworkName+'</td>'
-                html+=' <td>'+item.ResponseTime+'</td>'
-                html+=' <td>'+item.ResponseSpeed+'</td>'
-                if(LuckVipsoft.network.NetworkName==item.NetworkName){
-                    html+='<td><span>当前线路</span></td>';
+                html += ' <tr>'
+                html += '<td>' + item.NetworkName + '</td>'
+                html += ' <td>' + item.ResponseTime + '</td>'
+                html += ' <td>' + item.ResponseSpeed + '</td>'
+                if (LuckVipsoft.network.NetworkName == item.NetworkName) {
+                    html += '<td><span>当前线路</span></td>';
                 }
-                else{
-                    html+=' <td onclick="chooseNetWork(\''+item.NetworkName+'\')">进入该线路</td>'
+                else {
+                    html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
                 }
-                html+=' </tr>'        
+                html += ' </tr>'
             });
             $("#networklist").html(html);
 
-        });	
+        });
     });
 })
 //获取路线
-function getNetWorks(){
-    $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data){
-        netWork=data;
+function getNetWorks() {
+    $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data) {
+        netWork = data;
         setNetWork(data);
     });
 }
 
 //绑定路线
-function setNetWork(data){
+function setNetWork(data) {
     $("#networklist").html('');
-    var html='<tr><th>线路地址</th><th>响应时间</th><th>响应速度</th><th>操作</th></tr>';
-    $.each(data,function(index,item){
-        html+=' <tr>'
-        html+='<td>'+item.NetworkName+'</td>'
-        html+=' <td>'+(item.ResponseTime?item.ResponseTime:"-")+'</td>'
-        html+=' <td>'+(item.ResponseSpeed?item.ResponseSpeed:"-")+'</td>'
-        if(LuckVipsoft.network.NetworkName==item.NetworkName){
-            html+='<td><span>当前线路</span></td>';
+    var html = '<tr><th>线路地址</th><th>响应时间</th><th>响应速度</th><th>操作</th></tr>';
+    $.each(data, function (index, item) {
+        html += ' <tr>'
+        html += '<td>' + item.NetworkName + '</td>'
+        html += ' <td>' + (item.ResponseTime ? item.ResponseTime : "-") + '</td>'
+        html += ' <td>' + (item.ResponseSpeed ? item.ResponseSpeed : "-") + '</td>'
+        if (LuckVipsoft.network.NetworkName == item.NetworkName) {
+            html += '<td><span>当前线路</span></td>';
         }
-        else{
-            html+=' <td onclick="chooseNetWork(\''+item.NetworkName+'\')">进入该线路</td>'
+        else {
+            html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
         }
-        html+=' </tr>'        
+        html += ' </tr>'
     });
     $("#networklist").html(html);
 
 }
 
 //选择线路
-function chooseNetWork(networkName){
-    $.each(netWork,function(index,item){
-        if(item.NetworkName==networkName) {
-            LuckVipsoft.network=item;
-            LuckVipsoft.http=item.API;
+function chooseNetWork(networkName) {
+    $.each(netWork, function (index, item) {
+        if (item.NetworkName == networkName) {
+            LuckVipsoft.network = item;
+            LuckVipsoft.http = item.API;
         }
     });
     setNetWork(netWork);
 }
 //获取响应信息
-function getNetWorkResponse(network){
-    var rTime=0;
+function getNetWorkResponse(network) {
+    var rTime = 0;
     var sendDate = (new Date()).getTime();
     var LoginMsg = $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null;
-    var compCode=LoginMsg!=null? LoginMsg.CompCode:"lucksoft";
+    var compCode = LoginMsg != null ? LoginMsg.CompCode : "lucksoft";
     var param = {
         CompCode: compCode
     }
@@ -402,9 +462,9 @@ function getNetWorkResponse(network){
         dataType: "json",
         ContentType: 'application/json',
         type: "POST",
-        data:JSON.stringify(param),
-        url: network.API+"/api/GeneralInterface/GetAuthorizeByCompCode",
-        async:false,
+        data: JSON.stringify(param),
+        url: network.API + "/api/GeneralInterface/GetAuthorizeByCompCode",
+        async: false,
         success: function (res) {
             var receiveDate = (new Date()).getTime();
             rTime = receiveDate - sendDate;
@@ -413,25 +473,20 @@ function getNetWorkResponse(network){
     return rTime;
 }
 //获取响应速度
-function getResponseSpeed(time){
-    if (time > 0 && time <= 50)
-    {
+function getResponseSpeed(time) {
+    if (time > 0 && time <= 50) {
         return "很快";
     }
-    else if (time > 50 && time <= 100)
-    {
+    else if (time > 50 && time <= 100) {
         return "快";
     }
-    else if (time > 100 && time <= 200)
-    {
+    else if (time > 100 && time <= 200) {
         return "普通";
     }
-    else if (time > 200 && time <= 500)
-    {
+    else if (time > 200 && time <= 500) {
         return "慢";
     }
-    else
-    {
+    else {
         return "很慢";
     }
 }

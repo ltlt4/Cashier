@@ -1,6 +1,6 @@
 var LuckVipsoft = {}
-LuckVipsoft.http = "http://192.168.0.13:8088"
-//LuckVipsoft.http = "http://192.168.0.111"
+//LuckVipsoft.http = "http://192.168.0.13:8088"
+LuckVipsoft.http = "http://192.168.0.102"
 LuckVipsoft.api = {
     /* 登录、注册*/
     retrievePasswordSendCode: '/api/GeneralInterface/RetrievePasswordSendCode', //发送验证码
@@ -44,18 +44,21 @@ LuckVipsoft.api = {
     GetRechargeCountOrderByDetail: '/api/GeneralInterface/GetRechargeCountOrderByDetail',// 单据管理-充次订单详情
     RechargeCountOrderRePrint: '/api/GeneralInterface/RechargeCountOrderRePrint',//充次重打印
     RevokeRechargeCountOrder: '/api/GeneralInterface/RevokeRechargeCountOrder',//充次撤单
+    GetRedeemOrderByPaged: '/api/GeneralInterface/GetRedeemOrderByPaged',//礼品兑换列表
+    GetRedeemOrderByDetail: '/api/GeneralInterface/GetRedeemOrderByDetail', //单据管理-礼品兑换订单详情
+    RevokeRedeemOrder: '/api/GeneralInterface/RevokeRedeemOrder',//礼品兑换撤单
     RedeemOrderRePrint: '/api/GeneralInterface/RedeemOrderRePrint',//礼品兑换订单 重打印
-    GetMallOrderListPage: '/api/GeneralInterface/GetMallOrderListPage',//获取订单列表
-    GetMallOrderDetail: '/api/GeneralInterface/GetMallOrderDetail',//获取订单详情
     GetConsumeOrderList: '/api/GeneralInterface/GetConsumeOrderList',//单据管理-消费订单
     GetConsumeOrderData: '/api/GeneralInterface/GetConsumeOrderData',//单据管理-订单详情
-    RevokeConsumeOrder: '/api/{version}/GeneralInterface/RevokeConsumeOrder',//消费撤单：快速消费、商品消费、固定消费、快速扣次、桌台消费、油品消费
-    MemberReturnGoods: '/api/{version}/GeneralInterface/MemberReturnGoods',//会员消费退货
-    RefundVenueConsume: '/api/{version}/GeneralInterface/RefundVenueConsume',// 场馆消费退款
+    RevokeConsumeOrder: '/api/GeneralInterface/RevokeConsumeOrder',//消费撤单：快速消费、商品消费、固定消费、快速扣次、桌台消费、油品消费
+    MemberReturnGoods: '/api/GeneralInterface/MemberReturnGoods',//会员消费退货
+    RefundVenueConsume: '/api/GeneralInterface/RefundVenueConsume',// 场馆消费退款
+    GetMallOrderListPage: '/api/GeneralInterface/GetMallOrderListPage',//获取线上订单列表
+    GetMallOrderDetail: '/api/GeneralInterface/GetMallOrderDetail',//获取线上订单详情
     WriteOffMallOrder: '/api/GeneralInterface/WriteOffMallOrder',//商品核销
     GetExpressList: '/api/GeneralInterface/GetExpressList',//快递公司列表（分页）    
     GetPreWriteOffOrder: '/api/GeneralInterface/GetPreWriteOffOrder',//查询待核销商品订单返回订单详情
-
+    GetExpressInfo:'/api/GeneralInterface/GetExpressInfo',//快递物流节点跟踪
 
     /*卡券核销 */
     GetConponLogListPage: '/api/GeneralInterface/GetConponLogListPage',//根据优惠券ID或者卡号查询优惠券

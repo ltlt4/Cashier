@@ -5,7 +5,6 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
         token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
         information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
     }
-
     var laypage = layui.laypage;
     var laydate = layui.laydate;
     var form = layui.form;

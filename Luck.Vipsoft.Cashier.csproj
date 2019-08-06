@@ -96,6 +96,7 @@
     <Content Include="js\Order\writeOff\writeOff.js" />
     <Content Include="js\settings\settings.js" />
     <Content Include="Scripts\linq.min.js" />
+    <Content Include="Scripts\math.min.js" />
     <Content Include="Scripts\template-web.js" />
     <Content Include="Scripts\vue.js" />
     <Content Include="Scripts\vue.min.js" />
@@ -146,6 +147,8 @@
     <Content Include="Theme\images\logo-login.png" />
     <Content Include="Theme\images\logo.png" />
     <Content Include="Theme\images\lomoline.png" />
+    <Content Include="Theme\images\moling.png" />
+    <Content Include="Theme\images\moling_n.png" />
     <Content Include="Theme\images\morentouxiang.svg" />
     <Content Include="Theme\images\optxiala.png" />
     <Content Include="Theme\images\phoneIcon.png" />

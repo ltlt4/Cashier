@@ -8,8 +8,20 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		staffInf:$.session.get("staffInf")? $.session.get("staffInf") : null,
 	}
 
-	var sysArgument = $.session.get('sysArgument')	
+	var sysArgument = $.session.get('Cashier_User').SysArguments
+	console.log('sysArgument',sysArgument)
+	console.log(sysArgument)
 	var oPayCompose = new payCompose(sysArgument)
+
+	
+	 console.log('-------------页面参数-------------------')
+	 var id = getQueryString('id')
+	 var m = getQueryString('m')
+	 console.log('orderId',id)
+	 console.log('m',m) //1.预约 
+
+	 console.log('-------------页面参数-------------------')
+
 	//计算完成后回调，页面执行渲染
 	oPayCompose.processCallback = function()
 	{		  
@@ -53,7 +65,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		let dataResult  = {
 			num: oPayCompose.result.goodsNum  ,
 			point: (oPayCompose.result.amountPoint-0).toFixed(2),
-			cutPrice: (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney -0).toFixed(2) ,
+			cutPrice: (oPayCompose.result.amountDiscountMoney -0).toFixed(2) ,
 			price: (oPayCompose.result.amountMoney-0).toFixed(2) ,
 			activityPrice:(oPayCompose.result.amountActivityMoney-0).toFixed(2) ,
 		}
@@ -65,13 +77,18 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 	oPayCompose.finishCallback = function(){
 		console.log("支付相关参数计算完成函数回调")
 
-		 let amountDiscountMoney = oPayCompose.result.amountDiscountMoney
-		 let amountActivityMoney = oPayCompose.result.amountActivityMoney
+		console.log('oPayCompose.result',oPayCompose.result)
+
+		 let amountDiscountMoney = parseFloat(oPayCompose.result.amountDiscountMoney)
+		 let amountActivityMoney =parseFloat(oPayCompose.result.amountActivityMoney)
+		 let amountModifyMoney = parseFloat(oPayCompose.result.amountModifyMoney)
+		 let allPayMoney  =parseFloat(oPayCompose.result.allPayMoney)
+		 	
 		//01.payInfoTmp 渲染
 		dataResult = {
-			amount : amountDiscountMoney,                      //应收
-			paid : amountDiscountMoney - amountActivityMoney , //待收
-			discount : amountActivityMoney,				   //优惠
+			amount : amountDiscountMoney.toFixed(2),                      //应收
+			paid :  math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(allPayMoney).done().toFixed(2), //待收
+			discount : math.chain(amountActivityMoney).add(amountModifyMoney).done().toFixed(2),				   //优惠
 			payItem : oPayCompose.payItem,				   //支付列表 
 			curPayItem :  oPayCompose.curPayItem				   //当前选中支付方式
 		}
@@ -83,7 +100,10 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		$.each(oPayCompose.payItem,function(index,item){
 			$('#pay_item_'+item.code).addClass('border-red')
 		})
-		
+
+		if(oPayCompose.curPayItem != 999){
+			$("#pay_input_"+oPayCompose.curPayItem).select()
+		}
 	}
 		
 
@@ -148,19 +168,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				html +='<li data-code="'+item.code+'" id="pay_item_'+item.code+'" class="pay_item"><a style="background: url(../../../Theme/images/pay/'+item.icon+') no-repeat center 10px;" href="#">'+item.name+'</a></li>'				
 			});			
 			$("#pay").html(html)
-			$(".pay_item").bind("click",function(){
-				// if(oPayCompose.payItem.length >= 3)
-				// {					
-				// 	$.luck.error('最多只能选择3中支付方式')
-				// 	return false
-				// }
+			$(".pay_item").bind("click",function(){		
 				let code = $(this).attr('data-code') 	
 				if(oPayCompose.payMaxCount(code, 3))
 				{
 					$.luck.error('最多只能选择3中支付方式')
 					return false
 				}
-
 							 
 				let result = oPayCompose.selectPay(code)
 				//重新渲染 -> cashier-num
@@ -230,22 +244,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				_this.getGoodsListPageList();
 				//}
 			})
-			//选择优惠活动
-			// $("body").on("click", ".order-select", function () {		
-			// 	if (hasShopAcivity) {
-			// 		$(".activity-list").toggle();
-			// 	}
-			// 	$("body").on("click", ".check-box-list li", function () {
-			// 		var act=$(this).attr("data-obj");					
-			// 		let result	= oPayCompose.selectActivity(act)  // .chooseActivity(act)						
-			// 		if(result){						
-			// 		}
-			// 		else
-			// 		{
-			// 			$.luck.error("未达到活动规则")
-			// 		}	
-			// 	})
-			// })
+		
 			/*清除获取的会员*/
 			$("body").on("click", '.vip-delete img', function (e) {
 				shopMemberActAry = [];
@@ -1008,7 +1007,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 							}
 							else
 							{
-								mdata.avatar = user.information.ImageServerPath +oPayCompose.chooseMember.Avatar
+								mdata.avatar = user.information.ImageServerPath + oPayCompose.chooseMember.Avatar
 							}							
 						}
 					
@@ -1028,6 +1027,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 							skin: "lomo-ordinary",
 							content: $(".lomo-cashier"),
 						})
+						$("body").find(".cashier-num-b[class='active'] input").focus();
 					})	
 				}
 				else{
@@ -1081,6 +1081,22 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			var curEditMoneyDom = null;
 			//整单优惠
 			$(".cashier-way .way7").on("click",function(){
+				//应收 ，最大金额			
+				let  maxMoney =  (oPayCompose.result.amountMoney -  oPayCompose.result.amountActivityMoney).toFixed(2) 
+				$('#single_amount').html(maxMoney)
+				if(oPayCompose.result.amountModifyMoney >0){		
+					console.log('oPayCompose.modificationInfo',oPayCompose.result.modificationInfo)
+					$('#single_discount_val').val(oPayCompose.result.modificationInfo.val)
+					$('#single_discount_mode').val(oPayCompose.result.modificationInfo.mode)
+					$('#single_discount_money').val(oPayCompose.result.modificationInfo.money)
+				}
+				else{
+					$('#single_discount_val').val('0.00')
+					$('#single_discount_mode').val(2)
+					$('#single_discount_money').val('0.00')
+				}
+				form.render()
+				
 				layer.open({
 				    type: 1,
 				    id: "singleDiscount",
@@ -1094,8 +1110,77 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				    btn: ['确认', '取消'],
 				    skin: "lomo-ordinary",
 				    content:$(".single-discount"),
+					yes:function(index){
+						let diffVal = $('#single_discount_money').val()						
+						let val = $('#single_discount_val').val()
+						let mode = $('#single_discount_mode').val()	
+						let  dis =math.chain( oPayCompose.result.amountMoney).subtract(oPayCompose.result.amountActivityMoney).subtract(parseFloat(diffVal)).done().toFixed(2)
+						
+						let info ={ val: val ,mode:mode , money :diffVal }
+						oPayCompose.settingModify(dis,info)				
+						layer.close(index)
+					},
+					btn2:function(){						
+					}
 				})
 			})
+			//整单金额输入框
+			$("#single_discount_val").on('change',function(){
+				let val = $(this).val()
+				if(!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)){ 
+					$.luck.error('只能输入数字，小数点后只能保留两位') ;
+					$(this).val('');
+					return false
+				}
+				let maxMoney = (oPayCompose.result.amountMoney -  oPayCompose.result.amountActivityMoney).toFixed(2) 
+				val = parseFloat(val)
+
+				let mode =$('#single_discount_mode').val()
+				console.log('mode',mode)
+			
+				if(mode==2){
+					if(val >maxMoney ){
+						$('#single_discount_val').val(maxMoney)
+						$('#single_discount_money').val('0.00')
+						return false
+					}
+					else{
+						let newVal = (maxMoney -val).toFixed(2)					
+						$('#single_discount_money').val(newVal)
+					}
+				}
+				else{
+					console.log('val',val)
+					if(val < 0 || val >10){
+						$.luck.error('比例只能时0-10内的数字') ;						
+						$(this).val('');
+						$('#single_discount_money').val('0.00')
+						return false
+					}
+					val = val.toFixed(1)
+					console.log(val)
+					$(this).val(val);
+					let newVal =( maxMoney * (val/10) ).toFixed(2)				
+					$('#single_discount_money').val(newVal)
+				}
+			})
+			$("#single_cancel").on('click',function(){
+				$('#single_discount_val').val('0.00')		
+				$('#single_discount_money').val('0.00')	
+				oPayCompose.cancelModify()		
+			})
+
+			$(".moneyInput").blur(function(){
+				console.log('moneyInput->','blur')
+			});
+			
+			form.on('select(single_discount_money)', function(data){   
+				$('#single_discount_val').val('0.00')		
+				$('#single_discount_money').val('0.00')	
+				//重置
+				oPayCompose.cancelModify()		
+			});
+
 			//整单提成
 			$(".cashier-way .way8").on("click",function(){
 				layer.open({
@@ -1110,7 +1195,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				    area: ['80%', 'auto'],
 				    btn: ['确认', '取消'],
 				    skin: "lomo-ordinary",
-				    content:$(".bill-lading"),
+					content:$(".bill-lading"),
+					yes:function(index){
+						
+						layer.close(index)
+					},
+					btn2:function(){						
+					}
 				})
 			})
 			//备注
@@ -1127,7 +1218,14 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				    area: ['500px', 'auto'],
 				    btn: ['确认', '取消'],
 				    skin: "lomo-ordinary",
-				    content:'<div class="pd20"><textarea placeholder="收银备注" class="layui-textarea" name="" cols="" rows="3"></textarea></div>',
+					content:'<div class="pd20"><textarea placeholder="收银备注" id ="pay_remark" class="layui-textarea" name="" cols="" rows="3">'+oPayCompose.remark+'</textarea></div>',
+					yes:function(index){
+						let remark = $("#pay_remark").val()				
+						oPayCompose.remark = remark
+						layer.close(index)
+					},
+					btn2:function(){						
+					}
 				})
 			})
 			//重新选择优惠券
@@ -1165,46 +1263,64 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				    content:$(".paybox"),
 				})
 			})
-			
-			
 
 			$("body").on("click",".cashier-num-b li",function(){
 				curEditMoneyDom = $(this);		
 				curPayCode = $(this).attr('data-code') //选中的支付输入框
-				oPayCompose.selectPayInput(curPayCode)
+				var result = oPayCompose.selectPayInput(curPayCode)				
+				// $("#pay_input_"+curPayCode).val(result)
+				//console.log('curPayCode',curPayCode)
+
+				//$("#pay_input_"+curPayCode).select()
 
 				//oPayCompose.curPayItem = curPayCode
 				// $(this).addClass("active").siblings().removeClass("actvie");
 			})
 
-			$(".cashier-keyboard li").on("click",function(){
-
-				curPayCode ='001' //选中的支付输入框
-
-				if(oPayCompose.curPayItem =='')
-				{
-					$.luck.error('未选中支付输入框')
+			//小键盘及金额计算
+			$(".cashier-keyboard li").on("click",function(){			
+				var val = $(this).text();			
+				if(oPayCompose.curPayItem ==''){
+					$.luck.error('请选中支付输入框')
 					return false;
 				}
 
-			  	var result = oPayCompose.changePayMoeny(oPayCompose.curPayItem, 123.21)
-			  	console.log("changePayMoeny->curPayCode",curPayCode ,result)
-				// var val = $(this).text();
-				// console.log(val)
-				// if(!curEditMoneyDom){
-				// 	return;
-				// }else{
-				// 	if(val=='100.00'||val=='200.00'||val=='500.00'){
-				// 		curEditMoneyDom.find("b").html('￥ '+val);
-				// 	}else{
-				// 		if(curEditMoneyDom.find("b")=="￥ 0"){
-				// 			curEditMoneyDom.find("b").html('￥ '+val);
-				// 		}else{
-				// 			var old = Number(curEditMoneyDom.find("b").html().split('￥')[1]);
-				// 			curEditMoneyDom.find("b").html('￥ '+old+val);
-				// 		}
-				// 	}
-				// }
+				if(oPayCompose.curPayItem == '999'){
+					$.luck.error('请选择优惠券')
+					return false;
+				}
+
+				let oldVal = $("#pay_input_"+oPayCompose.curPayItem).val()					
+				if(val == '.'){
+					oldVal += val
+					$("#pay_input_"+oPayCompose.curPayItem).val(oldVal)
+					return false;
+				}
+
+				if(val == '←'){
+					if(oldVal.length <=1){
+						oldVal = 0
+					}
+					else{
+						oldVal = oldVal.substr(0, oldVal.length - 1);  
+					}					
+				}	
+				else if(val=='100.00'||val=='200.00'||val=='500.00')
+				{
+					oldVal = val
+				}		   
+				else{
+					oldVal += val
+				}
+
+				oldVal = parseFloat(oldVal)				
+				if(!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(oldVal)){ 
+					$.luck.error('金额只能时2位小数') 					
+					return false
+				}
+
+				if(oldVal == ''){oldVal = 0}	
+				var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, oldVal)	
 			})
 
 
@@ -1225,7 +1341,6 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				    content:$(".lomo-wcpsy"),
 				})
 			})
-
 		},
 		
 		
