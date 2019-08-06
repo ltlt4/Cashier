@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>预约管理-商户收银宝</title>
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+<style>
+    .layui-input {
+        height: 32px;
+    }
+
+    .layui-form-select dl dd.layui-this {
+        background: #41c060;
+    }
+
+    .layui-form-item .layui-input-inline {
+        width: 65%;
+    }
+
+    .layui-form-label {
+        font-weight: 500;
+        line-height: 14px;
+    }
+
+    .layui-none {
+        line-height: 26px;
+        padding: 15px;
+        text-align: center;
+        color: #999;
+    }
+</style>
+
+<body>
+    <div>
+        <!--主体  start-->
+        <div class="lomo-online-order ">
+            <div class="lomoTab-warp">
+                <form action="" class="layui-form">
+                    <div class="reservation-operation">
+                        <div class="operation1">
+                            <button type="button" id='addRes'>+新增预约</button>
+                        </div>
+                        <div class="operation2 layui-form-item">
+                            <input type="text" id="Mobile" placeholder="预约手机号码/核销码">
+                            <button type="button">查询</button>
+                        </div>
+                        <div class="operation3 layui-form-item">
+                            <select name="" id="Status">
+                                <option value="">请选择</option>
+                                <option value="0">未付款</option>
+                                <option value="1">到店付款</option>
+                                <option value="2">已开单</option>
+                                <option value="3">已超时</option>
+                                <option value="4">已支付</option>
+                                <option value="5">已取消</option>
+                            </select>
+                        </div>
+                        <div class="operation3 layui-form-item" id="shopList">
+                            <select name="" id="ShopId">
+                                <option value="">选择店铺</option>
+                            </select>
+                        </div>
+                        <div class="operation4 layui-form-item">
+                            <div class="">
+                                <div class="">
+                                    <div>
+                                        <input type="text" class="layui-input" id="timeFrame" placeholder="请选择预约日期区间"
+                                            style="height: 32px; width: 70%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="add-bt online-order-bt bt-g" lay-submit lay-filter="inquiry">查询</button>
+                            <button class="add-bt online-order-bt gray" id="empty" type="reset">清空</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="online-order-table">
+                    <table id="order">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>手机号码</th>
+                                <th>技师姓名</th>
+                                <th>项目名称</th>
+                                <th>是否会员</th>
+                                <th>预约时间</th>
+                                <th>服务方式</th>
+                                <th>是否支付</th>
+                                <th>订单状态</th>
+                                <th>预约店铺</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="layui-none">无数据</div>
+                </div>
+                <!-- 分页器 start -->
+                <div id="paging" class="lomo-paging">
+                </div>
+                <!-- 分页器 start -->
+            </div>
+        </div>
+        <!--主体    end-->
+        <!-- 新增预约  start-->
+        <div id="lomo-yuyue" class="lomo-gd order-cd cd-info hide" style="height: 100%; width: 100%; margin: 0;">
+            <div class="order-cd-info">
+                <form action="" class="layui-form">
+                    <div class="yuyue-form">
+                        <div class="yuyue-form-list">
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">姓名：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="CustomerName" class="layui-input" placeholder="请输入预约人姓名">
+                                </div>
+                            </div>
+                            <div class="layui-form-item ">
+                                <label for="" class="layui-form-label">手机号码：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="Mobile" class="layui-input" placeholder="请输入预约手机号码">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="yuyue-form-list">
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">预约店铺：</label>
+                                <div class="layui-input-inline">
+                                    <select name="ShopID" lay-filter="dianpu" id="Shop">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item ">
+                                <label for="" class="layui-form-label">服务项目：</label>
+                                <div class="layui-input-inline">
+                                    <select name="ProjectID" lay-filter="fuwu" id="ProjectID">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="yuyue-form-list">
+                            <div class="layui-form-item ">
+                                <label for="" class="layui-form-label">预约技师：</label>
+                                <div class="layui-input-inline">
+                                    <select name="TecID" lay-filter="technician" id="tec">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">到店时间：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="ResDate" class="layui-input" name="ResDate" readonly placeholder="请选择时间" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="yuyue-form-list">
+                            <div class="layui-form-item ">
+                                <label for="" class="layui-form-label">时间段：</label>
+                                <div class="layui-input-inline">
+                                    <select name="TimeSlot" lay-filter="timesoft" id="timesoft">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">备注：</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="请输入备注" class="layui-textarea" name="Remark"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="yuyue-button">
+                        <button class="submit-bt" class="layui-btn" lay-submit="" lay-filter="subscribe">确认</button>
+                        <button type="button" class="submit-bt-clear" id="cancelBtn">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- 新增预约  end-->
+
+        <!--遮罩层 start-->
+        <div class="lomo-mask-body hide"></div>
+        <!--遮罩层 end-->
+    </div>
+</body>
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+<script src="../../../js/Order/reservation/reservation.js"></script>
+
+
+</html>

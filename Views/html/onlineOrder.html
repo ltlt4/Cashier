@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>线上订单-商户收银宝</title>
+  <link href="../css/Public.css" type="text/css" rel="stylesheet" />
+  <link href="../css/index.css" type="text/css" rel="stylesheet" />
+  <link href="../css/animate.css" type="text/css" rel="stylesheet" />
+  <link href="../layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+  <div>
+    <!--线上订单 start-->
+    <div class="lomo-online-order">
+      <div class="lomoTab"><span class="hover">商城订单</span><span>订单核销</span></div>
+      <div class="lomoTab-warp">
+        <div class="online-order-time">
+          <ul>
+            <li>今天</li>
+            <li>昨天</li>
+            <li>近一周</li>
+            <li class="hover">近一月</li>
+            <li>近半年</li>
+            <li>近一年</li>
+          </ul>
+          <div class="time-plug-in">
+            <!--时间插件-->
+            <select name="">
+              <option>2019-04-03</option>
+            </select>
+            <select name="">
+              <option>2019-04-03</option>
+            </select>
+            <!--时间插件-->
+            <button type="button" class="add-bt">查询</button>
+          </div>
+        </div>
+        <div class="online-order-form">
+          <ul>
+            <li>
+              <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+              <button type="button" class="add-bt order-form-bt">查询</button>
+            </li>
+            <li><span>状态</span>
+              <select name="" class="order-form-select">
+                <option>已发货</option>
+                <option>未发货</option>
+              </select>
+            </li>
+            <li><span>类别</span>
+              <select name="" class="order-form-select">
+                <option>已发货</option>
+                <option>未发货</option>
+              </select>
+            </li>
+            <li><span>付款状态</span>
+              <select name="" class="order-form-select">
+                <option>已发货</option>
+                <option>未发货</option>
+              </select>
+            </li>
+            <li><span>供应商</span>
+              <select name="" class="order-form-select">
+                <option>已发货</option>
+                <option>未发货</option>
+              </select>
+            </li>
+            <li>
+              <button type="button" class="add-bt order-form-yellowbt">重置条件</button>
+            </li>
+          </ul>
+        </div>
+        <div class="online-order-table">
+          <table>
+            <tr>
+              <th width="18%">订单号</th>
+              <th width="8%">会员</th>
+              <th width="5%">状态</th>
+              <th width="11%">联系人</th>
+              <th width="16%">地址</th>
+              <th width="12%">快递</th>
+              <th width="15%">购买时间</th>
+              <th width="15%">操作</th>
+            </tr>
+            <tr>
+              <td>XF20156451256451231</td>
+              <td>800001<br />
+                黎岩峰</td>
+              <td>未发货</td>
+              <td>黎岩峰<br />
+                18745698541</td>
+              <td>湖北省宜昌市三峡云计算中心4楼4006室</td>
+              <td>中通快递<br />
+                778016512684</td>
+              <td>2019-6-4 16:50:32</td>
+              <td><button type="button" class="add-bt online-order-bt bt-g">详情</button>
+                <button type="button" class="add-bt online-order-bt orange">发货</button></td>
+            </tr>
+            <tr>
+              <td>XF20156451256451231</td>
+              <td>800001<br />
+                黎岩峰</td>
+              <td>未发货</td>
+              <td>黎岩峰<br />
+                18745698541</td>
+              <td>湖北省宜昌市三峡云计算中心4楼4006室</td>
+              <td>中通快递<br />
+                778016512684</td>
+              <td>2019-6-4 16:50:32</td>
+              <td><button type="button" class="add-bt online-order-bt bt-g">详情</button>
+                <button type="button" class="add-bt online-order-bt orange">发货</button></td>
+            </tr>
+            <tr>
+              <td>XF20156451256451231</td>
+              <td>800001<br />
+                黎岩峰</td>
+              <td>未发货</td>
+              <td>黎岩峰<br />
+                18745698541</td>
+              <td>湖北省宜昌市三峡云计算中心4楼4006室</td>
+              <td>中通快递<br />
+                778016512684</td>
+              <td>2019-6-4 16:50:32</td>
+              <td><button type="button" class="add-bt online-order-bt bt-g">详情</button>
+                <button type="button" class="add-bt online-order-bt orange">发货</button></td>
+            </tr>
+            <tr>
+              <td>XF20156451256451231</td>
+              <td>800001<br />
+                黎岩峰</td>
+              <td>未发货</td>
+              <td>黎岩峰<br />
+                18745698541</td>
+              <td>湖北省宜昌市三峡云计算中心4楼4006室</td>
+              <td>中通快递<br />
+                778016512684</td>
+              <td>2019-6-4 16:50:32</td>
+              <td><button type="button" class="add-bt online-order-bt bt-g">详情</button>
+                <button type="button" class="add-bt online-order-bt orange">发货</button></td>
+            </tr>
+          </table>
+        </div>
+        <!-- 分页器 start -->
+        <div id="paging" class="lomo-paging">
+        </div>
+        <!-- 分页器 start -->
+      </div>
+      <div class="lomoTab-warp hide">
+        <dl class="Card-Cancel-info">
+          <dd class="Card-Cancel-form">
+            <input id="inSearch" type="text" placeholder="商品条码/简码" class="input" />
+            <a href="#" class="card-num-up"></a>
+            <!--小键盘 start-->
+            <div class="small-keyboard Card-Cancel-keyboard hide">
+              <ul class="small-keyboard-num">
+                <!-- <li v-for="val,index in keyList"
+                                v-bind:class="{'keyboard-remove':index==13,'keyboard-confirm':index==14}" @click="keyBoard(val)">
+                                {{val}}</li> -->
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+                <li>0</li>
+                <li>00</li>
+                <li>.</li>
+                <li>←</li>
+                <li class="keyboard-remove">清除</li>
+                <li class="keyboard-confirm">确认</li>
+              </ul>
+              <em class="topSjx"></em>
+            </div>
+            <!--小键盘 end-->
+            <button type="button" class="bt">搜索</button>
+          </dd>
+        </dl>
+      </div>
+    </div>
+    <!--线上订单 end-->
+    <!--发货 start-->
+    <div class="lomo-fh hide">
+      <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>发货</div>
+      <dl class="fh-form">
+        <dt>快递单号</dt>
+        <dd>
+          <input name="" type="text" class="sph" />
+          <span class="card-num-up"></span>
+          <!--小键盘 start-->
+          <div class="small-keyboard Card-Cancel-keyboard hide" style="top: 126px;left: 150px;">
+            <ul class="small-keyboard-num">
+              <li>1</li>
+              <li>2</li>
+              <li>3</li>
+              <li>4</li>
+              <li>5</li>
+              <li>6</li>
+              <li>7</li>
+              <li>8</li>
+              <li>9</li>
+              <li>0</li>
+              <li>00</li>
+              <li>.</li>
+              <li>←</li>
+              <li class="keyboard-remove">清除</li>
+              <li class="keyboard-confirm">确认</li>
+            </ul>
+            <em class="topSjx"></em>
+          </div>
+          <!--小键盘 end-->
+        </dd>
+        <dt>快递名称</dt>
+        <dd>
+          <select name="" class="fh-form-select">
+            <option>2019-04-03</option>
+          </select>
+        </dd>
+        <dd class="fh-form-bt">
+          <button type="button" class="submit-bt-clear">取消</button>
+          <button type="button" class="submit-bt">确认</button>
+        </dd>
+      </dl>
+    </div>
+    <!--发货 end-->
+    <!-- 订单详情 start -->
+    <div id="lomo-xq" class="lomo-gd order-cd cd-info hide">
+      <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>订单详情</div>
+      <div class="order-cd-info">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable">
+          <tr>
+            <td width="49%">会员：李洋（NO.800001）</td>
+            <td width="49%">状态：正常</td>
+          </tr>
+          <tr>
+            <td>等级：白金会员</td>
+            <td>所属门店：纳新总店</td>
+          </tr>
+        </table>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable" style="margin-top:30px;">
+          <tr>
+            <td width="49%"><i>单据号：</i><em>896578945212</em></td>
+            <td width="49%"><i>订单日期：</i><em>2019-6-20 12:48:27</em></td>
+          </tr>
+          <tr>
+            <td><i>总金额：</i><em>2000元</em></td>
+            <td><i>获得积分：</i><em>200分</em></td>
+          </tr>
+          <tr>
+            <td><i>现金支付：</i><em>2000元</em></td>
+            <td><i>余额支付：</i><em>200分</em></td>
+          </tr>
+          <tr>
+            <td><i>刷卡支付：</i><em>2000元</em></td>
+            <td><i>积分支付：</i><em>200分</em></td>
+          </tr>
+          <tr>
+            <td><i>支付宝支付：</i><em>2000元</em></td>
+            <td><i>微信支付：</i><em>200分</em></td>
+          </tr>
+          <tr>
+            <td><i>产品种类：</i><em>2000元</em></td>
+            <td><i>产品总数：</i><em>200分</em></td>
+          </tr>
+          <tr>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+            <td><i>订单备注：</i></td>
+            <td></td>
+          </tr>
+        </table>
+        <div class="order-cdTable2Sco">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable2"
+            style="margin-top:20px;">
+            <tr>
+              <th width="16%">商品类型</th>
+              <th width="17%">商品编号</th>
+              <th width="17%">商品名称</th>
+              <th width="15%">折后金额</th>
+              <th width="10%">商品数量</th>
+              <th width="10%">可退数量</th>
+              <th width="10%">总金额</th>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>12345.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>12334.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>13345.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>13444.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>20022.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>20022.00</td>
+            </tr>
+            <tr>
+              <td>商品类型</td>
+              <td>896578945212</td>
+              <td>支付宝支付</td>
+              <td>2000.00</td>
+              <td>1222</td>
+              <td>3333</td>
+              <td>20002.00</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- 订单详情 end -->
+    <!--遮罩层 start-->
+    <div class="lomo-mask-body hide"></div>
+    <!--遮罩层 end-->
+  </div>
+</body>
+<script src="../js/jquery3.4.1.min.js"></script>
+<script src="../layui/layui.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/onlineOrder.js"></script>
+<script src="../js/utils.js"></script>
+
+</html>

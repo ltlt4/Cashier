@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>系统设置-商户收银宝</title>
+    <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/setting.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="page">
+        <!--设置 start-->
+        <div class="lomo-online-order">
+            <div class="lomoTab">
+                <span class="hover">IC卡设置</span>
+                <span>打印设置</span>
+                <!-- <span>副屏设置</span> -->
+                <span>其他设置</span>
+                <span>系统更新</span>
+            </div>
+            <!-- IC卡设置 -->
+            <div class="lomoTab-warp">
+                <div class="ICset">
+                    <div class="ICset-info">
+                        IC卡时指集成电路卡、又称智能卡，因其存储容量高、安全性好、使用寿命长等，广泛应用于电信、金融、医疗、公众服务等领域，如：201电话卡、点卡、水卡、医保卡、公交卡等。系统目前支持接触式IC卡（4442芯片）、感应式IC卡（M1芯片）两种类型
+                    </div>
+                    <dl class="ICset-info-form layui-form" lay-filter="setIcCard">
+                        <div class="clearfix m-b-5">
+                            <p class="fl" style="padding-top: 10px;">
+                                <input type="checkbox" name="IsEnableICCard" title="启用本系统IC卡功能" lay-skin="primary" id="color-input-red">
+                            </p>
+                            <div class="layui-input-inline fl">
+                                <select name="cardType" lay-filter="cardType" class="ICset-info-select">
+                                    <option value="1">感应式IC卡（M1芯片）</option>
+                                    <option value="2">接触式IC卡（4442芯片）—URD-R310 USB读卡器</option>
+                                    <option value="3">接触式IC卡（4442芯片）—串口读卡器</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="clearfix hide" id="sataBox">
+                            <div class="fl">
+                                <label>串口：</label>
+                                <div class="inline-select">
+                                    <select name="sata" lay-filter="sataType" class="ICset-info-select">
+                                        <option v-for="item in Coms">{{item}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="fl m-l-5">
+                                <label>波特率：</label>
+                                <div class="inline-select">
+                                    <select name="baudRate" class="ICset-info-select">
+                                        <option value="9600">9600</option>
+                                        <option value="19200">19200</option>
+                                        <option value="38400">38400</option>
+                                        <option value="57600">57600</option>
+                                        <option value="115200">115200</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="layui-btn layui-btn-primary m-t-5 m-l-5 layui-btn-sm flashSata fl">刷新串口</button>
+                            <p class="curSata fl m-t-10 m-l-5">当前串口：<span id="curSataName"></span></p>
+                        </div>
+
+                        <dd>注意：此功能必须要链接IC卡相关设备才能使用</dd>
+                    </dl>
+                    <div class="ICset-info-bt">
+                        <p>对于已经使用本软件执行发卡操作的IC卡，如果需要对其重新发卡，需先对其进行初始化操作。注意：IC卡初始化之后，此卡对应旧的相关记录仍保存在软件中，无用的信息请手动删除。</p>
+                        <button type="button" class="add-bt">IC卡初始化</button>
+                    </div>
+
+                    <div class="clearfix submit-box">
+                        <button id="submitIcSet">保存</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 打印设置 -->
+            <div class="lomoTab-warp hide">
+                <div class="ICset ICset2">
+                    <dl class="ICset-info-form layui-form" lay-filter="setPrint">
+                        <dt>
+                            <input type="checkbox" name="rinting" title="启用小票自动打印" lay-skin="primary" id="rinting">
+                            <button type="button" class="add-bt">下载打印驱动</button>
+                        </dt>
+                        <dd>
+                            <ul class="setPrint">
+                                <li>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">选择主打印机</label>
+                                        <div class="layui-input-block">
+                                            <select name="main" class="ICset-info-select">
+                                                <option v-for="item in Prints">{{item}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">选择从打印机</label>
+                                        <div class="layui-input-block">
+                                            <select name="secondary" class="ICset-info-select">
+                                                <option value="">请选择从打印机</option>
+                                                <option v-for="item in Prints">{{item}}</option>
+                                            </select>
+                                        </div>
+                                        <em>注：从打印机内容与主打印机一致</em>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">打印份数</label>
+                                        <div class="layui-input-block">
+                                            <input name="printNum" type="number" class="layui-input" />
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="ICset-info-cc">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">打印尺寸</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="MM" value="58" title="58MM">
+                                            <input type="radio" name="MM" value="80" title="80MM">
+                                            <input type="radio" name="MM" value="210" title="210MM">
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li >
+                                    <span>打印间隔</span>
+                                    <input name="" type="text" class="ICset-info-input" />
+                                </li>-->
+                                <li>
+                                    <button type="button" class="add-bt">IC卡初始化</button></li>
+                            </ul>
+                        </dd>
+                    </dl>
+
+                    <div class="clearfix submit-box">
+                        <button id="submitPrint">保存</button>
+                    </div>
+                </div>
+            </div>
+            <!--副屏设置 -->
+            <!-- <div class="lomoTab-warp hide">
+                <div class="ICset ICset2 ICset3">
+                    <div class="ICset-fp-set">
+                        <h1>该功能只能在支持副屏显示的设备上使用</h1>
+                        <ul class="layui-form m-t-10">
+                            <li>
+                                <input name="" type="checkbox" value="" title="是否启用双屏" id="double" lay-skin="primary" />
+                            <li>
+                                <input name="" type="checkbox" value="" title="是否启用左侧购物框" id="color-input-red2" lay-skin="primary" />
+                                <input name="" type="checkbox" value="" title="是否固定左侧购物框" id="color-input-red3" lay-skin="primary" />
+                            </li>
+                            <li class="clearfix">
+								<span style="width: 100px; margin-left: 25px;">广告图片文件</span>
+								<a href="#" class="ICset-fp-file">
+                                <input type="file" name="">
+                                选择目录 </a><em>广告数量（0）</em></li>
+                            <li class="clearfix">
+								<span style="width: 100px; margin-left: 25px;">图片切换时间</span>
+                                <input name="" type="text" class="ICset-fp-input" />
+                            </li>
+                            <li><span style="width: 100px; margin-left: 25px;">其他设置</span></li>
+                            <li>
+                                <input name="" type="checkbox" value="" title="是否启用声音文件" lay-skin="primary" id="color-input-red4" />
+							</li>
+                            <li>
+								<span style="width: 100px; margin-left: 25px;">声音文件</span>
+								<a href="#" class="ICset-fp-file">
+                                <input type="file" name="">
+                                选择目录 </a></li>
+                        </ul>
+                    </div>
+					
+                    <div class="clearfix submit-box">
+                        <button>保存</button>
+                    </div>
+                </div>
+            </div> -->
+            <!-- 其他设置 -->
+            <div class="lomoTab-warp hide">
+                <div class="ICset ICset2 ICset4">
+                    <div class="ICset-fp-set ICset-other-set">
+                        <ul class="layui-form" lay-filter="guestSet">
+                            <!-- <li>
+                                <input name="" type="checkbox" value="" title="其他设置" lay-skin="primary" id="color-input-red7" />
+							</li> -->
+                            <li>
+                                <input name="IsDisplayCom" type="checkbox" value="" title="是否启用客显系统" lay-skin="primary" id="color-input-red8" />
+                            </li>
+                            <!-- <li>
+                                <input name="" type="checkbox" value="" title="是否固定左侧购物框" lay-skin="primary" id="color-input-red9" />
+                            </li> -->
+                            <li class="clearfix">
+                                <label class="fl m-r-10" style="line-height: 36px;">客显地址</label>
+                                <div class="layui-input-inline fl">
+                                    <select name="guestShow">
+                                        <option v-for="item in Coms">{{item}}</option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li class="guest-show-test">
+                                <button type="button" class="add-bt">单价：66.66</button>
+                                <button type="button" class="add-bt">总价：88.88</button>
+                                <button type="button" class="add-bt">找零：22.22</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="clearfix submit-box">
+                        <button id="submitOtherSet">保存</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 系统更新 -->
+            <div class="lomoTab-warp hide">
+                <div class="ICset ICset5">
+                    <dl class="ICset-xtgx-set">
+                        <dt>检查到新版本，点击“下一步”下载更新文件</dt>
+                        <dd>
+                            <p>
+                                请确保您的电脑能够正常连接互联网络，如果有安装防火墙，
+                                请暂停防火墙功能，防止升级操作被防火墙拦截。
+                            </p>
+                            <button type="button" class="add-bt">立即更新</button>
+                            <button type="button"
+                                class="add-bt">
+                                稍后再说</button>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <!--设置 end-->
+    </div>
+</body>
+
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+<script src="../../../Scripts/vue.js"></script>
+<script src="../../../js/settings/settings.js"></script>
+</html>

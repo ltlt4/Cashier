@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>充值充次-商户收银宝</title>
+    <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+	<link href="../../../css/rechargeStroke.css" type="text/css" rel="stylesheet" />
+	
+</head>
+
+<body>
+    <div>
+        <div style="position: absolute;top: 51px;width: 100%;">
+            <div class="lomo-shopBar">
+                <!--卡号搜索/新增 start-->
+                <div class="card-num">
+                    <dl class="card-num-form">
+						<dd>
+							<input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+							<a href="javascript:void(0);" class="card-num-up" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
+							<button class="bt" id="search">搜索</button>
+						</dd>
+						<dt>
+							<button type="button" class="add-bt">+&nbsp;新增</button>
+						</dt>
+                    </dl>
+                </div>
+                <!--卡号搜索/新增 end-->
+                <!--分类翻页 start-->
+                <div class="shop-type">
+                    <div class="classify-nav-box clearfix">
+                    	<div class="triangle_border_left"></div>
+                    	<div class="scroll-view">
+                    		<div class="type classify-nav">
+                    
+                    		</div>
+                    	</div>
+                    	<div class="triangle_border_right"></div>
+                    </div>
+                    <div class="leaveltwo-nav-box clearfix hide">
+                    	<div class="triangle_border_left"></div>
+                    	<div class="scroll-view-two">
+                    			<div class="type classify-nav-two">
+                    			</div>
+                    		</div>
+                    	<div class="triangle_border_right"></div>
+                    </div>
+                    <div class="back-product change-product-nav hide" data-type="normal">
+                    	<a href="javascript:;"><i class="layui-icon layui-icon-left"></i>返回商品列表</a>
+                    </div>
+                </div>
+                <!--分类翻页 end-->
+				<div class="shop-type-button">
+				</div>
+                <!--商品搜索 start-->
+                <div class="card-num lomo-right">
+                    <dl class="card-num-form">
+                        <dd>
+                            <form action="">
+                                <input id="searchVal" type="text" placeholder="商品条码/简码/名称" class="input" />
+                                <a href="javascript:void(0);" class="card-num-up"
+                                    onclick="luckKeyboard.showSmallkeyboard(this)"></a>
+                                <button type="submit" class="bt search-product">搜索</button>
+                            </form>
+                        </dd>
+                    </dl>
+                </div>
+                <!--商品搜索 end-->
+            </div>
+        </div>
+        <!--主体 start-->
+        <div>
+            <div class="lomo-mian-left">
+                <dl class="vipInfo">
+                    <dt><img src="../../../Theme/images/morentouxiang.svg" /></dt>
+                    <dd><b></b><i></i><span class='hide'></span></dd>
+                    <dd><small>积分: 0</small><small>余额：0</small></dd>
+                    <div class="vip-delete"><img src="../../../Theme/images/del.png" alt=""></div>
+                </dl>
+                <div class="lomo-order">
+                    <div class="order-list">
+                        <!-- <dl>
+                            <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                    class="order-add">+</span>
+                            </dt>
+                            <dd> <i class="colorIcon purple">次</i>
+                                <div class="order-name">
+                                    <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                                    <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                </div>
+                            </dd>
+                        </dl> -->
+                    </div>
+                </div>
+                <div class="order-tool">
+                    <dl class="order-page">
+                        <dt>
+                            <p class="order-select consumeActivity">
+                                暂无优惠活动
+                            </p>
+                            <span class="triangle_border_right gray"></span>
+                        </dt>
+                        <dd>
+                            <div class="order-page-down"><span></span></div>
+                            <div class="order-page-up"><span></span></div>
+                        </dd>
+                        <div class="activity-list">
+                            <ul class="check-box-list consumeActList">
+
+                            </ul>
+                        </div>
+                    </dl>
+                    <div class="order-Pay">
+                        <ul>
+                            <li>数量：<span id="bTotalNum">0</span></li>
+                            <li>积分：0</li>
+                            <li>实收：<b id="actualPay">0</b><small id="bTotalMoney">0</small></li>
+                            <li>优惠：<i>0</i> </li>
+                        </ul>
+                    </div>
+                    <div class="order-button">
+                        <button type="button" class="add-bt" style="width: 90%">充次</button>
+                    </div>
+                </div>
+            </div>
+            <div class="lomo-mian-right">
+                <div class="goods-list goods-list-img">
+                    <!-- 产品列表 -->
+                </div>
+            </div>
+            <dl class="goods-page">
+                <dt>
+                    <span class="graph">开启无图模式</span>
+                    <span class="setmeal change-product-nav" data-type="setmeal">套餐商品</span>
+                    <span class="timescount change-product-nav" data-type="timescount"
+                        style="display: none;">已有计次项目</span>
+                </dt>
+                <dd> <button class="page-prev">上一页</button><span class="numb">1/1</span><button
+                        class="page-next next">下一页</button> </dd>
+            </dl>
+        </div>
+        <!--主体 end-->
+        <!-- 功能弹出框 start-->
+        <div>
+            <!--挂单 start-->
+            <div class="lomo-gd hide lomo-gd2 lomo-esc">
+                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>挂单</div>
+                <dl class="gd-form">
+                    <dt>手牌号</dt>
+                    <dd>
+                        <input name="" type="text" class="sph" />
+                        <span class="card-num-up"></span>
+                    </dd>
+                    <dt>备注</dt>
+                    <dd>
+                        <textarea name="" cols="" rows="" class="bz"></textarea>
+                    </dd>
+                    <dd class="gd-form-bt">
+                        <button type="button" class="submit-bt-clear">取消[ESC]</button>
+                        <button type="button" class="submit-bt">确认[F5]</button>
+                    </dd>
+                </dl>
+            </div>
+            <!--挂单 end-->
+            <!--取单 start-->
+            <div class="lomo-members-search hide lomo-qd lomo-esc">
+                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>取单</div>
+                <dl class="members-search-form">
+                    <dt>
+                        <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
+                    </dt>
+                    <dd>
+                        <button type="button" class="add-bt">搜索</button>
+                    </dd>
+                </dl>
+                <div class="members-search-list">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                        <tr>
+                            <th>单据号</th>
+                            <th>挂单时间</th>
+                            <th>会员姓名</th>
+                            <th>手牌号</th>
+                            <th>备注</th>
+                        </tr>
+                        <tr>
+                            <td>800001</td>
+                            <td>2019-6-3 12:34:32</td>
+                            <td>18596545218</td>
+                            <td>易烊千玺</td>
+                            <td> 白金会员白金会员白</td>
+                        </tr>
+                        <tr>
+                            <td>800001</td>
+                            <td>张三</td>
+                            <td>18596545218</td>
+                            <td>白金会员</td>
+                            <td>520</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="members-search-bt"><button type="button" class="submit-bt">取消[ESC]</button></div>
+            </div>
+            <!--取单 end-->
+            <!--收银结账 start-->
+            <div class="lomo-cashier hide">
+                <!--弹出层遮罩层 start-->
+                <div class="lomo-mask-cashier hide"></div>
+                <!--弹出层遮罩层 end-->
+                <div class="lomo-cashier-left">
+                    <h1>会员</h1>
+                    <dl class="vipInfo vipInfo-xz">
+                        <dt><img src="../../../Theme/images/touxiang.png" /></dt>
+                        <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+                        <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+                    </dl>
+                    <h1>付款方式</h1>
+                    <div class="cashier-way">
+                        <ul>
+                            <li class="border-red"><a href="#">储值卡</a></li>
+                            <li><a href="#" class="way2">微信</a></li>
+                            <li><a href="#" class="way3">支付宝</a></li>
+                            <li><a href="#" class="way4">优惠券</a></li>
+                            <li><a href="#" class="way5">积分抵扣</a></li>
+                            <li><a href="#" class="way6">银联卡</a></li>
+                        </ul>
+                    </div>
+                    <h1>更多操作</h1>
+                    <div class="cashier-way">
+                        <ul>
+                            <li>
+                                <a href="#" class="way7">整单优惠</a>
+                                <!--整单优惠 start-->
+                                <div class="chipBox  chipBox-yh hide" style="top:386px">
+                                    <ul class="chipBox-zdyh">
+                                        <li>应收金额：¥2050.00</li>
+                                        <li>优惠金额：
+                                            <input name="" type="text" class="sph" />
+                                            <select name="" class="yhhd">
+                                                <option>7折/元</option>
+                                            </select>
+                                        </li>
+                                        <li>优惠后金额：¥2050.00</li>
+                                    </ul>
+                                    <div class="chipBox-ForomBt">
+                                        <button type="button" class="submit-bt-clear">取消</button>
+                                        <button type="button" class="submit-bt">确认</button>
+                                    </div>
+                                    <em class="botSjx"></em>
+                                </div>
+                                <!--整单优惠 end-->
+                            </li>
+                            <li>
+                                <a href="#" class="way8">整单提成</a>
+                                <div class="chipBox hide lomo-tcyg-add"
+                                    style="margin-top:0px;padding: 3%;top:310px;overflow: visible;width: auto">
+                                    <div style="width: 100%;min-height:90px">
+                                        <span class="name nameTitle">提成员工：</span><span class="name">欧阳降权<i>x</i></span>
+                                        <span class="name">崔作非<i>x</i></span><span class="name">捞易<i>x</i></span><span
+                                            class="name">刘雨滴<i>x</i></span><span class="name">石头<i>x</i></span><span
+                                            class="name">文叔<i>x</i></span><span class="name">珍淑<i>x</i></span><span
+                                            class="add">+</span>
+                                    </div>
+                                    <div class="tcyg-form-bt">
+                                        <button type="button" class="submit-bt-clear">取消</button>
+                                        <button type="button" class="submit-bt">结账</button>
+                                    </div>
+                                    <em class="botSjx"></em>
+                                </div>
+                            </li>
+                            <li>
+                                <a href="#" class="way9">备注</a>
+                                <!--备注 start-->
+                                <div class="chipBox hide chipBox-bz">
+                                    <div class="chipBox-title">备注</div>
+                                    <div class="chipBox-Forominput">
+                                        <textarea name="" cols="" rows=""></textarea>
+                                    </div>
+                                    <div class="chipBox-ForomBt">
+                                        <button type="button" class="submit-bt-clear">取消</button>
+                                        <button type="button" class="submit-bt">确认</button>
+                                    </div>
+                                    <em class="botSjx"></em>
+                                </div>
+                                <!--备注 end-->
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="cashier-bt">
+                        <button type="button" class="add-bt green">返回收银</button>
+                    </div>
+                </div>
+                <div class="lomo-cashier-right">
+                    <div class="cashier-num">
+                        <ul class="cashier-num-a">
+                            <li><span>应收</span><b class="fl">¥5000.00</b><em>抹零</em></li>
+                            <li><span>待收</span><b>¥5000.00</b></li>
+                            <li><span>优惠</span><b>¥5000.00</b></li>
+                        </ul>
+                        <ul class="cashier-num-b">
+                            <li><span>优惠券<b>¥500</b></span><em>重选优惠券</em></li>
+                            <li><span>储值卡<b>¥500</b></span><small>找零¥50.00</small></li>
+                            <li><span>现金<b>¥500</b></span></li>
+                        </ul>
+                    </div>
+                    <div class="cashier-keyboard">
+                        <ul>
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                            <li>500.00</li>
+                            <li>4</li>
+                            <li>5</li>
+                            <li>6</li>
+                            <li>500.00</li>
+                            <li>5</li>
+                            <li>6</li>
+                            <li>7</li>
+                            <li>500.00</li>
+                            <li>0</li>
+                            <li>00</li>
+                            <li>.</li>
+                            <li>←</li>
+                        </ul>
+                    </div>
+                    <div class="cashier-end">
+                        <input name="" type="text" placeholder="请输入会员密码" class="input" />
+                        <button type="button" class="add-bt">完成结算</button>
+                    </div>
+                </div>
+            </div>
+            <!--选择优惠券 start-->
+            <div class="lomo-members-search lomo-yhq hide">
+                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>选择优惠券</div>
+                <dl class="members-search-form">
+                    <dt>
+                        <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
+                    </dt>
+                    <dd>
+                        <button type="button" class="add-bt">搜索</button>
+                    </dd>
+                </dl>
+                <div class="members-search-list">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                        <tr>
+                            <th>名称</th>
+                            <th>券号</th>
+                            <th>券类型</th>
+                            <th>优惠金额</th>
+                            <th>最低消费</th>
+                        </tr>
+                        <tr>
+                            <td>国庆大酬宾</td>
+                            <td>42065236524</td>
+                            <td>全场券</td>
+                            <td>7折</td>
+                            <td> 500</td>
+                        </tr>
+                        <tr>
+                            <td>国庆大酬宾</td>
+                            <td>42065236524</td>
+                            <td>全场券</td>
+                            <td>7折</td>
+                            <td> 500</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="members-search-bt">
+					<button type="button" class="submit-bt-clear">取消</button>
+					<button type="button" class="submit-bt">确认</button></div>
+            </div>
+            <!--选择优惠券 end-->
+            <!--收银结账 end-->
+            <!--无产品收银 start-->
+            <div class="lomo-gd lomo-wcpsy hide">
+                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>无产品收银</div>
+                <dl class="gd-form">
+                    <dt>优惠活动</dt>
+                    <dd>
+                        <select name="" class="yhhd">
+                            <option>暂无优惠活动</option>
+                        </select></span>
+                    </dd>
+                    <dt>消费金额</dt>
+                    <dd>
+                        <input name="" type="text" class="sph" />
+                    </dd>
+                    <dt>获得积分</dt>
+                    <dd>
+                        <input name="" type="text" class="sph" />
+                    </dd>
+                    <dt>折后金额</dt>
+                    <dd>
+                        <input name="" type="text" class="sph" />
+                    </dd>
+                    <dd class="lomo-line"></dd>
+                    <dt>提成员工</dt>
+                    <dd class="wcpsy-add">
+                        <span class="name">欧阳降权<i>x</i></span> <span class="name">崔作非<i>x</i></span><span
+                            class="name">捞易<i>x</i></span><span class="name">刘雨滴<i>x</i></span><span
+                            class="name">石头<i>x</i></span><span class="name">文叔<i>x</i></span><span
+                            class="name">珍淑<i>x</i></span><span class="add">+</span>
+                    </dd>
+                    <dd class="lomo-line"></dd>
+                    <dd class="gd-form-bt">
+						<button type="button" class="submit-bt-clear">取消</button>
+						<button type="button" class="submit-bt">结账</button>
+					</dd>
+                </dl>
+            </div>
+            <!--无产品收银 end-->
+        </div>
+		<!--提成员工 start-->
+		<p class="left-arrow-white"></p>
+		<dl class="lomo-tcyg hide">
+		    <dd>
+		        <div class="lomo-tcyg-goodsInfo"> <img src="" />
+		            <div class="tcyg-goodsInfo">
+		                <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+		                <span>单价：¥50.00</span><span>会员价：<i>¥50.00</i></span>
+		                <div class="tcyg-goodsInfo-bt">
+		                    <button type="button" class="add-bt">赠送</button>
+		                    <button type="button" class="add-bt">删除</button>
+		                </div>
+		            </div>
+		        </div>
+		        <div class="tcyg-goodsInfo-price">
+		            <ul>
+		                <li>现价<b>500.00</b></li>
+		                <li>数量<b>2</b></li>
+		                <li>总价<b>500.00</b></li>
+		            </ul>
+		        </div>
+		        <div class="lomo-tcyg-add clearfix m-t-20">
+					<span class="name nameTitle">提成员工：</span>
+					<span class="name">珍淑<i>x</i></span>
+					<span class="add choose-member">+</span>
+				</div>
+		        <div class="tcyg-form-bt">
+		            <button type="button" class="submit-bt-clear">取消</button>
+		            <button type="button" class="submit-bt">结账</button>
+		        </div>
+		        <!--小键盘 start-->
+		        <div class="small-keyboard lomo-tcyg-keyboard hide">
+		            <ul class="small-keyboard-num">
+		                <li>1</li>
+		                <li>2</li>
+		                <li>3</li>
+		                <li>4</li>
+		                <li>5</li>
+		                <li>6</li>
+		                <li>7</li>
+		                <li>8</li>
+		                <li>9</li>
+		                <li>0</li>
+		                <li>00</li>
+		                <li>.</li>
+		                <li>←</li>
+		                <li class="keyboard-remove">清除</li>
+		                <li class="keyboard-confirm">确认</li>
+		            </ul>
+		            <em class="topSjx"></em>
+		        </div>
+		        <!--小键盘 end-->
+		    </dd>
+		</dl>
+		<!--选择提成员工 start-->
+		<div class="lomo-xztcyg hide" style="padding: 10px;">
+			<div class="layui-row layui-col-space10">
+				<div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
+					
+				</div>
+				<div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
+					<table id="List" lay-filter="List"></table>
+				</div>
+			</div>
+		</div>
+		
+        <!--充值 start-->
+        <div class="lomo-gd lomo-wcpsy2 hide">
+			<div class="layui-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label">优惠活动</label>
+					<div class="layui-input-block">
+						<dl class="order-page">
+						    <dt>
+						        <p class="order-select rechargeActivity">
+									暂无优惠活动
+								</p>
+								<span class="triangle_border_right gray"></span>
+						    </dt>
+							<div class="activity-list hide">
+								<ul class="check-box-list rechargeActList">
+									
+								</ul>
+							</div>
+						</dl>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">充值金额</label>
+					<div class="layui-input-block">
+						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">赠送金额</label>
+					<div class="layui-input-block">
+						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">获得积分</label>
+					<div class="layui-input-block">
+						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+			</div>
+        </div>
+        <!--充值 end-->
+        <!--会员搜索弹层-->
+        <div id="lomo-members-search" class="lomo-members-search lomo-search hide">
+            <dl class="members-search-form">
+				<dt>
+					<input name="" type="text" placeholder="请输入姓名/卡号/手机号码" class="input" />
+				</dt>
+				<dd>
+					<button class="add-bt" id="search">搜索</button>
+				</dd>
+            </dl>
+            <div class="members-search-list">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                    <tr>
+                        <th>会员卡号</th>
+                        <th>会员姓名</th>
+                        <th>手机号码</th>
+                        <th>会员等级</th>
+                        <th>积分</th>
+                        <th>余额</th>
+                    </tr>
+                    <tbody id="memList">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!--遮罩层 start-->
+        <div class="lomo-mask-body hide"></div>
+        <!--遮罩层左 start-->
+        <div class="lomo-mask-left hide"></div>
+        <!--遮罩层5 start-->
+        <div class="lomo-mask-body5 hide"></div>
+		
+    </div>
+
+    <script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+    <script src="../../../Theme/plugins/layui/layui.js"></script>
+    <script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+    <script src="../../../Theme/script/verify.js"></script>
+    <script src="../../../Theme/script/common.js"></script>
+    <script src="../../../Theme/script/keyboard.js"></script>
+    <script src="../../../js/Member/rechargeStroke/rechargeStroke.js"></script>
+</body>
+
+</html>

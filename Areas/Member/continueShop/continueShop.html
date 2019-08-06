@@ -1,0 +1,332 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>购物备份-商户收银宝</title>
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <div style="position: absolute;top: 51px;width: 100%;">
+            <div class="lomo-shopBar">
+                <!--卡号搜索/新增 start-->
+                <div class="card-num">
+                    <dl class="card-num-form">
+                        <dd>
+                            <input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                            <a href="javascript:void(0);" class="card-num-up" id="members-keyboard"></a>
+                            <!--小键盘 start-->
+                            <div class="small-keyboard index-keyboard minor-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd><input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="javascript:void(0);" class="card-num-up"></a><button type="button"
+                                            class="bt key-switch">全键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>00</li>
+                                    <li>.</li>
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--小键盘 end-->
+                            <!--全键盘 start-->
+                            <div class="small-keyboard index-keyboard big-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd>
+                                        <input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="#" class="card-num-up"></a>
+                                        <button type="button" class="bt key-switch">小键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num small-keyboard-l">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>q</li>
+                                    <li>w</li>
+                                    <li>e</li>
+                                    <li>r</li>
+                                    <li>t</li>
+                                    <li>y</li>
+                                    <li>u</li>
+                                    <li>i</li>
+                                    <li>o</li>
+                                    <li>p</li>
+                                    <li class="small-kb">大写</li>
+                                    <li>a</li>
+                                    <li>s</li>
+                                    <li>d</li>
+                                    <li>f</li>
+                                    <li>g</li>
+                                    <li>h</li>
+                                    <li>j</li>
+                                    <li>k</li>
+                                    <li>l</li>
+                                    <li class="small-kb">小键盘</li>
+                                    <li>z</li>
+                                    <li>x</li>
+                                    <li>c</li>
+                                    <li>v</li>
+                                    <li>b</li>
+                                    <li>n</li>
+                                    <li>m</li>
+                                    <li>.</li>
+                                    <li class="small-kb">空格</li>
+                                </ul>
+                                <ul class="small-keyboard-num small-keyboard-r">
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm keyboard-confirm-big">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--全键盘 end-->
+                            <button type="button" class="bt" id="search">搜索</button>
+                        </dd>
+                        <dt>
+                            <button type="button" class="add-bt">+&nbsp;新增</button>
+                        </dt>
+                    </dl>
+                </div>
+                <!--卡号搜索/新增 end-->
+                <!--分类翻页 start-->
+                <div class="shop-type">
+                    <div class="triangle_border_left"></div>
+                    <div class="type">
+                        <a href="javascript:void(0);">全部</a>
+                        <a href="javascript:void(0);">饮料</a>
+                        <a href="javascript:void(0);">零售</a>
+                        <a href="javascript:void(0);">香烟</a>
+                    </div>
+                    <div class="triangle_border_right"></div>
+                </div>
+                <!--分类翻页 end-->
+                <!--商品搜索 start-->
+                <div class="card-num lomo-right">
+                    <dl class="card-num-form">
+                        <dd>
+                            <input type="text" placeholder="商品条码/简码" class="input" />
+                            <a href="javascript:void(0);" class="card-num-up"></a>
+                            <!--小键盘 start-->
+                            <div class="small-keyboard index-keyboard minor-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd><input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="javascript:void(0);" class="card-num-up"></a><button type="button"
+                                            class="bt key-switch">全键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>00</li>
+                                    <li>.</li>
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--小键盘 end-->
+                            <!--全键盘 start-->
+                            <div class="small-keyboard index-keyboard big-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd>
+                                        <input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="#" class="card-num-up"></a>
+                                        <button type="button" class="bt key-switch">小键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num small-keyboard-l">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>q</li>
+                                    <li>w</li>
+                                    <li>e</li>
+                                    <li>r</li>
+                                    <li>t</li>
+                                    <li>y</li>
+                                    <li>u</li>
+                                    <li>i</li>
+                                    <li>o</li>
+                                    <li>p</li>
+                                    <li class="small-kb">大写</li>
+                                    <li>a</li>
+                                    <li>s</li>
+                                    <li>d</li>
+                                    <li>f</li>
+                                    <li>g</li>
+                                    <li>h</li>
+                                    <li>j</li>
+                                    <li>k</li>
+                                    <li>l</li>
+                                    <li class="small-kb">小键盘</li>
+                                    <li>z</li>
+                                    <li>x</li>
+                                    <li>c</li>
+                                    <li>v</li>
+                                    <li>b</li>
+                                    <li>n</li>
+                                    <li>m</li>
+                                    <li>.</li>
+                                    <li class="small-kb">空格</li>
+                                </ul>
+                                <ul class="small-keyboard-num small-keyboard-r">
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm keyboard-confirm-big">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--全键盘 end-->
+                            <button type="button" class="bt">搜索</button>
+                        </dd>
+                    </dl>
+                </div>
+                <!--商品搜索 end-->
+            </div>
+        </div>
+        <!--主体 start-->
+        <div class="lomo-mian-left">
+            <dl class="vipInfo">
+                <dt><img src="../../../img/header.png" /></dt>
+                <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+                <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+            </dl>
+            <div class="lomo-order">
+                <div class="order-list2">
+                    <dl>
+                        <dd> <i class="colorIcon purple">次</i>
+                            <div class="order-name">
+                                <h1>98#号汽油</h1>
+                                <div>
+                                    <span>单价: <i>¥50.00</i></span>
+                                    <span>数量: <i style="color: #000">27.5L</i></span>
+                                    <span>小计: <i style="color: #fd0d38">¥50.00</i></span>
+                                </div>
+                            </div>
+                        </dd>
+                </div>
+                <div class="order-list">
+                    <dl>
+                        <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                class="order-add">+</span>
+                        </dt>
+                        <dd> <i class="colorIcon purple">次</i>
+                            <div class="order-name">
+                                <h1>矿泉水</h1>
+                                <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="jf-tool">
+                <dl class="order-page">
+                    <dt>
+                        <select name="" class="order-select">
+                            <option>暂无优惠活动</option>
+                        </select>
+                    </dt>
+                    <dd>
+                        <div class="order-page-down"><span></span></div>
+                        <div class="order-page-up"><span></span></div>
+                    </dd>
+                </dl>
+                <div class="order-Pay">
+                    <ul>
+                        <li>数量：10</li>
+                        <li>积分：2000</li>
+                        <li>实收：<b>¥2000.00</b><small>¥2100.00</small></li>
+                        <li>优惠：<i>¥100.00</i> </li>
+                    </ul>
+                </div>
+                <div class="jf-button2">
+                    <button type="button" class="add-bt">继续购物</button>
+                    <button type="button" class="add-bt dhBt">结账</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="lomo-mian-right">
+            <div class="goods-list goods-list-img2">
+                <div class="goods-info ">
+                    <div class="goods-info-img"><img src="../../../Theme/images/kqs.png" /></div>
+                    <div class="goods-info-list">
+                        <h1>矿泉水</h1>
+                        <!-- <div class="goods-info-list-details">
+                            <small>600ML</small>
+                            <small style="float: right">橘子味</small>
+                        </div> -->
+                        <div class="goods-info-list-price">
+                            <small>¥50.00</small>
+                            <div style="float: right;">
+                                <i class="colorIcon blue">库</i>
+                                <b>3</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <dl class="goods-page">
+            <dt><span>无图模式</span> </dt>
+            <dd> <button>上一页</button><span class="numb">2/17</span><button class="next">下一页</button> </dd>
+        </dl>
+        <!--主体 end-->
+    </div>
+</body>
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+<script src="../../../js/Member/continueShop/continueShop.js"></script>
+</html>

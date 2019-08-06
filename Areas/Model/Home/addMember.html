@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增会员</title>
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/Model/Home/addMember.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../../Theme/plugins/ImgCropping/css/ImgCropping.css">
+    <link rel="stylesheet" href="../../../Theme/plugins/ImgCropping/css/cropper.min.css">
+    <link rel="stylesheet" href="../../../Theme/plugins/layui/css/layui.css">
+</head>
+<style>
+	body{
+		background: none;
+	}
+    .layui-form-select dl dd.layui-this {
+        background: #41c060
+    }
+</style>
+
+<body>
+    <div class="lomo-gd order-cd vip-add">
+        <div class="vip-photo" id="Avatar">
+            <span class="upload"> 300*300<br />
+                点我上传图片
+            </span>
+            <form action="" method="POST" id="upload-form">
+                <input type="file" id="userUpload" class="hide">
+            </form>
+            <button type="button" class="add-bt">拍照</button>
+        </div>
+        <div class="order-cd-form vip-add-form">
+            <ul >
+                <form action="" class="layui-form" >
+                    <li id="CardID" class="layui-form-item">
+                        <em>会员卡号：</em>
+                        <span class="keyIcon">
+                            <input name="addCardID" type="text" placeholder="输入会员卡号(F2)" class="cd-form-input"
+                                lay-verify="required|cardID" autocomplete="off" />
+                            <small class="col_red MustCode">*</small>
+                        </span>
+                    </li>
+                    <li id="CardName" class="layui-form-item">
+                        <em>会员姓名：</em>
+                        <span>
+                            <input name="addCardName" type="text" placeholder="输入会员姓名" class="cd-form-input" lay-verify="name" />
+                        </span>
+                    </li>
+                    <li id="Mobile" class="layui-form-item">
+                        <em>手机号码：</em>
+                        <span class="keyIcon">
+                            <input name="addMobile" type="text" placeholder="输入会员手机号" class="cd-form-input"
+                                lay-verify="required|phone" autocomplete="off" />
+                            <small class="col_red MustCode">*</small>
+                        </span>
+                    </li>
+                    <li id="Birthday" class="layui-form-item">
+                        <em>生日：</em>
+                        <span>
+                            <input name="addBirthday" type="text" class="cd-form-input" id="timeBirthday"  lay-verify="timer"/>
+                        </span>
+                    </li>
+                    <li id="Sex" class="layui-form-item">
+                        <em>性别：</em>
+                        <span>
+                            <input name="addSex" type="radio" class="cd-form-input" value="1" title="男" checked="" />
+                            <input name="addSex" type="radio" class="cd-form-input" value="0" title="女" />
+                        </span>
+                    </li>
+                    <li id="LevelID" class="layui-form-item"><em>会员等级：</em>
+                        <span>
+                            <select name="addLevelID" class="cd-form-select">
+                                <option value="0">储蓄卡</option>
+                                <option value="1">不知道</option>
+                            </select>
+                        </span>
+                    </li>
+                    <li id="ShopID" class="layui-form-item">
+                        <em>所属店铺：</em>
+                        <span>
+                            <select name="addShopID" class="cd-form-select">
+                                <option>俱乐部</option>
+                            </select>
+                        </span>
+                    </li>
+                    <li class="layui-form-item" id="PassWord"><em>会员密码：</em><span>
+                            <input name="addPassWord" type="text" placeholder="输入会员密码" class="cd-form-input" lay-verify="pwd" />
+                        </span>
+                    </li>
+                    <li class="layui-form-item" id="PassWord2">
+                        <em>确认密码：</em><span>
+                            <input name="addPassWord2" type="text" placeholder="再次输入会员密码" class="cd-form-input" lay-verify="pwd|repass"/>
+                        </span>
+                    </li>
+                    <li class="layui-form-item" id="OutCardID"><em>卡面号：</em><span>
+                            <input name="addOutCardID" type="text" placeholder="输入会员卡号" class="cd-form-input" lay-verify="cardID"/>
+                        </span>
+                    </li>
+                    <li id='CardMoney' class="layui-form-item">
+                        <em>售卡金额：</em><span>
+                            <input name="addCardMoney" type="text" placeholder="0" class="cd-form-input" lay-verify="onlynum" />
+                        </span>
+                    </li>
+                    <li id="Money" class="layui-form-item"><em>账户余额：</em><span>
+                            <input name="addMoney" type="text" class="cd-form-input" lay-verify="onlynum" />
+                        </span>
+                    </li>
+                    <li id="Point" class="layui-form-item">
+                        <em>积分数量：</em><span>
+                            <input name="addPoint" type="text" placeholder="0" class="cd-form-input" lay-verify="onlynum" />
+                        </span>
+                    </li>
+                    <li id="RefererCardID" class="layui-form-item"><em>推荐人：</em><span>
+                            <input name="addRefererCardID" type="text" placeholder="推荐人姓名" class="cd-form-input" lay-verify="name" />
+                        </span>
+                    </li>
+                    <li id="Staff" class="layui-form-item">
+                        <em>提成员工：</em><span>
+                            <select name="addStaff" class="cd-form-select">
+                                
+                            </select>
+                        </span>
+                    </li>
+                    <li id="IdentityCode" class="layui-form-item"><em>身份证：</em><span>
+                            <input name="addIdentityCode" type="text" placeholder="输入会员身份证号码" class="cd-form-input" lay-verify="identity" />
+                        </span>
+                    </li>
+                    <li class="layui-form-item">
+                        <em>邮箱：</em><span>
+                            <input name="" type="text" placeholder="输入会员邮箱" class="cd-form-input" lay-verify="email" />
+                        </span>
+                    </li>
+                    <li class="layui-form-item"><em>固定电话：</em><span>
+                            <input name="" type="text" placeholder="输入会员电话" class="cd-form-input" />
+                        </span>
+                    </li>
+                    <li id="PlateNumber" class="layui-form-item">
+                        <em>车牌号：</em><span>
+                            <input name="addPlateNumber" type="text" placeholder="输入会员车牌号" class="cd-form-input" lay-verify="vehicleNumber"/>
+                        </span>
+                    </li>
+                    <li id="Address" class="layui-form-item" style="width: 100%">
+                        <em>地址：</em>
+                        <span>
+                            <input name="addAddress" type="text" placeholder="输入会员详细地址" class="cd-form-input pw"  max="100" />
+                        </span>
+                    </li>
+                    <li id="Remark" style="width: 100%" class="layui-form-item"><em>备注：</em><span>
+                            <textarea name="addRemark" class="cd-form-bz"></textarea>
+                        </span></li>
+                    <li style="text-align:right;width: 100%;margin-top: 30px;">
+                        <button type="button" class="submit-bt-clear">取消[ESC]</button>
+                        <button class="submit-bt" lay-submit="" lay-filter="addMem">保存[F5]</button>
+                    </li>
+                </form>
+            </ul>
+        </div>
+    </div>
+</body>
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/plugins/ImgCropping/js/cropper.min.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+
+<script src="../../../js/Model/Home/addMember.js"></script>
+
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>线上订单-商户收银宝</title>
+  <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+  <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+  <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+  <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+<style>
+  .layui-form-select dl dd.layui-this {
+    background: #41c060
+  }
+
+  .layui-none {
+    line-height: 26px;
+    padding: 15px;
+    text-align: center;
+    color: #999;
+  }
+  /*滚动条样式*/
+  ::-webkit-scrollbar-track-piece {
+        background-color: #fff;
+        -webkit-border-radius: 0;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        height: 50px;
+        background-color: #41c060;
+        outline: 2px solid #fff;
+        outline-offset: -2px;
+        border: 2px solid #fff;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        height: 50px;
+        background-color: #9f9f9f;
+    }
+
+</style>
+
+<body>
+  <div>
+    <!--线上订单 start-->
+    <div class="lomo-online-order">
+      <div class="lomoTab"><span class="hover">商城订单</span><span>订单核销</span></div>
+      <div class="lomoTab-warp" id="order">
+        <div class="online-order-time">
+          <ul>
+            <li class="hover">今天</li>
+            <li>近7天</li>
+            <li>本月</li>
+            <li>近30天</li>
+          </ul>
+          <div>
+            <input type="text" id="orderTimeStart" class="time-start" style="width: 140px"> -
+            <input type="text" id="orderTimeEnd" class="time-end" style="width: 140px">
+          </div>
+        </div>
+        <div>
+          <form action="" class="layui-form" style="width: 1020px">
+            <ul class="online-order-form">
+              <li class="layui-form-item">
+                <label class="layui-form-label">单据号 ：</label>
+                <div class="layui-input-inline">
+                  <input type="text" name="billCode" placeholder="请输单据号" autocomplete="off" class="layui-input">
+                </div>
+              </li>
+              <li class="layui-form-item">
+                <label class="layui-form-label">状态 ：</label>
+                <div class="layui-input-inline">
+                  <select name="type" id="">
+                    <option value="">全部</option>
+                    <option value="0">已发货</option>
+                    <option value="1">未发货</option>
+                  </select>
+                </div>
+              </li>
+              <!-- <li class="layui-form-item">
+                <label class="layui-form-label">单据类型 ：</label>
+                <div class="layui-input-inline">
+                  <select name="type" id="">
+                    <option value="">全部</option>
+                    <option value="0">普通产品</option>
+                    <option value="1">套餐产品</option>
+                  </select>
+                </div>
+              </li> -->
+            </ul>
+            <div class="time-plug-in" style="left: 735px;top:76px;">
+              <button lay-submit="" lay-filter="inquiry" class="add-bt">查询</button>
+              <button type="reset" class="add-bt" style="background: #FAA800">重置条件</button>
+            </div>
+          </form>
+        </div>
+        <div class="online-order-table">
+          <table>
+            <thead>
+              <tr>
+                <th>单据号</th>
+                <th>会员卡号</th>
+                <th>会员姓名</th>
+                <th>状态</th>
+                <th>购买时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+          <div class="layui-none">无数据</div>
+        </div>
+        <div style="width: 99%;text-align: center;position: absolute;top:90%;">
+          <div id="orderPage"></div>
+        </div>
+      </div>
+      <div class="lomoTab-warp hide">
+        <dl class="Card-Cancel-info">
+          <form action="" class="layui-form">
+            <dd class="Card-Cancel-form layui-from-item">
+              <input id="inSearch" type="text" placeholder="请输入订单号或核销码" name="inSearch" class="input"
+                lay-verify="required" />
+              <a href="#" class="card-num-up"></a>
+              <!--小键盘 start-->
+              <div class="small-keyboard Card-Cancel-keyboard hide">
+                <ul class="small-keyboard-num">
+                  <li>1</li>
+                  <li>2</li>
+                  <li>3</li>
+                  <li>4</li>
+                  <li>5</li>
+                  <li>6</li>
+                  <li>7</li>
+                  <li>8</li>
+                  <li>9</li>
+                  <li>0</li>
+                  <li>00</li>
+                  <li>.</li>
+                  <li>←</li>
+                  <li class="keyboard-remove">清除</li>
+                  <li class="keyboard-confirm">确认</li>
+                </ul>
+                <em class="topSjx"></em>
+              </div>
+              <!--小键盘 end-->
+              <button lay-submit lay-filter="search" class="bt">搜索</button>
+            </dd>
+          </form>
+          <div style="padding-top:20px;">
+            <dd class="Card-Cancel-txt">
+              <h1>1、搜索订单号或核销码</h1>
+              <p>请顾客出示订单信息，输入订单号或核销码</p>
+              <h1>2、校验信息</h1>
+              <p>系统提示有效期验证，其他信息请自行核对</p>
+              <h1>3、使用完成</h1>
+              <p>查看使用结果，顾客将收到核销成功信息</p>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <!--线上订单 end-->
+    <!--发货 start-->
+    <div class="lomo-fh hide">
+      <div style="padding:20px 10px;">
+        <ul class="lomo-express-list">
+          <li>
+            <div class="lomo-express-list-hover"><img src="../../../Theme/images/ems.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/zt.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/sf.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/st.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/yd.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/yt.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/tt.png" alt=""></div>
+          </li>
+          <li>
+            <div><img src="../../../Theme/images/bs.png" alt=""></div>
+          </li>
+        </ul>
+      </div>
+      <dl class="fh-form">
+        <form class="layui-form" lay-filter="deliver">
+          <dd class="layui-form-item" style="padding-left: 100px">
+            <label class="layui-form-label">快递单号：</label>
+            <div class="layui-input-inline" style="width: 380px;">
+              <input name="courierCode" type="text" class="sph layui-input" lay-verify="required" id="courierCode" />
+            </div>
+          </dd>
+          <dd class="layui-form-item" style="padding-left: 100px">
+            <label class="layui-form-label">快递名称：</label>
+            <div class="layui-input-inline" style="width: 380px;">
+              <input name="courierName" type="text" class="sph layui-input" lay-verify="required|choice"
+                id="courierName" autocomplete="off" data-simpleName="" />
+              <div class="lomo-express-option hide">
+
+              </div>
+            </div>
+            <label class="fh-form-label">点击搜索更多快递</label>
+          </dd>
+          <!-- <dd class="fh-form-bt">
+            <button type="button" class="submit-bt-clear">取消</button>
+            <button lay-submit lay-filter="deliverGoods" class="submit-bt">确认</button></dd> -->
+        </form>
+      </dl>
+    </div>
+    <!--发货 end-->
+
+    <!--遮罩层 start-->
+    <div class="lomo-mask-body hide"></div>
+    <!--遮罩层 end-->
+  </div>
+  <!--商品核销 start-->
+  <div class="lomo-xztcyg hide" style="padding: 10px;">
+    <div class="layui-row layui-col-space10">
+      <div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
+
+      </div>
+      <div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
+        <table id="List" lay-filter="List"></table>
+      </div>
+    </div>
+  </div>
+  <!--商品核销 end-->
+  <!-- 订单详情 start -->
+  <div class="lomo-gd order-cd cd-info hide" style="margin: 0;width: 100%;height: 100%;">
+    <div class="order-cd-info">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable" style="background: #F2F2F2;">
+        <tr>
+          <td width="49%"><i>订单日期：</i><em id="CreateTime"></em></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td width="49%"><i>单据编号：</i><em id="BillCode"></em></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><i>会员卡号：</i><em id="CardID"></em></td>
+          <td><i>会员姓名：</i><em id="CardName"></em></td>
+        </tr>
+        <tr>
+          <td><i>会员等级：</i><em id="LevelName"></em></td>
+          <td><i>所属门店：</i><em id="ShopName"></em></td>
+        </tr>
+        <tr>
+          <td><i>收货人：</i><em id="Consignee"></em></td>
+          <td><i>联系方式：</i><em id="ConsigneeMobile"></em></td>
+        </tr>
+        <tr>
+          <td colspan="2"><i>收货地址：</i><em id="Address"></em></td>
+        </tr>
+        <tr>
+          <td><i>快递单号：</i><em id="ExpressNo"></em></td>
+          <td><i>快递公司：</i><em id="ExpressName"></em></td>
+        </tr>
+        <tr>
+          <td colspan="2"><i>卖家留言：</i><em id="Remark"></em></td>
+        </tr>
+      </table>
+      <div class="lomo-xq-czxq" style="min-height:80px;height:auto;">
+        <div><span>折后金额：</span><span class="bold size-red" id="TotalMoney"></span></div>
+        <div> <span>运费：</span><span class="bold" id="Postage"></span></div>
+        <div style="min-height:30px;height:auto;" id="Payments">
+        </div>
+      </div>
+      <div class="order-cdTable2Sco">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable2" style="margin-top:20px;">
+          <tr>
+            <th>商品类型</th>
+            <th>商品编号</th>
+            <th>商品名称</th>
+            <th>折后单价</th>
+            <th>商品数量</th>
+            <th>总金额</th>
+          </tr>
+          <tbody id="details"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- 订单详情 start -->
+</body>
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+<script src="../../../js/Order/onlineOrder/onlineOrder.js"></script>
+
+</html>

@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>首页-商户收银宝</title>
+    <link href="../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../css/index.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../Theme/plugins/layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="../../Theme/plugins/animate/animate.css">
+</head>
+<style>
+    /*滚动条样式*/
+    ::-webkit-scrollbar-track-piece {
+        background-color: #fff;
+        -webkit-border-radius: 0;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        height: 50px;
+        background-color: #999;
+        -webkit-border-radius: 4px;
+        outline: 2px solid #fff;
+        outline-offset: -2px;
+        border: 2px solid #fff;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            height: 50px;
+            background-color: #9f9f9f;
+            -webkit-border-radius: 4px;
+        }
+
+
+    html,
+    body {
+        -webkit-user-select: none;
+        padding: 0;
+        background-color: transparent !important;
+        cursor: default;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    #lomo-content {
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0px;
+        bottom: 0;
+        right: 0;
+    }
+</style>
+<body>
+    <!-- 头部 -->
+    <div id="page">
+        <div class="lomo-top" onmousemove="if(event.button == 0){ MoveWindow()}" ondblclick=" Command_MaxOrNor();">
+            <div class="lomo-top-head">
+                <div class="lomo-top-logo"><a href="javascript:void(0);"></a></div>
+                <dl class="lomo-top-tool">
+                    <dd>
+                        <div class="tool-min" onclick="Command_Min();" onmousemove="event.stopPropagation()">
+                            <img src="../../Theme/images/icon06.png" alt="">
+                        </div>
+                        <div class="tool-max" onclick="Command_MaxOrNor()" onmousemove="event.stopPropagation()">
+                            <img src="../../Theme/images/icon06-2.png" alt="" class="hide">
+                            <img src="../../Theme/images/icon06-2-1.png" alt="">
+                        </div>
+                        <div class="tool-close" onmousemove="event.stopPropagation()">
+                            <img src="../../Theme/images/icon06-3.png" alt="">
+                        </div>
+                    </dd>
+                    <dd>
+                        <a href="javascript:void(0);" class="tool-lock"></a>
+                        <a href="javascript:void(0);" class="tool-web"></a>
+                        <a href="javascript:void(0);" class="tool-man"></a></dd>
+                    <dt>超级管理员</dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <!-- 头部  end-->
+    <!--顶部功能菜单 start-->
+    <div class="lomo-topTool hide">
+        <h1>收银</h1>
+        <ul>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/cashRegister/cashRegister.html'
+                class="tool1 lomo-skip">消费收银</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/rechargeStroke/rechargeStroke.html'
+                class="tool2 lomo-skip">充值充次</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Order/writeOff/writeOff.html'
+                class="tool3 lomo-skip">卡券核销</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Order/onlineOrder/onlineOrder.html'
+                class="tool4 lomo-skip">线上订单</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/exchange/exchange.html'
+                class="tool5 lomo-skip">积分兑现</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/management/management.html'
+                class="tool6 lomo-skip">单据管理</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/tableConsumption/tableConsumption.html'
+                class="tool11 lomo-skip">场地消费</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Member/quickCount/quickCount.html'
+                class="tool12 lomo-skip">快速计次</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Order/reservation/reservation.html'
+                class="tool13 lomo-skip">预约项目</a></li>
+        </ul>
+        <h1>其他</h1>
+        <ul>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Settings/settings/settings.html' class="tool7 lomo-skip">系统设置</a></li>
+            <li><a href="javascript:void(0);" class="tool8" onclick="GoToBackstage() ">进入后台</a></li>
+            <li><a href="javascript:void(0);" class="tool9 lomo-eject">客服中心</a></li>
+            <li><a href="javascript:void(0);" class="tool10 lomo-eject">意见反馈</a></li>
+        </ul>
+    </div>
+    <!--顶部功能菜单 end-->
+
+    <!--内容开始-->
+    <div id="lomo-content">
+        <iframe name="childframe" id="childframe" width="100%" frameborder="0" height="100%" allowtransparency="true"
+            src="../../Areas/Member/cashRegister/cashRegister.html"></iframe>
+    </div>
+    <!--内容结束-->
+    <!--网络设置 start-->
+    <div class="lomo-network-set hide">
+        <dl class="network-set-form">
+            <dt>网络访问慢。系统延迟高时，您可以根据检测结果选择网络</dt>
+            <dd>
+                <button type="button" class="add-bt" id="checknetwork">立即检测</button>
+            </dd>
+        </dl>
+        <div class="network-set-list">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable2" id="networklist">
+            </table>
+        </div>
+    </div>
+    <!--网络设置 end-->
+    <!--遮罩层 start-->
+    <div>
+        <!--遮罩层 start-->
+        <div class="lomo-mask-body hide"></div>
+        <div class="lomo-mask hide"></div>
+        <!--遮罩层 end-->
+    </div>
+    <!--遮罩层 start-->
+    </div>
+    </div>
+    <!--意见反馈-->
+    <div class="feedback hide">
+        <form action="" class="layui-form">
+            <dl style="margin-top: 10px;">
+                <dd class="layui-form-item">
+                    <label class="layui-form-label">意见类型</label>
+                    <div class="layui-input-inline" style="width: 280px">
+                        <select name="mesType" class="yhhd">
+                            <option value="2">功能优化改良</option>
+                            <option value="3">bug反馈</option>
+                            <option value="1">其他使用问题</option>
+                            <option value="4">数据初始化</option>
+                        </select>
+                    </div>
+                </dd>
+                <dd class="layui-form-item">
+                    <label class="layui-form-label">问题描述</label>
+                    <div class="layui-input-inline" style="width: 280px">
+                        <textarea id="Feedback_Message" name="describe" required="" placeholder="请输入内容"
+                            class="layui-textarea" lay-verify="required"></textarea>
+                    </div>
+                </dd>
+                <dd class="layui-form-item">
+                    <label class="layui-form-label">联系人</label>
+                    <div class="layui-input-inline" style="width: 280px">
+                        <input name="contacts" type="text" class="layui-input" lay-verify="required|name" />
+                    </div>
+                </dd>
+                <dd class="layui-form-item">
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-inline" style="width: 280px">
+                        <input name="contactInf" type="text" class="layui-input" lay-verify="required|phone" />
+                    </div>
+                </dd>
+                <dd class="gd-form-bt">
+                    <button lay-submit lay-filter="opinion" class="submit-bt">提交</button></dd>
+            </dl>
+        </form>
+    </div>
+
+</body>
+
+</html>
+<script src="../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../Scripts/vue.js"></script>
+<script src="../../Theme/plugins/layui/layui.js"></script>
+<script src="../../Theme/plugins/md5/md5.js"></script>
+<script src="../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../Theme/script/verify.js"></script>
+<script src="../../Theme/script/common.js"></script>
+<script src="../../js/index.js"></script>

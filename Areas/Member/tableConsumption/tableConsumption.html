@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>桌台消费-商户收银宝</title>
+        <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+        <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+        <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+        <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+        <link href="../../../css/tableConsumption.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <div>
+            <div style="position: absolute;top: 51px;width: 100%;">
+                <div class="lomo-shopBar">
+                    <!--卡号搜索/新增 start-->
+				    <div class="card-num">
+					    <dl class="card-num-form">
+							<dd>
+							    <input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+							    <a href="javascript:void(0);" class="card-num-up" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
+							    <button class="bt" id="search">搜索</button>
+							</dd>
+							<dt>
+							    <button type="button" class="add-bt">+&nbsp;新增</button>
+							</dt>
+					    </dl>
+				    </div>
+                    
+                    <!--场地产品分类-->
+                    <div class="venue-product-area hide">
+                        <!--产品翻页 start-->
+                        <div class="shop-type">
+                            <div class="classify-nav-box clearfix">
+						        <div class="triangle_border_left"></div>
+						        <div class="scroll-view">
+							        <div class="type classify-nav">
+
+							        </div>
+						        </div>
+						        <div class="triangle_border_right"></div>
+					        </div>
+					        <div class="leaveltwo-nav-box clearfix hide">
+						        <div class="triangle_border_left"></div>
+						        <div class="scroll-view-two">
+								        <div class="type classify-nav-two">
+								        </div>
+							        </div>
+						        <div class="triangle_border_right"></div>
+					        </div>
+                            <div class="back-product change-product-nav hide" data-type="normal">
+						        <a href="javascript:;"><i class="layui-icon layui-icon-left"></i>返回商品列表</a>
+					        </div>
+                        </div>
+                        <!--商品搜索 start-->
+                        <div class="card-num lomo-right">
+                            <dl class="card-num-form">
+							    <dd>
+								    <input id="searchVal" type="text" placeholder="商品条码/简码/名称" class="input" />
+								    <a href="javascript:void(0);" class="card-num-up"
+								        onclick="luckKeyboard.showSmallkeyboard(this)"></a>
+								    <button class="bt search-product">搜索</button>
+							    </dd>
+						    </dl>
+                        </div>
+                    </div>
+                    <!--场地分类-->
+                    <div class="shop-type venue-area ">
+                        <div class="classify-nav-box clearfix">
+                    	    <div class="triangle_border_left"></div>
+                    	    <div class="scroll-view">
+                    		    <div class="type classify-nav">
+                    			    <!--区域-->
+                    		    </div>
+                    	    </div>
+                    	    <div class="triangle_border_right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--主体 start-->
+            <div class="lomo-mian-left">
+                <dl class="vipInfo">
+                    <!--会员信息-->
+                </dl>
+
+                <!--场地产品购物车-->
+                <div class="venue-product-area hide">
+                    <div class="lomo-order">
+                       <!-- <div class="order-list">
+                            <dl>
+                                <dd>
+                                    <img src="../../../../Theme/images/changguan.png" alt="" style="float: left;"/>
+                                    <div class="order-name">
+                                        <h1>1号羽毛球馆</h1>
+                                        <span class="size-gray">累计时长: <i class="size-green">1小时20分</i></span>
+                                        <span class="size-gray">开始时间: <i style="color:#000">2019-09-12 12:00:00</i></span>
+                                        <span class="size-gray">单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <div class="order-list venue-pro-list">
+                                <dl>
+                                    <dt> 
+                                        <span class="order-reduce">-</span>
+                                        <span class="order-nub">8888</span>
+                                        <span class="order-add">+</span>
+                                    </dt>
+                                    <dd> 
+                                        <i class="colorIcon purple">次</i>
+                                        <div class="order-name">
+                                            <h1>矿泉水</h1>
+                                            <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>-->
+                    </div>
+                    <div class="jf-tool">
+                        <div class="jf-button2" style="width:400px">
+                            <button type="button" class="add-bt" id="backVenue" style="width: 80%;margin-left:0;">挂单并返回桌台</button>
+                        </div>
+                    </div>
+                </div>
+                <!--场地结算-->
+                <div class="venue-area">
+                    <div class="lomo-order">
+                     <!--   <div class="order-list">
+                            <dl>
+                                <dt class="addnew"><button id="addProductVenue" class="add-bt" style="width: 100%;">添加商品</button></dt>
+                                <dd>
+                                    <img src="../../../../Theme/images/changguan.png" alt="" style="float: left;"/>
+                                    <div class="order-name">
+                                        <h1>1号羽毛球馆</h1>
+                                        <span class="size-gray">累计时长: <i class="size-green">1小时20分</i></span>
+                                        <span class="size-gray">开始时间: <i style="color:#000">2019-09-12 12:00:00</i></span>
+                                        <span class="size-gray">单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <div class="order-list venue-pro-list">
+                                <dl>
+                                    <dt> 
+                                        <span class="order-nub fr">8888</span>
+                                    </dt>
+                                    <dd> 
+                                        <i class="colorIcon purple">次</i>
+                                        <div class="order-name">
+                                            <h1>矿泉水</h1>
+                                            <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt> 
+                                        <span class="order-nub fr">8888</span>
+                                    </dt>
+                                    <dd> 
+                                        <i class="colorIcon purple">次</i>
+                                        <div class="order-name">
+                                            <h1>矿泉水</h1>
+                                            <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt> 
+                                        <span class="order-nub fr">8888</span>
+                                    </dt>
+                                    <dd> 
+                                        <i class="colorIcon purple">次</i>
+                                        <div class="order-name">
+                                            <h1>矿泉水</h1>
+                                            <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>-->
+                    </div>
+                    <div class="jf-tool">
+                        <div id="divOrderPayItem">
+                            <dl class="order-page">
+                                <dt>
+                                    <select name="" class="order-select">
+                                        <option>暂无优惠活动</option>
+                                    </select>
+                                </dt>
+                                <dd>
+                                    <div class="order-page-down"><span></span></div>
+                                    <div class="order-page-up"><span></span></div>
+                                </dd>
+                            </dl>
+                            <div class="order-Pay">
+                                <ul>
+                                    <li>数量：<span id="spanGoodsNum">0</span></li>
+                                    <li>积分：<span id="spanTotalPoint">0</span></li>
+                                    <li>实收：<b>¥<span id="spanDiscountMoney">0</span></b><small id="smallTotalMoney" style="display:none">¥<span id="spanTotalMoney">0</span></small></li>
+                                    <li>优惠：<i>¥<span id="spanPreferentialAmount">0</span></i> </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="jf-button2" style="width:400px">
+                            <button type="button" class="add-bt" id="btnOpenVenue" style="width: 80%;margin-left:0; display:none">立即开台</button>
+                            <button type="button" class="add-bt" id="btnVenueRestingGoods" style="width: 80%;margin-left:0; display:none">挂单并返回桌台</button>
+                            <button type="button" class="add-bt" id="btnVenueConsume" style="width: 80%;margin-left:0; display:none">立即结账</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="lomo-mian-right">
+                <div class="goods-list venue-area">
+                     <!--场地主体-->
+                </div>
+                <div class="product-list goods-list-img venue-product-area hide">
+                    <!--商品主体-->
+                </div>
+            </div>
+
+            <!--场地产品底部栏-->
+            <dl class="goods-page venue-product-area hide">
+                <dt>
+                    <span class="venue_btn">快速收银</span>
+                    <span class="venue_btn graph">无图模式</span>
+                    <span class="venue_btn change-product-nav" data-type="setmeal">套餐商品</span>
+                </dt>
+                <dd> <button class="page-prev">上一页</button><span class="numb">1/1</span><button class="page-next next">下一页</button> </dd>
+            </dl>
+            <!--场地底部栏-->
+            <dl class="goods-page venue-area">
+                <dt>
+                    <span class="venue_btn" data-type="ChangeVenue">场地更换</span>
+                    <span class="venue_btn" data-type="ModifyVenueState">场地状态</span>
+                    <span class="venue_btn" data-type="Printing">打印清单</span>
+                    <span class="venue_btn" data-type="VenueUnionBill">合并账单</span>
+                   <!-- <span class="venue_btn" data-type="">清台</span>-->
+                </dt>
+                <dd> <button class="page-prev">上一页</button><span class="numb">1/1</span><button class="page-next next">下一页</button> </dd>
+            </dl>
+            <!--主体 end-->
+
+
+            <!-- 功能弹出框 start -->
+            <!-- 场地状态 start-->
+            <div class="siteStatus hide">
+                <div class="divTitle"><span><img src="../../../../Theme/images/icon010.png" alt=""></span>场地状态</div>
+                <form action="" class="layui-form">
+                    <dl style="padding: 30px">
+                        <div>
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">当前场地：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item ">
+                                <label for="" class="layui-form-label">预约状态：</label>
+                                <div class="layui-input-inline">
+                                    <select name="technician" lay-filter="dianpu">
+                                        <option value="0">维修</option>
+                                        <option value="1">空闲</option>
+                                        <option value="2">已开台</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <dd class="gd-form-bt" style="text-align: center;margin-top:20px">
+                            <button type="button" class="submit-bt">确认</button>
+                            <button type="button" class="submit-bt-clear">取消</button>
+                        </dd>
+                    </dl>
+                </form>
+            </div>
+            <!-- 场地状态 end -->
+            <!-- 更换场地 start-->
+            <div class="table-replacement hide">
+                <div class="divTitle"><span><img src="../../../../Theme/images/icon010.png" alt=""></span>更换场地</div>
+                <form action="" class="layui-form">
+                    <dl style="padding: 30px">
+                        <div class="replacement-div">
+                            <div class="layui-form-item">
+                                <label for="">当前场地：</label>
+                                <div>
+                                    <input type="text" class="layui-input" value="" id="txtCurrentVenue" readonly="readonly"/>
+                                </div>
+                            </div>
+                            <div class="replacement-div-img">
+                                <img src="../../../../Theme/images/genhuan.png" alt=""/>
+                            </div>
+                            <div class="layui-form-item">
+                                <label for="">更换后场地：</label>
+                                <div class="change-area-box">
+                                    <input type="hidden" id="hidChangedVenueID" />
+                                    <select name="repsite" class="selChangedRegion" lay-filter="filterChangedRegion">
+                                    
+                                    </select>
+                                    <ul class="check-list replacementCheck-list">
+                                        <!--<li class="active">羽毛球一号馆</li>-->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <dd class="gd-form-bt" style="text-align: center;margin-top:20px">
+                            <button type="button" class="submit-bt" id="subChangedVenue">确认</button>
+                            <button type="button" class="submit-bt-clear">取消</button>
+                        </dd>
+                    </dl>
+                </form>
+            </div>
+            <!--  更换场地 end -->
+            <!-- 账单合并 start  -->
+            <div class="table-merge hide">
+                <div class="divTitle"><span><img src="../../../../Theme/images/icon010.png" alt=""></span>账单合并</div>
+                <form action="" class="layui-form">
+                    <dl style="padding: 30px">
+                        <div class="replacement-div" style="height:310px;">
+                            <div class="layui-form-item">
+                                <label for="">当前场地：</label>
+                                <div>
+                                    <input type="text" class="layui-input" value="" id="txtmergeCurrentVenue" readonly="readonly"/>
+                                </div>
+                            </div>
+                            <div class="replacement-div-img">
+                                <img src="../../../../Theme/images/genhuan.png" alt=""/>
+                            </div>
+                            <div class="layui-form-item">
+                                <label for="">合并后场地：</label>
+                                <div class="change-area-box">
+                                    <input type="hidden" id="hidmergeChangedVenueID" />
+                                    <select name="repsite" class="selChangedRegion" lay-filter="filterChangedRegion">
+                                    
+                                    </select>
+                                    <ul class="check-list mergeCheck-list">
+                                        <!--<li class="active">羽毛球一号馆</li>-->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <dd class="gd-form-bt" style="text-align: center;margin-top:20px">
+                            <button type="button" class="submit-bt" id="subVenueUnionBill">确认</button>
+                            <button type="button" class="submit-bt-clear">取消</button>
+                        </dd>
+                    </dl>
+                </form>
+            </div>
+            <!-- 账单合并 end -->
+            <!-- 功能弹出框 end -->
+            <!--遮罩层 start-->
+            <div class="lomo-mask-body hide"></div>
+            <!--遮罩层 end-->
+
+            <!--会员搜索弹层-->
+		    <div id="lomo-members-search" class="lomo-members-search lomo-search hide">
+			    <dl class="members-search-form">
+			        <form action="">
+			            <dt>
+			                <input name="" type="text" placeholder="请输入姓名/卡号/手机号码" class="input" />
+			            </dt>
+			            <dd>
+			                <button type="submit" class="add-bt" id="Button1">搜索</button>
+			            </dd>
+			        </form>
+			    </dl>
+			    <div class="members-search-list">
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+			            <tr>
+			                <th>会员卡号</th>
+			                <th>会员姓名</th>
+			                <th>手机号码</th>
+			                <th>会员等级</th>
+			                <th>积分</th>
+			                <th>余额</th>
+			            </tr>
+			            <tbody id="memList">
+						                
+			            </tbody>
+			        </table>
+			    </div>
+		    </div>
+
+        </div>
+    </body>
+    <script type="text/javascript" src="../../../Theme/script/jquery3.4.1.min.js"></script>
+    <script type="text/javascript" src="../../../Theme/plugins/layui/layui.js"></script>
+    <script type="text/javascript" src="../../../Theme/script/Luck.Vipsoft.js"></script>
+    <script type="text/javascript" src="../../../Theme/script/verify.js"></script>
+    <script type="text/javascript" src="../../../Theme/script/common.js"></script>
+    <script type="text/javascript" src="../../../Theme/script/keyboard.js"></script>
+    <script type="text/javascript" src="../../../js/Member/tableConsumption/tableConsumption.js"></script>
+</html>

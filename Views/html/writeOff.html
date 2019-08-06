@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>卡券核销-商户收银宝</title>
+</head>
+<link href="../css/Public.css" type="text/css" rel="stylesheet" />
+<link href="../css/index.css" type="text/css" rel="stylesheet" />
+<link href="../css/animate.css" type="text/css" rel="stylesheet" />
+
+<body>
+    <div>
+        <!--卡券核销 start-->
+        <div class="Card-Cancel">
+            <dl class="Card-Cancel-info">
+                <dt>卡券核销</dt>
+                <dd class="Card-Cancel-form">
+                    <input id="inSearch" type="text" placeholder="商品条码/简码" class="input" />
+                    <a href="#" class="card-num-up"></a>
+                    <button type="button" class="bt around">搜索</button>
+                    <!--小键盘 start-->
+                    <div class="small-keyboard Card-Cancel-keyboard hide">
+                        <ul class="small-keyboard-num">
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                            <li>4</li>
+                            <li>5</li>
+                            <li>6</li>
+                            <li>7</li>
+                            <li>8</li>
+                            <li>9</li>
+                            <li>0</li>
+                            <li>00</li>
+                            <li>.</li>
+                            <li>←</li>
+                            <li class="keyboard-remove">清除</li>
+                            <li class="keyboard-confirm">确认</li>
+                        </ul>
+                        <em class="topSjx"></em>
+                    </div>
+                    <!--小键盘 end-->
+                </dd>
+                <!-- 核销文本 start -->
+                <div>
+                    <dd class="Card-Cancel-txt">
+                        <h1>1、搜索卡券</h1>
+                        <p>请顾客出示卡券、输入优惠券号或会员卡号</p>
+                        <h1>2、校验</h1>
+                        <p>系统提示有效期验证，其他信息请自行核对</p>
+                        <h1>3、使用完成</h1>
+                        <p>查看使用结果，顾客将同时收到优惠券核销或会员卡使用通知</p>
+                    </dd>
+                </div>
+                <!-- 核销文本 end -->
+                <!-- 核销详情 start-->
+                <div class="hide">
+                    </dd>
+                    <dd class="Card-Cancel-list">
+                        <ul>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                            <li> <img src="images/icon012.png" />
+                                <div> <span>全场折扣券<i>有效卡券</i></span> <small>有效期2019.05.05-2019.09.09</small>
+                                    <small>优惠券号5896789412369</small> </div>
+                            </li>
+                        </ul>
+                    </dd>
+                    <dd class="Card-Cancel-note">
+                        <ul>
+                            <li><span>核销备注</span>
+                                <textarea name="" cols="" rows="" class="noteForm"></textarea>
+                            </li>
+                            <li class="Cancel-note-bt"><i>票券核销后无法撤回</i>
+                                <button type="button" class="submit-bt">确认核销</button>
+                            </li>
+                        </ul>
+                    </dd>
+                </div>
+                <!-- 核销详情 end-->
+            </dl>
+        </div>
+        <!--卡券核销 end-->
+    </div>
+</body>
+<script src="../js/jquery3.4.1.min.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/writeOff.js"></script>
+<script src="../js/utils.js"></script>
+
+</html>

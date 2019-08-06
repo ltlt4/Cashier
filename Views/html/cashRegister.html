@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>消费收银-商户收银宝</title>
+    <link href="../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../css/index.css" type="text/css" rel="stylesheet" />
+    <link href="../css/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <div style="position: absolute;top: 51px;width: 100%;">
+            <div class="lomo-shopBar">
+                <!--卡号搜索/新增 start-->
+                <div class="card-num">
+                    <dl class="card-num-form">
+                        <dd>
+                            <input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                            <a href="javascript:void(0);" class="card-num-up" id="members-keyboard"></a>
+                            <!--小键盘 start-->
+                            <div class="small-keyboard index-keyboard minor-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd><input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="javascript:void(0);" class="card-num-up"></a><button type="button"
+                                            class="bt key-switch">全键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>00</li>
+                                    <li>.</li>
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--小键盘 end-->
+                            <!--全键盘 start-->
+                            <div class="small-keyboard index-keyboard big-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd>
+                                        <input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="#" class="card-num-up"></a>
+                                        <button type="button" class="bt key-switch">小键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num small-keyboard-l">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>q</li>
+                                    <li>w</li>
+                                    <li>e</li>
+                                    <li>r</li>
+                                    <li>t</li>
+                                    <li>y</li>
+                                    <li>u</li>
+                                    <li>i</li>
+                                    <li>o</li>
+                                    <li>p</li>
+                                    <li class="small-kb">大写</li>
+                                    <li>a</li>
+                                    <li>s</li>
+                                    <li>d</li>
+                                    <li>f</li>
+                                    <li>g</li>
+                                    <li>h</li>
+                                    <li>j</li>
+                                    <li>k</li>
+                                    <li>l</li>
+                                    <li class="small-kb">小键盘</li>
+                                    <li>z</li>
+                                    <li>x</li>
+                                    <li>c</li>
+                                    <li>v</li>
+                                    <li>b</li>
+                                    <li>n</li>
+                                    <li>m</li>
+                                    <li>.</li>
+                                    <li class="small-kb">空格</li>
+                                </ul>
+                                <ul class="small-keyboard-num small-keyboard-r">
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm keyboard-confirm-big">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--全键盘 end-->
+                            <button type="button" class="bt" id="search">搜索</button>
+                        </dd>
+                        <dt>
+                            <button type="button" class="add-bt">+&nbsp;新增</button>
+                        </dt>
+                    </dl>
+                </div>
+                <!--卡号搜索/新增 end-->
+                <!--分类翻页 start-->
+                <div class="shop-type">
+                    <div class="triangle_border_left"></div>
+                    <div class="type"><a href="javascript:void(0);">全部</a><a href="javascript:void(0);">水果</a><a
+                            href="javascript:void(0);">饮料</a><a href="javascript:void(0);">零食</a><a
+                            href="javascript:void(0);">泡面</a><a href="javascript:void(0);">水果</a><a
+                            href="javascript:void(0);">饮料</a><a href="javascript:void(0);">零食</a><a
+                            href="javascript:void(0);">泡面</a>
+                    </div>
+                    <div class="triangle_border_right"></div>
+                </div>
+                <!--分类翻页 end-->
+                <!--商品搜索 start-->
+                <div class="card-num lomo-right">
+                    <dl class="card-num-form">
+                        <dd>
+                            <input type="text" placeholder="商品条码/简码" class="input" />
+                            <a href="javascript:void(0);" class="card-num-up"></a>
+                            <!--小键盘 start-->
+                            <div class="small-keyboard index-keyboard minor-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd><input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="javascript:void(0);" class="card-num-up"></a><button type="button"
+                                            class="bt key-switch">全键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>00</li>
+                                    <li>.</li>
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--小键盘 end-->
+                            <!--全键盘 start-->
+                            <div class="small-keyboard index-keyboard big-keyboard hide">
+                                <dl class="small-keyboard-form">
+                                    <dd>
+                                        <input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                        <a href="#" class="card-num-up"></a>
+                                        <button type="button" class="bt key-switch">小键盘</button>
+                                        <span class="keyboard"></span>
+                                    </dd>
+                                </dl>
+                                <ul class="small-keyboard-num small-keyboard-l">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>q</li>
+                                    <li>w</li>
+                                    <li>e</li>
+                                    <li>r</li>
+                                    <li>t</li>
+                                    <li>y</li>
+                                    <li>u</li>
+                                    <li>i</li>
+                                    <li>o</li>
+                                    <li>p</li>
+                                    <li class="small-kb">大写</li>
+                                    <li>a</li>
+                                    <li>s</li>
+                                    <li>d</li>
+                                    <li>f</li>
+                                    <li>g</li>
+                                    <li>h</li>
+                                    <li>j</li>
+                                    <li>k</li>
+                                    <li>l</li>
+                                    <li class="small-kb">小键盘</li>
+                                    <li>z</li>
+                                    <li>x</li>
+                                    <li>c</li>
+                                    <li>v</li>
+                                    <li>b</li>
+                                    <li>n</li>
+                                    <li>m</li>
+                                    <li>.</li>
+                                    <li class="small-kb">空格</li>
+                                </ul>
+                                <ul class="small-keyboard-num small-keyboard-r">
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm keyboard-confirm-big">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--全键盘 end-->
+                            <button type="button" class="bt">搜索</button>
+                        </dd>
+                    </dl>
+                </div>
+                <!--商品搜索 end-->
+            </div>
+        </div>
+        <div>
+            <!--主体 start-->
+            <div>
+                <div class="lomo-mian-left">
+                    <dl class="vipInfo">
+                        <dt><img src="../img/header.png" /></dt>
+                        <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+                        <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+                        <div class="vip-delete"><img src="../images/del.png" alt=""></div>
+                    </dl>
+                    <div class="lomo-order">
+                        <div class="order-list">
+                            <dl>
+                                <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                        class="order-add">+</span>
+                                </dt>
+                                <dd> <i class="colorIcon purple">次</i>
+                                    <div class="order-name">
+                                        <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                                        <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                        class="order-add">+</span>
+                                </dt>
+                                <dd> <i class="colorIcon blue">库</i>
+                                    <div class="order-name">
+                                        <h1>2019夏季新品手工皮复古凉鞋</h1>
+                                        <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                        class="order-add">+</span>
+                                </dt>
+                                <dd> <i class="colorIcon red">套</i>
+                                    <div class="order-name">
+                                        <h1>泰式古典脚底按摩</h1>
+                                        <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                        class="order-add">+</span>
+                                </dt>
+                                <dd> <i class="colorIcon purple">次</i>
+                                    <div class="order-name">
+                                        <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                                        <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt> <span class="order-reduce">-</span> <span class="order-nub">8888</span> <span
+                                        class="order-add">+</span>
+                                </dt>
+                                <dd> <i class="colorIcon purple">次</i>
+                                    <div class="order-name">
+                                        <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                                        <span>单价: <i>¥50.00</i> <b>¥68.00</b></span>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="order-tool">
+                        <dl class="order-page">
+                            <dt>
+                                <select name="" class="order-select">
+                                    <option>暂无优惠活动</option>
+                                </select>
+                            </dt>
+                            <dd>
+                                <div class="order-page-down"><span></span></div>
+                                <div class="order-page-up"><span></span></div>
+                            </dd>
+                        </dl>
+                        <div class="order-Pay">
+                            <ul>
+                                <li>数量：10</li>
+                                <li>积分：2000</li>
+                                <li>实收：<b>¥2000.00</b><small>¥2100.00</small></li>
+                                <li>优惠：<i>¥100.00</i> </li>
+                            </ul>
+                        </div>
+                        <div class="order-button">
+                            <button type="button" class="add-bt">挂单</button>
+                            <button type="button" class="add-bt">取单</button>
+                            <button type="button" class="add-bt">清空</button>
+                            <button type="button" class="add-bt red">结账</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="lomo-mian-right">
+                    <div class="goods-list goods-list-img">
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐+美容+养颜</h1>
+                            <span><i class="colorIcon purple">次</i><b>3</b><small>¥50.00</small></span> <em>23</em>
+                            <!-- 选择计次项目 start-->
+                            <div class="goods-info-box hide">
+                                <dl>
+                                    <dt></dt>
+                                    <dd>
+                                        <table width="100%" class="dataTable">
+
+                                        </table>
+                                        <div class="info-box-bt">
+                                            <button type="button" class="submit-bt-clear">取消</button>
+                                            <button type="button" class="submit-bt">确认</button>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <!-- 选择计次项目 end-->
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>泰式古典脚底按摩</h1>
+                            <span><i class="colorIcon red">套</i><b>3</b><small>¥50.00</small></span> <em>1</em>
+                            <!-- 选择计次项目 start-->
+                            <div class="goods-info-box hide">
+                                <dl>
+                                    <dt></dt>
+                                    <dd>
+                                        <table width="100%" class="dataTable">
+
+                                        </table>
+                                        <div class="info-box-bt">
+                                            <button type="button" class="submit-bt-clear">取消</button>
+                                            <button type="button" class="submit-bt">确认</button>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <!-- 选择计次项目 end-->
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon orange">普</i><b>3</b><small>¥50.00</small></span> <em>43</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon blue">库</i><b>3</b><small>¥50.00</small></span> <em>234</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon green">服</i><b>3</b><small>¥50.00</small></span> <em>56</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon purple">次</i><b>3</b><small>¥50.00</small></span> <em>75</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon red">套</i><b>3</b><small>¥50.00</small></span> <em>15</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon blue">库</i><b>3</b><small>¥50.00</small></span> <em>12</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon green">服</i><b>3</b><small>¥50.00</small></span> <em>78</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon purple">次</i><b>3</b><small>¥50.00</small></span> <em>23</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon red">套</i><b>3</b><small>¥50.00</small></span> <em>1</em>
+                        </div>
+                        <div class="goods-info">
+                            <div class="goods-info-img"><img src="../img/img001.png" /></div>
+                            <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                            <span><i class="colorIcon orange">普</i><b>3</b><small>¥50.00</small></span> <em>43</em>
+                        </div>
+                    </div>
+                </div>
+                <dl class="goods-page">
+                    <dt> <span class="wcpsy">无产品收银</span><span class="graph">开启无图模式</span> </dt>
+                    <dd> <span>上一页</span><span class="numb">2/17</span><span class="next">下一页</span> </dd>
+                </dl>
+            </div>
+            <!--主体 end-->
+            <!-- 功能弹出框 start-->
+            <div>
+                <!--会员搜索弹出框 start-->
+                <div class="lomo-members-search  lomo-search  hide">
+                    <div class="divTitle" id="memberDel"><span><img src=".../../Theme/images/icon010.png" alt=""></span>会员搜索</div>
+                    <dl class="members-search-form">
+                        <dt>
+                            <input name="" type="text" placeholder="请输入姓名/卡号/手机号码" class="input" />
+                        </dt>
+                        <dd>
+                            <button type="button" class="add-bt">搜索</button>
+                        </dd>
+                    </dl>
+                    <div class="members-search-list">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                            <tr>
+                                <th>会员卡号</th>
+                                <th>会员姓名</th>
+                                <th>手机号码</th>
+                                <th>会员等级</th>
+                                <th>积分</th>
+                                <th>余额</th>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                                <td>¥2000.00</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="members-search-bt"><button type="button" class="submit-bt-clear">清除</button><button
+                            type="button" class="submit-bt">确认</button></div>
+                </div>
+                <!--会员搜索弹出框 end-->
+                <!--新增会员 start-->
+                <div class="lomo-gd order-cd vip-add  lomo-esc hide">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>新增会员</div>
+                    <div class="vip-photo"> <span class="upload"> 300*300<br />
+                            点我上传图片 </span> <button type="button" class="add-bt">拍照</button></div>
+                    <div class="order-cd-form vip-add-form">
+                        <ul>
+                            <li><em>会员卡号：</em><span class="keyIcon">
+                                    <input name="" type="text" placeholder="输入会员卡号(F2)" class="cd-form-input" />
+                                    <i></i> </span><em>会员姓名：</em><span>
+                                    <input name="" type="text" placeholder="输入会员姓名" class="cd-form-input" />
+                                </span></li>
+                            <li><em>手机号码：</em><span class="keyIcon">
+                                    <input name="" type="text" placeholder="输入会员手机号" class="cd-form-input" />
+                                    <i></i> </span><em>生日：</em><span>
+                                    <input name="" type="text" class="cd-form-input" />
+                                </span></li>
+                            <li><em>会员等级：</em><span>
+                                    <select name="" class="cd-form-select">
+                                        <option>储蓄卡</option>
+                                    </select>
+                                </span><em>所属店铺：</em><span>
+                                    <select name="" class="cd-form-select">
+                                        <option>俱乐部</option>
+                                    </select>
+                                </span></li>
+                            <li><em>会员密码：</em><span>
+                                    <input name="" type="text" placeholder="输入会员密码" class="cd-form-input" />
+                                </span><em>确认密码：</em><span>
+                                    <input name="" type="text" placeholder="再次输入会员密码" class="cd-form-input" />
+                                </span></li>
+                            <h1 class="vip-add-down"><i>点击录入详细资料</i></h1>
+                            <!--收缩 start-->
+                            <div class="hide">
+                                <li><em>卡面号：</em><span>
+                                        <input name="" type="text" placeholder="输入会员卡号" class="cd-form-input" />
+                                    </span><em>售卡金额：</em><span>
+                                        <input name="" type="text" placeholder="0" class="cd-form-input" />
+                                    </span></li>
+                                <li><em>账户余额：</em><span>
+                                        <input name="" type="text" class="cd-form-input" />
+                                    </span><em>积分数量：</em><span>
+                                        <input name="" type="text" placeholder="0" class="cd-form-input" />
+                                    </span></li>
+                                <li><em>推荐人：</em><span>
+                                        <input name="" type="text" placeholder="推荐人姓名" class="cd-form-input" />
+                                    </span><em>提成员工：</em><span>
+                                        <select name="" class="cd-form-select">
+                                            <option>张三丰</option>
+                                        </select>
+                                    </span></li>
+                                <li><em>身份证：</em><span>
+                                        <input name="" type="text" placeholder="输入会员身份证号码" class="cd-form-input" />
+                                    </span><em>邮箱：</em><span>
+                                        <input name="" type="text" placeholder="输入会员邮箱" class="cd-form-input" />
+                                    </span></li>
+                                <li><em>固定电话：</em><span>
+                                        <input name="" type="text" placeholder="输入会员电话" class="cd-form-input" />
+                                    </span><em>车牌号：</em><span>
+                                        <input name="" type="text" placeholder="输入会员车牌号" class="cd-form-input" />
+                                    </span></li>
+                                <li><em>地址：</em><span>
+                                        <input name="" type="text" placeholder="输入会员详细地址" class="cd-form-input pw" />
+                                    </span></li>
+                                <li><em>备注：</em><span>
+                                        <textarea name="" class="cd-form-bz"></textarea>
+                                    </span></li>
+                                <li><em>自定义：</em>
+                                    <div class="vip-add-zdy">
+                                        <ul>
+                                            <li><em>车身颜色：</em><span>
+                                                    <input name="" type="text" placeholder="输入车身颜色"
+                                                        class="cd-form-input" />
+                                                </span><em>发动机号：</em><span>
+                                                    <input name="" type="text" placeholder="输入会员发动机号"
+                                                        class="cd-form-input" />
+                                                </span></li>
+                                            <li><em>年份：</em><span>
+                                                    <select name="" class="cd-form-select">
+                                                        <option></option>
+                                                    </select>
+                                                </span></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </div>
+                            <!--收缩 end-->
+                            <li style="text-align:right;">
+                                <button type="button" class="submit-bt-clear">取消[ESC</button>
+                                <button type="button" class="submit-bt">保存[F5]</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--新增会员 end-->
+                <!--挂单 start-->
+                <div class="lomo-gd hide lomo-gd2 lomo-esc">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>挂单</div>
+                    <dl class="gd-form">
+                        <dt>手牌号</dt>
+                        <dd>
+                            <input name="" type="text" class="sph" />
+                            <span class="card-num-up"></span>
+                            <!--小键盘 start-->
+                            <div class="small-keyboard gd-keyboard" style="display:none;">
+                                <ul class="small-keyboard-num">
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                    <li>6</li>
+                                    <li>7</li>
+                                    <li>8</li>
+                                    <li>9</li>
+                                    <li>0</li>
+                                    <li>00</li>
+                                    <li>.</li>
+                                    <li>←</li>
+                                    <li class="keyboard-remove">清除</li>
+                                    <li class="keyboard-confirm">确认</li>
+                                </ul>
+                                <em class="topSjx"></em>
+                            </div>
+                            <!--小键盘 end-->
+                        </dd>
+                        <dt>备注</dt>
+                        <dd>
+                            <textarea name="" cols="" rows="" class="bz"></textarea>
+                        </dd>
+                        <dd class="gd-form-bt">
+                            <button type="button" class="submit-bt-clear">取消[ESC]</button>
+                            <button type="button" class="submit-bt">确认[F5]</button>
+                        </dd>
+                    </dl>
+                </div>
+                <!--挂单 end-->
+                <!--取单 start-->
+                <div class="lomo-members-search hide lomo-qd lomo-esc">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>取单</div>
+                    <dl class="members-search-form">
+                        <dt>
+                            <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
+                        </dt>
+                        <dd>
+                            <button type="button" class="add-bt">搜索</button>
+                        </dd>
+                    </dl>
+                    <div class="members-search-list">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                            <tr>
+                                <th>单据号</th>
+                                <th>挂单时间</th>
+                                <th>会员姓名</th>
+                                <th>手牌号</th>
+                                <th>备注</th>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>2019-6-3 12:34:32</td>
+                                <td>18596545218</td>
+                                <td>易烊千玺</td>
+                                <td> 白金会员白金会员白</td>
+                            </tr>
+                            <tr>
+                                <td>800001</td>
+                                <td>张三</td>
+                                <td>18596545218</td>
+                                <td>白金会员</td>
+                                <td>520</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="members-search-bt"><button type="button" class="submit-bt">取消[ESC]</button></div>
+                </div>
+                <!--取单 end-->
+                <!--收银结账 start-->
+                <div class="lomo-cashier hide">
+                    <!--弹出层遮罩层 start-->
+                    <div class="lomo-mask-cashier hide"></div>
+                    <!--弹出层遮罩层 end-->
+                    <div class="lomo-cashier-left">
+                        <h1>会员</h1>
+                        <dl class="vipInfo vipInfo-xz">
+                            <dt><img src="../img/header.png" /></dt>
+                            <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+                            <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+                        </dl>
+                        <!--小键盘 start-->
+                        <div class="small-keyboard index-keyboard minor-keyboard hide card-num-form ">
+                            <dl class="small-keyboard-form">
+                                <dd><input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                    <a href="javascript:void(0);" class="card-num-up"></a><button type="button"
+                                        class="bt key-switch">全键盘</button>
+                                    <span class="keyboard"></span>
+                                </dd>
+                            </dl>
+                            <ul class="small-keyboard-num">
+                                <li>1</li>
+                                <li>2</li>
+                                <li>3</li>
+                                <li>4</li>
+                                <li>5</li>
+                                <li>6</li>
+                                <li>7</li>
+                                <li>8</li>
+                                <li>9</li>
+                                <li>0</li>
+                                <li>00</li>
+                                <li>.</li>
+                                <li>←</li>
+                                <li class="keyboard-remove">清除</li>
+                                <li class="keyboard-confirm">确认</li>
+                            </ul>
+                            <em class="topSjx"></em>
+                        </div>
+                        <!--小键盘 end-->
+                        <!--全键盘 start-->
+                        <div class="small-keyboard index-keyboard big-keyboard hide card-num-form ">
+                            <dl class="small-keyboard-form">
+                                <dd>
+                                    <input name="" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                                    <a href="#" class="card-num-up"></a>
+                                    <button type="button" class="bt key-switch">小键盘</button>
+                                    <span class="keyboard"></span>
+                                </dd>
+                            </dl>
+                            <ul class="small-keyboard-num small-keyboard-l">
+                                <li>1</li>
+                                <li>2</li>
+                                <li>3</li>
+                                <li>4</li>
+                                <li>5</li>
+                                <li>6</li>
+                                <li>7</li>
+                                <li>8</li>
+                                <li>9</li>
+                                <li>0</li>
+                                <li>q</li>
+                                <li>w</li>
+                                <li>e</li>
+                                <li>r</li>
+                                <li>t</li>
+                                <li>y</li>
+                                <li>u</li>
+                                <li>i</li>
+                                <li>o</li>
+                                <li>p</li>
+                                <li class="small-kb">大写</li>
+                                <li>a</li>
+                                <li>s</li>
+                                <li>d</li>
+                                <li>f</li>
+                                <li>g</li>
+                                <li>h</li>
+                                <li>j</li>
+                                <li>k</li>
+                                <li>l</li>
+                                <li class="small-kb">小键盘</li>
+                                <li>z</li>
+                                <li>x</li>
+                                <li>c</li>
+                                <li>v</li>
+                                <li>b</li>
+                                <li>n</li>
+                                <li>m</li>
+                                <li>.</li>
+                                <li class="small-kb">空格</li>
+                            </ul>
+                            <ul class="small-keyboard-num small-keyboard-r">
+                                <li>←</li>
+                                <li class="keyboard-remove">清除</li>
+                                <li class="keyboard-confirm keyboard-confirm-big">确认</li>
+                            </ul>
+                            <em class="topSjx"></em>
+                        </div>
+                        <!--全键盘 end-->
+                        <h1>付款方式</h1>
+                        <div class="cashier-way">
+                            <ul id="pay">
+                                <li class="border-red"><a href="#">储值卡</a></li>
+                                <li><a href="#" class="way2">微信</a></li>
+                                <li><a href="#" class="way3">支付宝</a></li>
+                                <li><a href="#" class="way4">优惠券</a></li>
+                                <li><a href="#" class="way5">积分抵扣</a></li>
+                                <li><a href="#" class="way6">银联卡</a></li>
+                            </ul>
+                        </div>
+                        <h1>更多操作</h1>
+                        <div class="cashier-way" style="height: 140px">
+                            <ul>
+                                <li>
+                                    <a href="#" class="way7">整单优惠</a>
+                                    <!--整单优惠 start-->
+                                    <div class="chipBox  chipBox-yh hide" style="top:386px">
+                                        <ul class="chipBox-zdyh">
+                                            <li>应收金额：¥2050.00</li>
+                                            <li>优惠金额：
+                                                <input name="" type="text" class="sph" />
+                                                <select name="" class="yhhd">
+                                                    <option>7折/元</option>
+                                                </select>
+                                            </li>
+                                            <li>优惠后金额：¥2050.00</li>
+                                        </ul>
+                                        <div class="chipBox-ForomBt">
+                                            <button type="button" class="submit-bt-clear">取消</button>
+                                            <button type="button" class="submit-bt">确认</button>
+                                        </div>
+                                        <em class="botSjx"></em>
+                                    </div>
+                                    <!--整单优惠 end-->
+                                </li>
+                                <li>
+                                    <a href="#" class="way8">整单提成</a>
+                                    <div class="chipBox hide lomo-tcyg-add"
+                                        style="margin-top:0px;padding: 3%;top:310px;overflow: visible;width: auto">
+                                        <div style="width: 100%;min-height:90px">
+                                            <span class="name nameTitle">提成员工：</span><span
+                                                class="name">欧阳降权<i>x</i></span>
+                                            <span class="name">崔作非<i>x</i></span><span
+                                                class="name">捞易<i>x</i></span><span class="name">刘雨滴<i>x</i></span><span
+                                                class="name">石头<i>x</i></span><span class="name">文叔<i>x</i></span><span
+                                                class="name">珍淑<i>x</i></span><span class="add">+</span>
+                                        </div>
+                                        <div class="tcyg-form-bt">
+                                            <button type="button" class="submit-bt-clear">取消</button>
+                                            <button type="button" class="submit-bt">结账</button>
+                                        </div>
+                                        <em class="botSjx"></em>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="#" class="way9">备注</a>
+                                    <!--备注 start-->
+                                    <div class="chipBox hide chipBox-bz">
+                                        <div class="chipBox-title">备注</div>
+                                        <div class="chipBox-Forominput">
+                                            <textarea name="" cols="" rows=""></textarea>
+                                        </div>
+                                        <div class="chipBox-ForomBt">
+                                            <button type="button" class="submit-bt-clear">取消</button>
+                                            <button type="button" class="submit-bt">确认</button>
+                                        </div>
+                                        <em class="botSjx"></em>
+                                    </div>
+                                    <!--备注 end-->
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="cashier-bt">
+                            <button type="button" class="add-bt green">返回收银</button>
+                        </div>
+                    </div>
+                    <div class="lomo-cashier-right">
+                        <div class="cashier-num">
+                            <ul class="cashier-num-a">
+                                <li><span>应收</span><b class="fl">¥5000.00</b><em>抹零</em></li>
+                                <li><span>待收</span><b>¥5000.00</b></li>
+                                <li><span>优惠</span><b>¥5000.00</b></li>
+                            </ul>
+                            <ul class="cashier-num-b">
+                                <li><span>优惠券<b>¥500</b></span><em>重选优惠券</em></li>
+                                <li ><span>现金<b>¥0</b></span><small class="hide">找零¥50.00</small></li>
+                                <div id="mode">
+
+                                </div>
+                            </ul>
+                        </div>
+                        <div class="cashier-keyboard">
+                            <ul>
+                                <li>1</li>
+                                <li>2</li>
+                                <li>3</li>
+                                <li>100.00</li>
+                                <li>4</li>
+                                <li>5</li>
+                                <li>6</li>
+                                <li>200.00</li>
+                                <li>5</li>
+                                <li>6</li>
+                                <li>7</li>
+                                <li>500.00</li>
+                                <li>0</li>
+                                <li>00</li>
+                                <li>.</li>
+                                <li>←</li>
+                            </ul>
+                        </div>
+                        <div class="cashier-end">
+                            <input name="" type="text" placeholder="请输入会员密码" class="input" />
+                            <button type="button" class="add-bt">完成结算</button>
+                        </div>
+                    </div>
+                </div>
+                <!--选择优惠券 start-->
+                <div class="lomo-members-search lomo-yhq hide">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>选择优惠券</div>
+                    <dl class="members-search-form">
+                        <dt>
+                            <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
+                        </dt>
+                        <dd>
+                            <button type="button" class="add-bt">搜索</button>
+                        </dd>
+                    </dl>
+                    <div class="members-search-list">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+                            <tr>
+                                <th>名称</th>
+                                <th>券号</th>
+                                <th>券类型</th>
+                                <th>优惠金额</th>
+                                <th>最低消费</th>
+                            </tr>
+                            <tr>
+                                <td>国庆大酬宾</td>
+                                <td>42065236524</td>
+                                <td>全场券</td>
+                                <td>7折</td>
+                                <td> 500</td>
+                            </tr>
+                            <tr>
+                                <td>国庆大酬宾</td>
+                                <td>42065236524</td>
+                                <td>全场券</td>
+                                <td>7折</td>
+                                <td> 500</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="members-search-bt"><button type="button" class="submit-bt-clear">取消</button><button
+                            type="button" class="submit-bt">确认</button></div>
+                </div>
+                <!--选择优惠券 end-->
+                <!--收银结账 end-->
+                <!--无产品收银 start-->
+                <div class="lomo-gd lomo-wcpsy hide">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>无产品收银</div>
+                    <dl class="gd-form">
+                        <dt>优惠活动</dt>
+                        <dd>
+                            <select name="" class="yhhd">
+                                <option>暂无优惠活动</option>
+                            </select></span>
+                        </dd>
+                        <dt>消费金额</dt>
+                        <dd>
+                            <input name="" type="text" class="sph" />
+                        </dd>
+                        <dt>获得积分</dt>
+                        <dd>
+                            <input name="" type="text" class="sph" />
+                        </dd>
+                        <dt>折后金额</dt>
+                        <dd>
+                            <input name="" type="text" class="sph" />
+                        </dd>
+                        <dd class="lomo-line"></dd>
+                        <dt>提成员工</dt>
+                        <dd class="wcpsy-add">
+                            <span class="name">欧阳降权<i>x</i></span> <span class="name">崔作非<i>x</i></span><span
+                                class="name">捞易<i>x</i></span><span class="name">刘雨滴<i>x</i></span><span
+                                class="name">石头<i>x</i></span><span class="name">文叔<i>x</i></span><span
+                                class="name">珍淑<i>x</i></span><span class="add">+</span>
+                        </dd>
+                        <dd class="lomo-line"></dd>
+                        <dd class="gd-form-bt"><button type="button" class="submit-bt-clear">取消</button><button
+                                type="button" class="submit-bt">结账</button></dd>
+                    </dl>
+                </div>
+                <!--无产品收银 end-->
+                <!--提成员工 start-->
+                <dl class="lomo-tcyg hide">
+                    <dt></dt>
+                    <dd>
+                        <div class="lomo-tcyg-goodsInfo"> <img src="../img/img001.png" />
+                            <div class="tcyg-goodsInfo">
+                                <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+                                <span>单价：¥50.00</span><span>会员价：<i>¥50.00</i></span>
+                                <div class="tcyg-goodsInfo-bt">
+                                    <button type="button" class="add-bt">赠送</button>
+                                    <button type="button" class="add-bt">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tcyg-goodsInfo-price">
+                            <ul>
+                                <li>现价<b>500.00</b></li>
+                                <li>数量<b>2</b></li>
+                                <li>总价<b>500.00</b></li>
+                            </ul>
+                        </div>
+                        <div class="lomo-tcyg-add"><span class="name nameTitle">提成员工：</span><span
+                                class="name">欧阳降权<i>x</i></span> <span class="name">崔作非<i>x</i></span><span
+                                class="name">捞易<i>x</i></span><span class="name">刘雨滴<i>x</i></span><span
+                                class="name">石头<i>x</i></span><span class="name">文叔<i>x</i></span><span
+                                class="name">珍淑<i>x</i></span><span class="add">+</span></div>
+                        <div class="tcyg-form-bt">
+                            <button type="button" class="submit-bt-clear">取消</button>
+                            <button type="button" class="submit-bt">结账</button>
+                        </div>
+                        <!--小键盘 start-->
+                        <div class="small-keyboard lomo-tcyg-keyboard hide">
+                            <ul class="small-keyboard-num">
+                                <li>1</li>
+                                <li>2</li>
+                                <li>3</li>
+                                <li>4</li>
+                                <li>5</li>
+                                <li>6</li>
+                                <li>7</li>
+                                <li>8</li>
+                                <li>9</li>
+                                <li>0</li>
+                                <li>00</li>
+                                <li>.</li>
+                                <li>←</li>
+                                <li class="keyboard-remove">清除</li>
+                                <li class="keyboard-confirm">确认</li>
+                            </ul>
+                            <em class="topSjx"></em>
+                        </div>
+                        <!--小键盘 end-->
+                    </dd>
+                </dl>
+                <!--提成员工 end-->
+                <!--选择提成员工 start-->
+                <div class="lomo-xztcyg hide">
+                    <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>选择员工</div>
+                    <div class="lomo-xztcyg-left">
+
+
+
+                    </div>
+                    <div class="lomo-xztcyg-right">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="xztcyg-Table">
+                            <tr>
+                                <th width="30%">姓名</th>
+                                <th width="30%">提成金额</th>
+                                <th width="30%">备注</th>
+                                <th width="10%">操作</th>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" />
+                                </td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                            <tr>
+                                <td>易金星</td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><input name="" type="text" placeholder="¥1250" class="input" /></td>
+                                <td><span>删除</span></td>
+                            </tr>
+                        </table>
+                        <div class="lomo-xztcyg-bt"><button type="button" class="submit-bt-clear">取消</button><button
+                                type="button" class="submit-bt">确认</button></div>
+                    </div>
+                </div>
+                <!--选择提成员工 end-->
+            </div>
+            <!-- 功能弹出框 end-->
+        </div>
+        <!--遮罩层 start-->
+        <div>
+            <!--遮罩层 start-->
+            <div class="lomo-mask-body hide"></div>
+            <!--遮罩层 end-->
+            <!--遮罩层左 start-->
+            <div class="lomo-mask-left hide"></div>
+            <!--遮罩层左 end-->
+            <!--遮罩层5 start-->
+            <div class="lomo-mask-body5 hide"></div>
+            <!--遮罩层5 end-->
+        </div>
+        <!--遮罩层 end-->
+    </div>
+</body>
+<script src="../js/jquery3.4.1.min.js"></script>
+<script src="../layui/layui.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/cashRegister.js"></script>
+<script src="../js/utils.js"></script>
+
+</html>

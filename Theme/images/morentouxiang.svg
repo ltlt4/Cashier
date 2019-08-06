@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>图层_4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="30" cy="30" r="30"></circle>
+    </defs>
+    <g id="加油站1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="继续购物弹窗" transform="translate(-30.000000, -126.000000)">
+            <g id="会员信息" transform="translate(10.000000, 112.000000)">
+                <g id="椭圆_1-2" transform="translate(20.000000, 14.000000)">
+                    <g id="图层_4">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="蒙版" fill="#EEEEEE" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        <path d="M30,36 C37.1801688,36 43,29.9563291 43,22.5 C43,15.0436709 37.1801688,9 30,9 C22.8198312,9 17,15.0436709 17,22.5 C17,29.9563291 22.8198312,36 30,36 Z M30,42 C17.8501645,42 8,46.030196 8,50.9971089 C8,55.9640218 17.8501645,60 30,60 C42.1498355,60 52,55.969804 52,51.0028911 C52,46.0359782 42.1498355,42 30,42 Z" id="形状" fill="#D4D4D4" fill-rule="nonzero" mask="url(#mask-2)"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

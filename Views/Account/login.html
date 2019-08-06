@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>首页-商户收银宝</title>
+    <link href="../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../css/index.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../Theme/plugins/layui/css/layui.css" />
+</head>
+
+<style>
+    .divTitle img {
+        margin-top: 15px !important;
+    }
+
+    .layui-layer-btn0 {
+        background: #41c060 !important;
+    }
+</style>
+
+<body>
+    <div class="lomo-login">
+        <dl class="lomo-login-top">
+            <dt></dt>
+            <dd><a class="tool-web" href="javascript:;"></a><a href="javascript:;" class="tool-close"></a></dd>
+        </dl>
+        <div class="login-box">
+            <dl class="login-form">
+                <dt><a href="#" class="hover">收银前台</a>|<a href="#">管理后台</a></dt>
+                <dd>
+                    <form>
+                        <ul>
+                            <li>
+                                <input id="enterprise" type="text" placeholder="请输入企业号" class="login-form-input" />
+                            </li>
+                            <li class="phone">
+                                <input id="username" type="text" placeholder="请输入账号" class="login-form-input" />
+                            </li>
+                            <li class="pw">
+                                <input id="pwd" type="password" placeholder="请输入密码" class="login-form-input" />
+                            </li>
+                        </ul>
+                        <div class="login-form-other">
+                            <input name="" type="checkbox" value="" id="color-input-red" />
+                            <label for="color-input-red" data-id="0"></label>
+                            <span>记住密码</span>
+                        </div>
+                        <div class="login-form-other" style="float: right">
+                            <input name="" type="checkbox" value='' id="color-input-hs" />
+                            <label for="color-input-hs" data-id="1"></label>
+                            <span>自动登录</span>
+                        </div>
+                        <div class="login-form-bt">
+                            <button type="submit" class="add-bt" id="login">马上登录</button>
+                            <button type="button" class="add-bt">体验一下</button><a href="#">忘记密码</a>
+                        </div>
+                    </form>
+                </dd>
+            </dl>
+            <div class="lomo-copyR">Copyright@商户银宝 2016-2020</div>
+        </div>
+    </div>
+
+    <!--网络设置 start-->
+    <div class="lomo-network-set hide">
+        <dl class="network-set-form">
+            <dt>网络访问慢。系统延迟高时，您可以根据检测结果选择网络</dt>
+            <dd>
+                <button type="button" class="add-bt" id="checknetwork">立即检测</button>
+            </dd>
+        </dl>
+        <div class="network-set-list">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable2" id="networklist">
+            </table>
+        </div>
+    </div>
+    <!--网络设置 end-->
+</body>
+<script src="../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../Theme/plugins/layui/layui.js"></script>
+<script src="../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../Theme/script/verify.js"></script>
+<script src="../../Theme/script/common.js"></script>
+<script src="../../js/Account/login.js"></script>
+
+
+</html>

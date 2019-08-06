@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>快速计次-商户收银宝</title>
+    <link href="../../../Theme/plugins/animate/animate.css" type="text/css" rel="stylesheet" />
+    <link href="../../../Theme/plugins/layui/css/layui.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/Public.css" type="text/css" rel="stylesheet" />
+    <link href="../../../css/index.css" type="text/css" rel="stylesheet" />
+	<link href="../../../css/quickCount.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <div style="position: absolute;top: 51px;width: 100%;">
+            <div class="lomo-shopBar">
+				<!--查询会员-->
+                <div class="card-num">
+                    <dl class="card-num-form">
+                        <dd>
+                            <input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
+                            <a href="javascript:void(0);" class="card-num-up" onclick="luckKeyboard.showSmallkeyboard(this)" id="members-keyboard"></a>
+                            <button type="button" class="bt" id="search">搜索</button>
+                        </dd>
+                    </dl>
+                </div>
+                <!--商品搜索 start-->
+                <div class="lomo-right search-area layui-form">
+					<div class="layui-form-item">
+						<label class="layui-form-label">当前项目：</label>
+						<div class="layui-input-block">
+							<select id="countList" name="countList" lay-search>
+								<option value="">请选择项目</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">提成员工：</label>
+						<div class="layui-input-block">
+							<select id="staffList" name="staffList" lay-search>
+								<option value="">请选择提成员工</option>
+							</select>
+						</div>
+					</div>
+                </div>
+                <!--商品搜索 end-->
+            </div>
+        </div>
+        <!--主体 start-->
+        <div class="lomo-mian-left">
+            <dl class="vipInfo">
+                <dt><img src="../../../img/header.png" /></dt>
+                <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+                <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+            </dl>
+            <div class="lomo-order">
+                <div class="count-list">
+				</div>
+            </div>
+        </div>
+		<div class="lomo-mian-right">
+            <h3 class="table-title">刷卡详情：</h3>
+			<div class="count-table">
+				<div class="online-order-table">
+				  <table>
+					<thead>
+					  <tr>
+						<th>会员卡号</th>
+						<th>会员姓名</th>
+						<th>手机号</th>
+						<th>签到课程</th>
+						<th>签到时间</th>
+						<th>店铺</th>
+						<th>操作员</th>
+					  </tr>
+					</thead>
+					<tbody>
+						<tr>
+						   <td>15565666</td>
+						   <td>张三</td>
+						   <td>189566626562</td>
+						   <td>初中语文暑假班</td>
+						   <td>2019-07-02 13:30:00</td>
+						   <td>万达店</td>
+						   <td>ss</td>
+						 </tr>
+					 </tbody>
+				  </table>
+				</div>
+			</div>
+        </div>
+        <!--主体 end-->
+    </div>
+	
+	<!--会员搜索弹层-->
+	<div id="lomo-members-search" class="lomo-members-search lomo-search hide">
+	    <dl class="members-search-form">
+	        <form action="">
+	            <dt>
+	                <input name="" type="text" placeholder="请输入姓名/卡号/手机号码" class="input" />
+	            </dt>
+	            <dd>
+	                <button type="submit" class="add-bt" id="search">搜索</button>
+	            </dd>
+	        </form>
+	    </dl>
+	    <div class="members-search-list">
+	        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+	            <tr>
+	                <th>会员卡号</th>
+	                <th>会员姓名</th>
+	                <th>手机号码</th>
+	                <th>会员等级</th>
+	                <th>积分</th>
+	                <th>余额</th>
+	            </tr>
+	            <tbody id="memList">
+				                
+	            </tbody>
+	        </table>
+	    </div>
+	</div>
+	
+	
+</body>
+<script src="../../../Theme/script/jquery3.4.1.min.js"></script>
+<script src="../../../Theme/plugins/layui/layui.js"></script>
+<script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Theme/script/verify.js"></script>
+<script src="../../../Theme/script/common.js"></script>
+<script src="../../../Theme/script/keyboard.js"></script>
+<script src="../../../js/Member/quickCount/quickCount.js"></script>
+</html>

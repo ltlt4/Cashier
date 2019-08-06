@@ -1,0 +1,66 @@
+.card-num{
+	margin-left: 10px;
+}
+.card-num-form dd input#barCode{
+	width: 280px;
+}
+.search-area .layui-form-item{
+	display: inline-block;
+	margin-bottom: 0;
+}
+.search-area .layui-form-label{
+	font-size: 15px;
+}
+.lomo-order,
+.lomo-mian-right{
+	bottom: 10px;
+}
+.count-item:after{
+	content: '';
+	clear: both;
+	display: block;
+}
+.count-item{
+	margin: 0 20px;
+	border-bottom: 1px #ededed solid;
+	line-height: 40px;
+	font-size: 16px;
+	padding: 10px 0;
+}
+.count-item .count-icon{
+	background: #ff591b;
+    color: #fff;
+    height: 15px;
+    width: 15px;
+    font-size: 12px;
+    text-align: center;
+    display: block;
+    float: left;
+    line-height: 15px;
+    border-radius: 3px;
+	margin: 13px 10px 0 0;
+}
+.count-item p{
+	float: left;
+}
+.count-item span{
+	float: right;
+	color: #a9a9a9;
+	margin-right: 10px;
+}
+.count-item span b{
+	float: right;
+	color: #4abe59;
+}
+.table-title{
+	color: #4abe59;
+	font-size: 15px;
+	margin: 20px 0 0 20px;
+	font-weight: bold;
+}
+.count-table{
+	padding: 15px;
+}
+.count-table .online-order-table{
+	margin-top: 0;
+}

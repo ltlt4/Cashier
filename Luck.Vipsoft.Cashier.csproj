@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E2DB0B60-9AA3-48A0-BDB3-FF696DC9A581}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Luck.Vipsoft.Cashier</RootNamespace>
+    <AssemblyName>Luck.Vipsoft.Cashier</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Member\cashRegister\cashRegister.html" />
+    <Content Include="Areas\Member\continueShop\continueShop.html" />
+    <Content Include="Areas\Member\exchange\exchange.html" />
+    <Content Include="Areas\Member\management\management.html" />
+    <Content Include="Areas\Member\oiling\oiling.html" />
+    <Content Include="Areas\Member\quickCount\quickCount.html" />
+    <Content Include="Areas\Member\rechargeStroke\rechargeStroke.html" />
+    <Content Include="Areas\Member\tableConsumption\tableConsumption.html" />
+    <Content Include="Areas\Member\training\training.html" />
+    <Content Include="Areas\Model\Home\searchMember.html" />
+    <Content Include="Areas\Order\onlineOrder\onlineOrder.html" />
+    <Content Include="Areas\Order\reservation\reservation.html" />
+    <Content Include="Areas\Order\writeOff\writeOff.html" />
+    <Content Include="Areas\Settings\settings\settings.html" />
+    <Content Include="css\index.css" />
+    <Content Include="css\Model\Home\searchMember.css" />
+    <Content Include="css\Public.css" />
+    <Content Include="css\quickCount.css" />
+    <Content Include="css\rechargeStroke.css" />
+    <Content Include="css\setting.css" />
+    <Content Include="js\Account\login.js" />
+    <Content Include="js\common.js" />
+    <Content Include="js\index.js" />
+    <Content Include="js\Member\cashRegister\cashRegister.js" />
+    <Content Include="js\Member\cashRegister\cashRegister_20190801_bak.js" />
+    <Content Include="js\Member\continueShop\continueShop.js" />
+    <Content Include="js\Member\exchange\exchange.js" />
+    <Content Include="js\Member\management\management.js" />
+    <Content Include="js\Member\oiling\oiling.js" />
+    <Content Include="js\Member\quickCount\quickCount.js" />
+    <Content Include="js\Member\rechargeStroke\rechargeStroke.js" />
+    <Content Include="js\Member\tableConsumption\tableConsumption.js" />
+    <Content Include="js\Member\training\training.js" />
+    <Content Include="js\Model\Home\searchMember.js" />
+    <Content Include="js\Order\onlineOrder\onlineOrder.js" />
+    <Content Include="js\Order\reservation\reservation.js" />
+    <Content Include="js\Order\writeOff\writeOff.js" />
+    <Content Include="js\settings\settings.js" />
+    <Content Include="Scripts\linq.min.js" />
+    <Content Include="Scripts\template-web.js" />
+    <Content Include="Scripts\vue.js" />
+    <Content Include="Scripts\vue.min.js" />
+    <Content Include="Theme\images\backIcon.png" />
+    <Content Include="Theme\images\botSjx.png" />
+    <Content Include="Theme\images\bs.png" />
+    <Content Include="Theme\images\changguan.png" />
+    <Content Include="Theme\images\del.png" />
+    <Content Include="Theme\images\ems.png" />
+    <Content Include="Theme\images\genhuan.png" />
+    <Content Include="Theme\images\goodsPic.png" />
+    <Content Include="Theme\images\guard001.svg" />
+    <Content Include="Theme\images\guard002.svg" />
+    <Content Include="Theme\images\guard003.svg" />
+    <Content Include="Theme\images\guard004.svg" />
+    <Content Include="Theme\images\guard005.svg" />
+    <Content Include="Theme\images\icon01.png" />
+    <Content Include="Theme\images\icon010-green.png" />
+    <Content Include="Theme\images\icon010.png" />
+    <Content Include="Theme\images\icon011.png" />
+    <Content Include="Theme\images\icon012.png" />
+    <Content Include="Theme\images\icon016.png" />
+    <Content Include="Theme\images\icon02.png" />
+    <Content Include="Theme\images\icon03.png" />
+    <Content Include="Theme\images\icon04-green.png" />
+    <Content Include="Theme\images\icon04.png" />
+    <Content Include="Theme\images\icon05.png" />
+    <Content Include="Theme\images\icon06-2-1.png" />
+    <Content Include="Theme\images\icon06-2.png" />
+    <Content Include="Theme\images\icon06-3.png" />
+    <Content Include="Theme\images\icon06.png" />
+    <Content Include="Theme\images\icon07.png" />
+    <Content Include="Theme\images\icon08.png" />
+    <Content Include="Theme\images\icon09.png" />
+    <Content Include="Theme\images\icon20.png" />
+    <Content Include="Theme\images\infoPic.png" />
+    <Content Include="Theme\images\jiazai.png" />
+    <Content Include="Theme\images\jinru.svg" />
+    <Content Include="Theme\images\kqs.png" />
+    <Content Include="Theme\images\leftSjx.png" />
+    <Content Include="Theme\images\line01.png" />
+    <Content Include="Theme\images\lipin.png" />
+    <Content Include="Theme\images\lock.svg" />
+    <Content Include="Theme\images\login001.png" />
+    <Content Include="Theme\images\login002.png" />
+    <Content Include="Theme\images\login003.png" />
+    <Content Include="Theme\images\loginBody.png" />
+    <Content Include="Theme\images\logo-login.png" />
+    <Content Include="Theme\images\logo.png" />
+    <Content Include="Theme\images\lomoline.png" />
+    <Content Include="Theme\images\morentouxiang.svg" />
+    <Content Include="Theme\images\optxiala.png" />
+    <Content Include="Theme\images\phoneIcon.png" />
+    <Content Include="Theme\images\qqicon.png" />
+    <Content Include="Theme\images\sf.png" />
+    <Content Include="Theme\images\shopType.png" />
+    <Content Include="Theme\images\st.png" />
+    <Content Include="Theme\images\taocan.png" />
+    <Content Include="Theme\images\tool01.png" />
+    <Content Include="Theme\images\tool010.png" />
+    <Content Include="Theme\images\tool011.png" />
+    <Content Include="Theme\images\tool012.png" />
+    <Content Include="Theme\images\tool013.png" />
+    <Content Include="Theme\images\tool014.png" />
+    <Content Include="Theme\images\tool015.png" />
+    <Content Include="Theme\images\tool016.png" />
+    <Content Include="Theme\images\tool017.png" />
+    <Content Include="Theme\images\tool018.png" />
+    <Content Include="Theme\images\tool019.png" />
+    <Content Include="Theme\images\tool02.png" />
+    <Content Include="Theme\images\tool03.png" />
+    <Content Include="Theme\images\tool04.png" />
+    <Content Include="Theme\images\tool05.png" />
+    <Content Include="Theme\images\tool06.png" />
+    <Content Include="Theme\images\tool07.png" />
+    <Content Include="Theme\images\tool08.png" />
+    <Content Include="Theme\images\tool09.png" />
+    <Content Include="Theme\images\tool100.png" />
+    <Content Include="Theme\images\tool101.png" />
+    <Content Include="Theme\images\tool99.png" />
+    <Content Include="Theme\images\topSjx.png" />
+    <Content Include="Theme\images\touxiang.png" />
+    <Content Include="Theme\images\tt.png" />
+    <Content Include="Theme\images\yd.png" />
+    <Content Include="Theme\images\yt.png" />
+    <Content Include="Theme\images\zt.png" />
+    <Content Include="Theme\plugins\animate\animate.css" />
+    <Content Include="Theme\plugins\ImgCropping\css\cropper.min.css" />
+    <Content Include="Theme\plugins\ImgCropping\css\ImgCropping.css" />
+    <Content Include="Theme\plugins\ImgCropping\js\cropper.min.js" />
+    <Content Include="Theme\plugins\ImgCropping\js\jquery-2.1.1.js" />
+    <Content Include="Theme\plugins\layui\css\layui.css" />
+    <Content Include="Theme\plugins\layui\css\layui.mobile.css" />
+    <Content Include="Theme\plugins\layui\css\modules\code.css" />
+    <Content Include="Theme\plugins\layui\css\modules\laydate\default\laydate.css" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\icon-ext.png" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\icon.png" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\layer.css" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\loading-0.gif" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\loading-1.gif" />
+    <Content Include="Theme\plugins\layui\css\modules\layer\default\loading-2.gif" />
+    <Content Include="Theme\plugins\layui\font\iconfont.svg" />
+    <Content Include="Theme\plugins\layui\images\face\0.gif" />
+    <Content Include="Theme\plugins\layui\images\face\1.gif" />
+    <Content Include="Theme\plugins\layui\images\face\10.gif" />
+    <Content Include="Theme\plugins\layui\images\face\11.gif" />
+    <Content Include="Theme\plugins\layui\images\face\12.gif" />
+    <Content Include="Theme\plugins\layui\images\face\13.gif" />
+    <Content Include="Theme\plugins\layui\images\face\14.gif" />
+    <Content Include="Theme\plugins\layui\images\face\15.gif" />
+    <Content Include="Theme\plugins\layui\images\face\16.gif" />
+    <Content Include="Theme\plugins\layui\images\face\17.gif" />
+    <Content Include="Theme\plugins\layui\images\face\18.gif" />
+    <Content Include="Theme\plugins\layui\images\face\19.gif" />
+    <Content Include="Theme\plugins\layui\images\face\2.gif" />
+    <Content Include="Theme\plugins\layui\images\face\20.gif" />
+    <Content Include="Theme\plugins\layui\images\face\21.gif" />
+    <Content Include="Theme\plugins\layui\images\face\22.gif" />
+    <Content Include="Theme\plugins\layui\images\face\23.gif" />
+    <Content Include="Theme\plugins\layui\images\face\24.gif" />
+    <Content Include="Theme\plugins\layui\images\face\25.gif" />
+    <Content Include="Theme\plugins\layui\images\face\26.gif" />
+    <Content Include="Theme\plugins\layui\images\face\27.gif" />
+    <Content Include="Theme\plugins\layui\images\face\28.gif" />
+    <Content Include="Theme\plugins\layui\images\face\29.gif" />
+    <Content Include="Theme\plugins\layui\images\face\3.gif" />
+    <Content Include="Theme\plugins\layui\images\face\30.gif" />
+    <Content Include="Theme\plugins\layui\images\face\31.gif" />
+    <Content Include="Theme\plugins\layui\images\face\32.gif" />
+    <Content Include="Theme\plugins\layui\images\face\33.gif" />
+    <Content Include="Theme\plugins\layui\images\face\34.gif" />
+    <Content Include="Theme\plugins\layui\images\face\35.gif" />
+    <Content Include="Theme\plugins\layui\images\face\36.gif" />
+    <Content Include="Theme\plugins\layui\images\face\37.gif" />
+    <Content Include="Theme\plugins\layui\images\face\38.gif" />
+    <Content Include="Theme\plugins\layui\images\face\39.gif" />
+    <Content Include="Theme\plugins\layui\images\face\4.gif" />
+    <Content Include="Theme\plugins\layui\images\face\40.gif" />
+    <Content Include="Theme\plugins\layui\images\face\41.gif" />
+    <Content Include="Theme\plugins\layui\images\face\42.gif" />
+    <Content Include="Theme\plugins\layui\images\face\43.gif" />
+    <Content Include="Theme\plugins\layui\images\face\44.gif" />
+    <Content Include="Theme\plugins\layui\images\face\45.gif" />
+    <Content Include="Theme\plugins\layui\images\face\46.gif" />
+    <Content Include="Theme\plugins\layui\images\face\47.gif" />
+    <Content Include="Theme\plugins\layui\images\face\48.gif" />
+    <Content Include="Theme\plugins\layui\images\face\49.gif" />
+    <Content Include="Theme\plugins\layui\images\face\5.gif" />
+    <Content Include="Theme\plugins\layui\images\face\50.gif" />
+    <Content Include="Theme\plugins\layui\images\face\51.gif" />
+    <Content Include="Theme\plugins\layui\images\face\52.gif" />
+    <Content Include="Theme\plugins\layui\images\face\53.gif" />
+    <Content Include="Theme\plugins\layui\images\face\54.gif" />
+    <Content Include="Theme\plugins\layui\images\face\55.gif" />
+    <Content Include="Theme\plugins\layui\images\face\56.gif" />
+    <Content Include="Theme\plugins\layui\images\face\57.gif" />
+    <Content Include="Theme\plugins\layui\images\face\58.gif" />
+    <Content Include="Theme\plugins\layui\images\face\59.gif" />
+    <Content Include="Theme\plugins\layui\images\face\6.gif" />
+    <Content Include="Theme\plugins\layui\images\face\60.gif" />
+    <Content Include="Theme\plugins\layui\images\face\61.gif" />
+    <Content Include="Theme\plugins\layui\images\face\62.gif" />
+    <Content Include="Theme\plugins\layui\images\face\63.gif" />
+    <Content Include="Theme\plugins\layui\images\face\64.gif" />
+    <Content Include="Theme\plugins\layui\images\face\65.gif" />
+    <Content Include="Theme\plugins\layui\images\face\66.gif" />
+    <Content Include="Theme\plugins\layui\images\face\67.gif" />
+    <Content Include="Theme\plugins\layui\images\face\68.gif" />
+    <Content Include="Theme\plugins\layui\images\face\69.gif" />
+    <Content Include="Theme\plugins\layui\images\face\7.gif" />
+    <Content Include="Theme\plugins\layui\images\face\70.gif" />
+    <Content Include="Theme\plugins\layui\images\face\71.gif" />
+    <Content Include="Theme\plugins\layui\images\face\8.gif" />
+    <Content Include="Theme\plugins\layui\images\face\9.gif" />
+    <Content Include="Theme\plugins\layui\layui.all.js" />
+    <Content Include="Theme\plugins\layui\layui.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\carousel.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\code.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\colorpicker.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\element.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\flow.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\form.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\jquery.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\laydate.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\layedit.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\layer.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\laypage.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\laytpl.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\mobile.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\rate.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\slider.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\table.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\transfer.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\tree.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\upload.js" />
+    <Content Include="Theme\plugins\layui\lay\modules\util.js" />
+    <Content Include="Theme\script\common.js" />
+    <Content Include="Theme\script\jquery3.4.1.min.js" />
+    <Content Include="Theme\script\keyboard.js" />
+    <Content Include="Theme\script\Luck.Vipsoft.js" />
+    <Content Include="Theme\script\payCompose.js" />
+    <Content Include="Theme\script\verify.js" />
+    <Content Include="Views\Account\login.html" />
+    <Content Include="Views\home\index.html" />
+    <Content Include="Views\html\cashRegister.html" />
+    <Content Include="Views\html\continueShop.html" />
+    <Content Include="Views\html\exchange.html" />
+    <Content Include="Views\html\management.html" />
+    <Content Include="Views\html\oiling.html" />
+    <Content Include="Views\html\onlineOrder.html" />
+    <Content Include="Views\html\rechargeStroke.html" />
+    <Content Include="Views\html\reservation.html" />
+    <Content Include="Views\html\settings.html" />
+    <Content Include="Views\html\tableConsumption.html" />
+    <Content Include="Views\html\training.html" />
+    <Content Include="Views\html\writeOff.html" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Theme\plugins\layui\font\iconfont.eot" />
+    <Content Include="Theme\plugins\layui\font\iconfont.ttf" />
+    <Content Include="Theme\plugins\layui\font\iconfont.woff" />
+    <Content Include="Theme\plugins\layui\font\iconfont.woff2" />
+    <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\收银端.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:23686/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

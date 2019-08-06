@@ -1,0 +1,59 @@
+﻿.divTitle span {
+    padding-top: 15px;
+}
+
+.layui-input {
+    height: 38px;
+}
+
+.layui-form-select dl dd.layui-this {
+    background: #41c060
+}
+
+.layui-form-item .layui-input-inline {
+    width: 65%;
+}
+
+.layui-form-label {
+    font-weight: 500;
+    line-height: 14px
+}
+.tableConsumption {
+    position:relative;
+}
+.check-list {
+    border:1px #eee solid;
+    max-height:200px;
+    overflow:auto;
+}
+.check-list li {
+    line-height:30px;
+    border-bottom:1px #eee solid;
+    padding: 0 10px;
+    position:relative;
+}
+.check-list li.active::after {
+    display:block;
+    position:absolute;
+    content:'';
+    width:5px;
+    height:10px;
+    border-right:1px #41c060 solid;
+    border-bottom:1px #41c060 solid;
+    transform:rotate(45deg);
+    right:15px;
+    top:8px;
+}
+.order-list dl {
+    position:relative;
+}
+.order-list dl dt.addnew {
+    width: 120px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    margin:0;
+}
+.venue-area .order-list dl dt span {
+    float:right;
+}

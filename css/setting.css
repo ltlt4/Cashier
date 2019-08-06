@@ -1,0 +1,17 @@
+.setPrint .layui-form-label{
+	padding: 9px 10px 9px 0;
+	width: 100px;
+	color: #333;
+	font-size: 14px;
+}
+.inline-select{
+	display: inline-block;
+	width: 100px;
+}
+.layui-form-select dl dd{
+	margin-top: 0;
+}
+.flashSata{
+	color: #41c060;
+	border: 1px #41c060 solid;
+}

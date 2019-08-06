@@ -1,0 +1,28 @@
+.lomo-wcpsy2 .order-page{
+	position: relative;
+	overflow: inherit;
+	padding: 0;
+	border: none;
+}
+.lomo-wcpsy2 .order-page dt{
+	float: none;
+	height: 36px;
+	line-height: 36px;
+	width: 98%;
+}
+.lomo-wcpsy2 .order-page dt .order-select{
+	width: 100%;
+    line-height: 36px;
+    height: 36px;
+}
+.lomo-wcpsy2 .order-page .triangle_border_right{
+	top: 5px;
+}
+.lomo-wcpsy2 .activity-list{
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top:40px;
+	bottom: inherit;
+	max-height: 190px;
+}

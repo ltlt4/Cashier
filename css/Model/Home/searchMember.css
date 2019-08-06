@@ -1,0 +1,15 @@
+.lomo-members-search{background:#fff;border-radius:5px;width: 100%;height: 100%;}
+.members-search-form{ overflow:hidden; margin:0px 20px;padding-top: 8px;}
+.members-search-form dt{float:left;width:83%;}
+.members-search-form dd{float:right;width:13%; text-align:right;}
+.members-search-form .input{border-radius:5px;background:#eee;color:#999;height:30px;padding:0 8px;width:100%;}
+.members-search-form .add-bt{width:100%;}
+.members-search-list{overflow:auto;position:absolute;top:50px;left:20px; bottom:20px; right:20px;}
+.members-search-list .dataTable{width:100%;}
+.members-search-list .dataTable tr td,.members-search-list .dataTable tr th{height:39px;line-height:39px; text-align:center; font-size:14px; padding:0 10px;cursor: pointer;}
+.members-search-list .dataTable tr th{background:#f6f6f6;font-size:16px;font-weight:normal;}
+.members-search-bt{position:absolute; left:20px;bottom:0;right:20px; background:#fff; padding:10px 0; text-align:right;}
+.members-search-bt .submit-bt{margin-left:20px;}
+.lomo-mem-list{background: #32b953;}
+.lomo-mem-list td{color: #fff;}
+

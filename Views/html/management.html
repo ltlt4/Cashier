@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>单据管理-商户收银宝</title>
+  <link href="../css/Public.css" type="text/css" rel="stylesheet" />
+  <link href="../css/index.css" type="text/css" rel="stylesheet" />
+  <link href="../css/animate.css" type="text/css" rel="stylesheet" />
+  <link href="../layui/css/layui.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+  <div>
+    <!-- 主体 -->
+    <div>
+      <!--单据管理 start-->
+      <div class="lomo-online-order">
+        <div class="lomoTab"><span
+            class="hover">单据管理</span><span>会员充值</span><span>会员冲次</span><span>积分兑换记录</span><span>会员退货</span></div>
+        <div class="lomoTab-warp">
+          <div class="online-order-time">
+            <ul>
+              <li>今天</li>
+              <li>昨天</li>
+              <li>近一周</li>
+              <li class="hover">近一月</li>
+              <li>近半年</li>
+              <li>近一年</li>
+            </ul>
+            <div class="time-plug-in">
+              <!--时间插件-->
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <!--时间插件-->
+              <button type="button" class="add-bt">查询</button>
+            </div>
+          </div>
+          <div class="online-order-form">
+            <ul>
+              <li>
+                <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+                <button type="button" class="add-bt order-form-bt">查询</button>
+              </li>
+              <li><span>付款金额</span>
+                <input name="" type="text" class="order-form-input order-form-input2" /><span>-</span> <input name=""
+                  type="text" class="order-form-input order-form-input2" /><button type="button"
+                  class="add-bt order-form-bt order-form-bt2">查询</button>
+              </li>
+              <li><span>消费类型</span>
+                <select name="" class="order-form-select">
+                  <option>已发货</option>
+                  <option>未发货</option>
+                </select>
+              </li>
+              <li><span>订单状态</span>
+                <input name="" type="checkbox" value="" class="checkBoxZT" /><span>已撤单</span>
+              </li>
+              <li>
+                <button type="button" class="add-bt order-form-yellowbt">重置条件</button>
+              </li>
+            </ul>
+          </div>
+          <div class="online-order-table">
+            <table>
+              <tr>
+                <th width="18%">单据号</th>
+                <th width="8%">会员</th>
+                <th width="9%">消费时间</th>
+                <th width="11%">消费类型</th>
+                <th width="10%">付款金额</th>
+                <th width="12%">操作员</th>
+                <th width="11%">店名</th>
+                <th width="21%">操作</th>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="paging" class="lomo-paging">
+
+          </div>
+          <!-- 分页器 start -->
+        </div>
+        <!--会员充值 start-->
+        <div class="lomoTab-warp hide">
+          <div class="online-order-time">
+            <ul>
+              <li>今天</li>
+              <li>昨天</li>
+              <li>近一周</li>
+              <li class="hover">近一月</li>
+              <li>近半年</li>
+              <li>近一年</li>
+            </ul>
+            <div class="time-plug-in">
+              <!--时间插件-->
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <!--时间插件-->
+              <button type="button" class="add-bt">查询</button>
+            </div>
+          </div>
+          <div class="online-order-form">
+            <ul>
+              <li>
+                <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+                <button type="button" class="add-bt order-form-bt">查询</button>
+              </li>
+              <li><span>付款金额</span>
+                <input name="" type="text" class="order-form-input order-form-input2" /><span>-</span> <input name=""
+                  type="text" class="order-form-input order-form-input2" /><button type="button"
+                  class="add-bt order-form-bt order-form-bt2">查询</button>
+              </li>
+              <li><span>消费类型</span>
+                <select name="" class="order-form-select">
+                  <option>已发货</option>
+                  <option>未发货</option>
+                </select>
+              </li>
+              <li><span>订单状态</span>
+                <input name="" type="checkbox" value="" class="checkBoxZT" /><span>已撤单</span>
+              </li>
+              <li>
+                <button type="button" class="add-bt order-form-yellowbt">重置条件</button>
+              </li>
+            </ul>
+          </div>
+          <div class="online-order-table">
+            <table>
+              <tr>
+                <th width="18%">单据号</th>
+                <th width="8%">会员</th>
+                <th width="9%">消费时间</th>
+                <th width="11%">消费类型</th>
+                <th width="10%">付款金额</th>
+                <th width="12%">操作员</th>
+                <th width="11%">店名</th>
+                <th width="21%">操作</th>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <!--会员充值 end-->
+        <!--会员充次 start-->
+        <div class="lomoTab-warp hide">
+          <div class="online-order-time">
+            <ul>
+              <li>今天</li>
+              <li>昨天</li>
+              <li>近一周</li>
+              <li class="hover">近一月</li>
+              <li>近半年</li>
+              <li>近一年</li>
+            </ul>
+            <div class="time-plug-in">
+              <!--时间插件-->
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <!--时间插件-->
+              <button type="button" class="add-bt">查询</button>
+            </div>
+          </div>
+          <div class="online-order-form">
+            <ul>
+              <li>
+                <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+                <button type="button" class="add-bt order-form-bt">查询</button>
+              </li>
+              <li><span>付款金额</span>
+                <input name="" type="text" class="order-form-input order-form-input2" /><span>-</span> <input name=""
+                  type="text" class="order-form-input order-form-input2" /><button type="button"
+                  class="add-bt order-form-bt order-form-bt2">查询</button>
+              </li>
+              <li><span>消费类型</span>
+                <select name="" class="order-form-select">
+                  <option>已发货</option>
+                  <option>未发货</option>
+                </select>
+              </li>
+              <li><span>订单状态</span>
+                <input name="" type="checkbox" value="" class="checkBoxZT" /><span>已撤单</span>
+              </li>
+              <li>
+                <button type="button" class="add-bt order-form-yellowbt">重置条件</button>
+              </li>
+            </ul>
+          </div>
+          <div class="online-order-table">
+            <table>
+              <tr>
+                <th width="18%">单据号</th>
+                <th width="8%">会员</th>
+                <th width="9%">消费时间</th>
+                <th width="11%">消费类型</th>
+                <th width="10%">付款金额</th>
+                <th width="12%">操作员</th>
+                <th width="11%">店名</th>
+                <th width="21%">操作</th>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <!--会员充次 end-->
+        <!--积分兑换记录 start-->
+        <div class="lomoTab-warp hide">
+          <div class="online-order-time">
+            <ul>
+              <li>今天</li>
+              <li>昨天</li>
+              <li>近一周</li>
+              <li class="hover">近一月</li>
+              <li>近半年</li>
+              <li>近一年</li>
+            </ul>
+            <div class="time-plug-in">
+              <!--时间插件-->
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <select name="">
+                <option>2019-04-03</option>
+              </select>
+              <!--时间插件-->
+              <button type="button" class="add-bt">查询</button>
+            </div>
+          </div>
+          <div class="online-order-form">
+            <ul>
+              <li>
+                <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+                <button type="button" class="add-bt order-form-bt">查询</button>
+              </li>
+              <li><span>付款金额</span>
+                <input name="" type="text" class="order-form-input order-form-input2" /><span>-</span> <input name=""
+                  type="text" class="order-form-input order-form-input2" /><button type="button"
+                  class="add-bt order-form-bt order-form-bt2">查询</button>
+              </li>
+              <li><span>消费类型</span>
+                <select name="" class="order-form-select">
+                  <option>已发货</option>
+                  <option>未发货</option>
+                </select>
+              </li>
+              <li><span>订单状态</span>
+                <input name="" type="checkbox" value="" class="checkBoxZT" /><span>已撤单</span>
+              </li>
+              <li>
+                <button type="button" class="add-bt order-form-yellowbt">重置条件</button>
+              </li>
+            </ul>
+          </div>
+          <div class="online-order-table">
+            <table>
+              <tr>
+                <th width="18%">单据号</th>
+                <th width="8%">会员</th>
+                <th width="9%">消费时间</th>
+                <th width="11%">消费类型</th>
+                <th width="10%">付款金额</th>
+                <th width="12%">操作员</th>
+                <th width="11%">店名</th>
+                <th width="21%">操作</th>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>800001<br />
+                  黎岩峰</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>消费类型</td>
+                <td>2052.00</td>
+                <td>黎岩峰</td>
+                <td>湖北纳新网络</td>
+                <td><button type="button" class="add-bt online-order-bt bt-xq">详情</button><button type="button"
+                    class="add-bt online-order-bt bt-dy">打印</button><button type="button"
+                    class="add-bt online-order-bt bt-cd">撤单</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <!--积分兑换记录 end-->
+        <!--会员退货 start-->
+        <div class="lomoTab-warp hide">
+          <div class="online-order-form">
+            <ul>
+              <li>
+                <input name="" type="text" placeholder="请输入单据号/会员卡号" class="order-form-input" />
+                <button type="button" class="add-bt order-form-bt">查询</button>
+              </li>
+            </ul>
+          </div>
+          <div class="vip-th-left">
+            <table class="dataTable">
+              <tr>
+                <th width="30%">单据号</th>
+                <th width="25%">消费时间</th>
+                <th width="17%">会员</th>
+                <th width="15%">实付金额</th>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>黎岩峰<br />25645123</td>
+                <td>55.55</td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>黎岩峰<br />25645123</td>
+                <td>55.55</td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>黎岩峰<br />25645123</td>
+                <td>55.55</td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>黎岩峰<br />25645123</td>
+                <td>55.55</td>
+              </tr>
+              <tr>
+                <td>XF20156451256451231</td>
+                <td>2019-6-12 12:23:28</td>
+                <td>黎岩峰<br />25645123</td>
+                <td>55.55</td>
+              </tr>
+            </table>
+          </div>
+          <div class="vip-th-right">
+            <table class="dataTable">
+              <tr>
+                <th>类型</th>
+                <th>批次号</th>
+                <th>名称</th>
+                <th>数量</th>
+                <th>可退<br />数量</th>
+                <th>退货<br />数量</th>
+                <th>单价</th>
+                <th>金额</th>
+              </tr>
+              <tr>
+                <td>普通</td>
+                <td>258758</td>
+                <td>书包</td>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>55.55</td>
+                <td>66.66</td>
+              </tr>
+              <tr>
+                <td>普通</td>
+                <td>258758</td>
+                <td>书包</td>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>55.55</td>
+                <td>66.66</td>
+              </tr>
+              <tr>
+                <td>普通</td>
+                <td>258758</td>
+                <td>书包</td>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>55.55</td>
+                <td>66.66</td>
+              </tr>
+              <tr>
+                <td>普通</td>
+                <td>258758</td>
+                <td>书包</td>
+                <td>3</td>
+                <td>3</td>
+                <td>3</td>
+                <td>55.55</td>
+                <td>66.66</td>
+              </tr>
+            </table>
+            <div class="vip-th-thje">退货金额：20.00</div>
+            <dl class="vip-th-info">
+              <dt>备注</dt>
+              <dd><textarea name="" cols="" rows="" class="th-info"></textarea>
+                <div class="vip-th-form">
+                  <button type="button" class="add-bt">确定交班</button>
+                  <span><input name="" type="checkbox" value="" id="color-input-red" />
+                    <label for="color-input-red"></label>
+                    打印</span></div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <!--会员退货 end-->
+      </div>
+      <!--单据管理 end-->
+    </div>
+    <!-- 主体  end -->
+    <!-- 功能弹出框 start-->
+    <div>
+      <!--撤单 start-->
+      <div id="lomo-cd" class="lomo-gd order-cd hide">
+        <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>您确定要撤消此单</div>
+        <div class="order-cd-form">
+          <ul>
+            <li><em>单号：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span><em>折后金额：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span></li>
+            <li><em>余额支付：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span><em>现金支付：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span></li>
+            <li><em>刷卡支付：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span><em>积分支付：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span></li>
+            <li><em>支付方式：</em><span>
+                <select name="" class="cd-form-select">
+                  <option>普通支付</option>
+                </select>
+              </span><em>支付宝微信：</em><span>
+                <input name="" type="text" class="cd-form-input" />
+              </span></li>
+            <li><em>撤单备注：</em><span>
+                <textarea name="" class="cd-form-bz"></textarea>
+              </span></li>
+            <li><em>撤单密码：</em><span>
+                <input name="" type="text" class="cd-form-input pw" />
+              </span></li>
+            <li style="text-align:right;"><button type="button" class="submit-bt">立即提交</button><button type="button"
+                class="submit-bt-clear">重置</button></li>
+          </ul>
+        </div>
+      </div>
+      <!--撤单 end-->
+      <!-- 订单详情 start -->
+      <div id="lomo-xq" class="lomo-gd order-cd cd-info hide">
+        <div class="divTitle"><span><img src=".../../Theme/images/icon010.png" alt=""></span>订单详情</div>
+        <div class="order-cd-info">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable">
+            <tr>
+              <td width="49%">会员：李洋（NO.800001）</td>
+              <td width="49%">状态：正常</td>
+            </tr>
+            <tr>
+              <td>等级：白金会员</td>
+              <td>所属门店：纳新总店</td>
+            </tr>
+          </table>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable" style="margin-top:30px;">
+            <tr>
+              <td width="49%"><i>单据号：</i><em>896578945212</em></td>
+              <td width="49%"><i>订单日期：</i><em>2019-6-20 12:48:27</em></td>
+            </tr>
+            <tr>
+              <td><i>总金额：</i><em>2000元</em></td>
+              <td><i>获得积分：</i><em>200分</em></td>
+            </tr>
+            <tr>
+              <td><i>现金支付：</i><em>2000元</em></td>
+              <td><i>余额支付：</i><em>200分</em></td>
+            </tr>
+            <tr>
+              <td><i>刷卡支付：</i><em>2000元</em></td>
+              <td><i>积分支付：</i><em>200分</em></td>
+            </tr>
+            <tr>
+              <td><i>支付宝支付：</i><em>2000元</em></td>
+              <td><i>微信支付：</i><em>200分</em></td>
+            </tr>
+            <tr>
+              <td><i>产品种类：</i><em>2000元</em></td>
+              <td><i>产品总数：</i><em>200分</em></td>
+            </tr>
+            <tr>
+              <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+              <td><i>订单备注：</i></td>
+              <td></td>
+            </tr>
+          </table>
+          <div class="order-cdTable2Sco">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable2"
+              style="margin-top:20px;">
+              <tr>
+                <th width="16%">商品类型</th>
+                <th width="17%">商品编号</th>
+                <th width="17%">商品名称</th>
+                <th width="15%">折后金额</th>
+                <th width="10%">商品数量</th>
+                <th width="10%">可退数量</th>
+                <th width="10%">总金额</th>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>12345.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>12334.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>13345.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>13444.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>20022.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>20022.00</td>
+              </tr>
+              <tr>
+                <td>商品类型</td>
+                <td>896578945212</td>
+                <td>支付宝支付</td>
+                <td>2000.00</td>
+                <td>1222</td>
+                <td>3333</td>
+                <td>20002.00</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- 订单详情 end -->
+    </div>
+    <!-- 功能弹出框 end-->
+    <!--遮罩层 start-->
+    <div class="lomo-mask-body hide"></div>
+    <!--遮罩层 end-->
+  </div>
+</body>
+<script src="../js/jquery3.4.1.min.js"></script>
+<script src="../layui/layui.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/management.js"></script>
+
+</html>
