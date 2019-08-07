@@ -59,6 +59,7 @@ LuckVipsoft.api = {
     GetExpressList: '/api/GeneralInterface/GetExpressList',//快递公司列表（分页）    
     GetPreWriteOffOrder: '/api/GeneralInterface/GetPreWriteOffOrder',//查询待核销商品订单返回订单详情
     GetExpressInfo:'/api/GeneralInterface/GetExpressInfo',//快递物流节点跟踪
+    DeliverMallOrder:'/api/GeneralInterface/DeliverMallOrder',//
 
     /*卡券核销 */
     GetConponLogListPage: '/api/GeneralInterface/GetConponLogListPage',//根据优惠券ID或者卡号查询优惠券
@@ -71,6 +72,7 @@ LuckVipsoft.api = {
     GetTimesoftSelData: '/api/GeneralInterface/GetTimesoftSelData/',//获取时间段
     CreatResOrder: '/api/GeneralInterface/CreatResOrder/',//新增预约
     GetOrderInfo: '/api/GeneralInterface/GetOrderInfo/',//订单详情
+    ReservationOpenOrder: '/api/GeneralInterface/ReservationOpenOrder/',//预约订单开单
 
 
     GetMemLevelByID: '/api/GeneralInterface/GetMemLevelByID',//根据ID获取等级信息

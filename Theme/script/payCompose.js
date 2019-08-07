@@ -34,14 +34,14 @@ $(function(){
 
     template.defaults.imports.fnPayItemAmount= function (code) {
         switch(code){
-            case '002': //余额
-                return ''//'<small>可用余额¥50.00</small>'        
-            case '003': //积分
-                return ''//'<small>可用积分50.00</small>'        
-            case '999': //优惠券
+            case '002':     //余额
+                return ''   //'<small>可用余额¥50.00</small>'        
+            case '003':     //积分
+                return ''   //'<small>可用积分50.00</small>'        
+            case '999':     //优惠券
                 return '<em class="paySelectCoupon">重选优惠券</em>'        
-            case '001': //现金
-                return '<small>找零¥50.00</small>'        
+            case '001':     //现金
+                return '<small>找零¥ 50.00 </small>'        
             default:
                 return ''          
         }    
@@ -49,7 +49,7 @@ $(function(){
 })
 
 
-/* 购物车结算流程,调用原则.外部调用不允许修改内部变量,必须写内部方法修改变量 */
+/* 购物车结算计算流程,调用修改原则.外部调用不允许修改内部变量,必须写内部方法修改变量 */
 class payCompose
 {
     constructor(config){
@@ -76,13 +76,12 @@ class payCompose
         this.payItem =[]
         this.curPayItem =''
         this.remark =''
+        this.conpon = []
        
 
         this.result = {         
             allPayMoney  :0.00 ,            //支付方式总金额
-
             modificationInfo :{}  ,          //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
-
             amountDiscountMoney : 0.00, 	//会员折扣总金额 (会出现比原价高时的情况)
             goodsNum : 0, 		            //商品数量
             amountPoint	: 0.00, 			//获得积分
@@ -97,6 +96,11 @@ class payCompose
         }
         return true 
     }
+
+    //待付金额
+    //总金额
+    //优惠金额
+    //支付方式金额
 
     setRemark(remark)
     {
@@ -131,7 +135,7 @@ class payCompose
         if( that.curPayItem!= code) //当前选中code 和提交code 不一致
         {
             return false 
-        }   
+        }
        
         let item = Enumerable.From(that.payItem).Where(x=>x.code == code).FirstOrDefault();
         if(item==undefined)
@@ -141,7 +145,8 @@ class payCompose
         else
         {
             that.curPayItem = code   //选中支付方式            
-            //排除自己还能输入的金额         
+            //排除自己还能输入的金额    
+                 
             item.amount= parseFloat(m)
             that.finish();
             return true
@@ -162,11 +167,10 @@ class payCompose
             if(code == '999'){ that.finish();return false;}
 
             //应收金额
-            let amount = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done().toFixed(2)
+            let amount = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
             let addPrice = 0.00
             $.each(that.payItem,function(index,ele){
-                if(ele.code != code ){
-                    console.log('item.amount',ele.amount)
+                if(ele.code != code ){                   
                     let m =  math.chain(addPrice).add(ele.amount).done()
                     addPrice = m
                 }
@@ -220,16 +224,25 @@ class payCompose
             }           
             ////////////// 微信支付宝 二选一////////////
             that.curPayItem = payConfigItem.code
-            that.payItem.push({code: payConfigItem.code , name : payConfigItem.name, amount: 0.00})     
+
+            if(code=='999')
+            {
+                that.payItem.unshift({code: payConfigItem.code , name : payConfigItem.name, amount: 0.00})
+            }
+            else
+            {
+                that.payItem.push({code: payConfigItem.code , name : payConfigItem.name, amount: 0.00})     
+            }
         }
         else
         {
-
             let index = that.payItem.indexOf(item)
             that.payItem.splice(index, 1) 
+             //删除优惠券集合
+            if(code=='999'){ that.conpon =[] }
+
 
             if(that.payItem.length>0){
-                console.log(that.payItem)
                 let lastItem = Enumerable.From(that.payItem).LastOrDefault();                
                 that.curPayItem = lastItem.code
             }
@@ -653,10 +666,10 @@ class payCompose
             }
         })
 
-        that.result.amountDiscountMoney = amountDiscountMoney.toFixed(4)
+        that.result.amountDiscountMoney = that.moneyPrecision(amountDiscountMoney) //amountDiscountMoney.toFixed(4)
         that.result.goodsNum = goodsNum
-        that.result.amountPoint = amountPoint.toFixed(4)
-        that.result.amountMoney = amountMoney.toFixed(4)
+        that.result.amountPoint = that.pointPrecision (amountPoint)   //amountPoint.toFixed(4)
+        that.result.amountMoney = that.moneyPrecision(amountDiscountMoney)      // amountMoney.toFixed(4)
 
         console.log('会员计算结果 ==>', that.result)
         resolve("setpMember");
@@ -783,8 +796,12 @@ class payCompose
     // 抹零开关
     settingZeroAmount()
     {
-        // let that =  this.amountMoney - this.amountActivityMoney  - that.result.modification
-        // that.result.zeroAmount         
+        let that =this        
+        that.result.isZeroAmount = (that.result.isZeroAmount == 1)? 0 : 1
+        
+        //清除所有支付项的金额
+        that.clearPayItemAmunt()
+        that.finish()
         return true 
     }
        
@@ -808,11 +825,10 @@ class payCompose
         if(that.result.isZeroAmount == 1){
             let amountMoney = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
             // that.result.amountMoney - that.result.amountActivityMoney  - that.result.amountModifyMoney            
-            let surAmountMoney = that.moneyPrecision(amountMoney)
+            let surAmountMoney = that.zeroPrecision(amountMoney)
             that.result.zeroAmount = surAmountMoney
         }
-        else
-        {
+        else{
             that.result.zeroAmount = 0.00
         }
 
@@ -885,7 +901,6 @@ class payCompose
         let that =this 
         let maxMoney =math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).done()
         
-
         amountModifyMoney = that.floor(amountModifyMoney)
 
         if(amountModifyMoney<=0) { return false }
@@ -894,9 +909,11 @@ class payCompose
         that.result.amountModifyMoney = amountModifyMoney 
         that.result.modificationInfo = modificationInfo
 
+        //清除所有支付项的金额
+        that.clearPayItemAmunt()
         that.finish()
         return true
-    } 
+    }
 
     //取消整单优惠
     cancelModify()
@@ -904,35 +921,49 @@ class payCompose
         let that = this    
         that.result.modificationInfo = {} 
         that.result.amountModifyMoney =0.00
+        //清除所有支付项的金额
+        that.clearPayItemAmunt()
         that.finish()
         return true
+    }
+    //清除所有支付项的金额
+    clearPayItemAmunt()
+    {
+        let that =this
+
+        //删除支付方式的所有金额
+        this.result.allPayMoney = 0.00        
+        $.each(that.payItem,function(index,item){
+            item.amount = 0.00
+        })
+
+        //删除优惠券
+        that.conpon = []
     }
 
     //前往结算
     goPay(callback)
     {
         let that =this    
+        //整单优惠
         this.result.modificationInfo = {}
         that.result.amountModifyMoney =0.00    
+        //当前支付总金额  
         this.result.allPayMoney = 0.00
-
         //抹零金额   
-        that.result.isZeroAmount= 0,
-        that.result.zeroAmount =0.00                    
-        this.chooseConpon = {}   
-
+        that.result.isZeroAmount = 0
+        that.result.zeroAmount = 0.00    
+        //支付方式
         this.payItem =[]
         this.curPayItem =''
-        //当前支付总金额
-    
+        //优惠券
+        this.conpon = []
             
-        if(that.chooseMember.Id == undefined)
-        {
+        if(that.chooseMember.Id == undefined){
             that.selectPay(that.config.SankeDefaultPayment)	
             that.curPayItem = that.config.SankeDefaultPayment  
         }
-        else
-        {
+        else{
             that.selectPay(that.config.MemberDefaultPayment)	
             that.curPayItem = that.config.MemberDefaultPayment  
         }
@@ -942,7 +973,6 @@ class payCompose
         }
         return false
     }
-
     
     ////////////////////////////功能函数////////////////////////////
     //日期格式化
@@ -969,15 +999,77 @@ class payCompose
         return Math.floor(num * 100) / 100 
     }
 
-    //积分保留处理方式
+    //全局积分保留处理方式
     pointPrecision (num)
-    {      
-        return num.toFixed(4)
+    {        
+        let that =this 
+        switch(that.config.PointPrecision)       
+        {
+            case 0: //保留2位
+                return  num.toFixed(2)         
+            case 1://保留整数（四舍五入）
+                return  Math.round(num)
+            case 2://保留整数
+                return  parseInt(num)   
+            case 3://保留1位
+                return  num.toFixed(1)     
+            case 4://保留3位
+                return  num.toFixed(3)
+            default :   
+                return  num.toFixed(3)      
+        }
+    }
+    //全局金额
+    moneyPrecision(num)
+    {  
+        let that =this  
+        switch(that.config.MoneyPrecision)       
+        {
+            case 0:
+                return  num.toFixed(2)         
+            case 1:
+                return parseInt( Math.floor(num * 10) / 10 )
+            case 2:
+                return parseInt(num)   
+            case 3:
+                return  num.toFixed(1)      
+            default :   
+                return num.toFixed(2)      
+        }
     }
 
-    //结算金额处理方式 (抹零计算规则)
-    moneyPrecision (num)
+    //结算金额处理方式 (抹零计算规则) 
+    zeroPrecision(num)
     {
-        return num.toFixed(2)
+        let that =this 
+        //IsAllowModifyOrderTotal     
+        if(that.config.IsAllowModifyOrderTotal == 1 && that.config.ZeroErasingUnit >0) 
+        {
+            switch(that.config.ZeroErasingUnit)
+            {
+                case 0: //不抹
+                {
+                    return 0
+                }
+                case 1: //分
+                {
+                   let a = parseInt(num*10)   
+                   return (a/10).toFixed(2)        
+                }              
+                case 2: //角                                  
+                {
+                    let b = parseInt(num)   
+                    return (num - b).toFixed(2)    
+                }
+                case 3://元
+                {
+                    let c =  parseInt(num/10)
+                    return (c*10).toFixed(2) 
+                }
+                default:
+                return 0
+            }          
+        }
+        return 0
     }
 }

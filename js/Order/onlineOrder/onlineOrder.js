@@ -8,7 +8,6 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
         information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
         staffClass: $.session.get("staffClass") ? $.session.get("staffClass") : null,
-        staffInf: $.session.get("staffInf") ? $.session.get("staffInf") : null,
     }
     //时间切换
     $(".online-order-time li").on("click", function () {
@@ -197,11 +196,11 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             }
                             return _html
                         }
-                        if (_this.list[i].Status == 0) {
+                        if (_this.list[i].Status == 0||_this.list[i].Status == 8) {
                             var btn = ['确定']
                         } else if (_this.list[i].Status == 1) {
                             var btn = ['发货', '取消']
-                        } else if (_this.list[i].Status > 1) {
+                        } else if (_this.list[i].Status > 1 && _this.list[i].Status<8) {
                             var btn = ['查看物流', '取消']
                         }
                         layer.open({
@@ -230,23 +229,23 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                                     layer.close(index)
                                 }
                             },
-                            success:function(layero,index){
-                              $('#CreateTime').text(cashier.dateFormat(_this.list[i].CreateTime));
-                              $('#BillCode').text(res.data.BillCode);
-                              $('#CardID').text(res.data.CardID);
-                              $('#CardName').text(res.data.CardName);
-                              $('#LevelName').text(res.data.LevelName);
-                              $('#ShopName').text(res.data.ShopName);
-                              $('#Consignee').text(res.data.Consignee?res.data.Consignee:"");
-                              $('#ConsigneeMobile').text(res.data.ConsigneeMobile?res.data.ConsigneeMobile:"");
-                              $('#Address').text(res.data.Address?res.data.Address:"");
-                              $('#ExpressNo').text(res.data.ExpressNo?res.data.ExpressNo:"");
-                              $('#ExpressName').text(res.data.ExpressName?res.data.ExpressName:"");
-                              $('#Remark').text(res.data.ExpressName?res.data.Remark:"");
-                              $('#TotalMoney').text('￥'+res.data.TotalMoney?res.data.TotalMoney:"");
-                              $('#Postage').text(res.data.Postage?res.data.Postage:"");
-                              $('#Payments').html(_this._Payment(res.data.Payments ? res.data.Payments : []));
-                              $('#details').html(_detailed(details?details:[]));
+                            success: function (layero, index) {
+                                $('#CreateTime').text(cashier.dateFormat(_this.list[i].CreateTime));
+                                $('#BillCode').text(res.data.BillCode);
+                                $('#CardID').text(res.data.CardID);
+                                $('#CardName').text(res.data.CardName);
+                                $('#LevelName').text(res.data.LevelName);
+                                $('#ShopName').text(res.data.ShopName);
+                                $('#Consignee').text(res.data.Consignee ? res.data.Consignee : "");
+                                $('#ConsigneeMobile').text(res.data.ConsigneeMobile ? res.data.ConsigneeMobile : "");
+                                $('#Address').text(res.data.Address ? res.data.Address : "");
+                                $('#ExpressNo').text(res.data.ExpressNo ? res.data.ExpressNo : "");
+                                $('#ExpressName').text(res.data.ExpressName ? res.data.ExpressName : "");
+                                $('#Remark').text(res.data.ExpressName ? res.data.Remark : "");
+                                $('#TotalMoney').text('￥' +( res.data.TotalMoney ? res.data.TotalMoney : ""));
+                                $('#Postage').text(res.data.Postage ? res.data.Postage : "");
+                                $('#Payments').html(_this._Payment(res.data.Payments ? res.data.Payments : []));
+                                $('#details').html(_detailed(details ? details : []));
                             }
                         });
                     }
@@ -474,13 +473,13 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                         skin: "lomo-ordinary",
                         content: html,
                         yes: function (index, layero) {
-                            _this.destruction(0,res.data.BillCode)
+                            _this.destruction(0, res.data.BillCode)
                             return false
                         },
                         success: function () {
                             $('body').on('click', '.lomo-commodities-hx', function () {
-                                var i=$(this).index();
-                                _this.destruction(1,details[i].GoodsCode);
+                                var i = $(this).index();
+                                _this.destruction(1, details[i].GoodsCode);
                             });
                         }
                     });
@@ -495,7 +494,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             var html = '';
             layer.msg('请选择提成员工')
             //员工树形列表
-            if (user.staffClass && user.staffInf) {
+            if (user.staffClass && user.staffInf[0]) {
                 $.each(user.staffClass, function (index, item) {
                     html += '<div class="layui-collapse">'
                     html += '<div class="layui-colla-item">'
@@ -515,7 +514,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             //已选择员工列表
             var grid_conpon = table.render({
                 elem: '#List',
-                data: user.staffInf,
+                data: user.staffInf[0],
                 cellMinWidth: 95,
                 cols: [
                     [
@@ -547,7 +546,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 btnAlign: "r",
                 content: $(".lomo-xztcyg"),
                 yes: function (index, layero) {
-                    var staffs=[{StaffId:'',CommissionMoney:10.0,Remark:''}]
+                    var staffs = [{ StaffId: '', CommissionMoney: 10.0, Remark: '' }]
                     var param = {
                         WriteOffType: type,
                         WriteOffId: data,
@@ -728,15 +727,14 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             });
         },
         //查看物流
-        logistics: function (ExpressNo, ExpressNo) {
-            console.log(ExpressNo)
-            $.http.post(LuckVipsoft.api.GetExpressInfo, { ExpressNumber: ExpressNo, ExpressType: ExpressNo}, user.token, function (res) {
+        logistics: function (ExpressNo, Expresscode) {
+            $.http.post(LuckVipsoft.api.GetExpressInfo, { ExpressNumber: ExpressNo, ExpressType: Expresscode }, user.token, function (res) {
                 if (res.status == 1) {
                     var html = `<div><h2>${res.data[0].number}</h2></div>`
                     var log = function (data) {
                         var _html = ''
                         data.forEach(item => {
-                            _html +=`<li class="layui-timeline-item">
+                            _html += `<li class="layui-timeline-item">
                             <i class="layui-icon layui-timeline-axis"></i>
                              <div class="layui-timeline-content layui-text">
                              <h3 class="layui-timeline-title">${item.time}</h3>

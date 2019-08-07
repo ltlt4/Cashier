@@ -62,7 +62,7 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
             this.search();
             this.getSelShop();
             this.details();
-            this.cancelOrder();
+            this.editOrder();
         },
         tbList: function () {
             _this = this;
@@ -94,9 +94,11 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
                                    <td>${_this.orderStatus(data[i].Status)}</td>
                                    <td>${data[i].ShopName}</td>
                                    <td>
-                               <button type="button" class="add-bt online-order-bt orange detailsBtn">详情</button>
-                                <button type="button" class="add-bt online-order-bt bt-g">开单</button>`
-                                if (data[i].PaymentType==2||data[i].PaymentType==3) {
+                               <button type="button" class="add-bt online-order-bt orange detailsBtn">详情</button>`                                
+                                if (data[i].Status == 4 && data[i].PaymentType==1||data[i].PaymentType==2) {//微信支付
+                                    html+='<button type="button" class="add-bt online-order-bt bt-g openoder">开单</button>'
+                                }else if ((data[i].Status == 1||data[i].Status == 4) && data[i].PaymentType==3) {
+                                    html+='<button type="button" class="add-bt online-order-bt bt-g adorder">开单(到店)</button>'
                                     html+= '<button type="button" class="add-bt online-order-bt gray">取消</button>'
                                 }
                                 html+= '</td></tr>'
@@ -232,21 +234,40 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
                 });
             }
         },
-        cancelOrder:function () {
+        editOrder:function () {
             var _this=this;
+            //取消订单
             $('#order').on('click','.gray',function(){
                 var index = $(this).index("#order .gray")
                 $.luck.confirm("确定取消此预约订单吗？",function () {
                     $.http.post(LuckVipsoft.api.CancelOrder, {id:_this.list[index].Id}, user.token, function (res) {
                         if (res.status==1) {
-                            $.luck.success(function () {
+                            $.luck.success(res.msg,function () {
                                 order.tbList();
                             })
                         }else{
-
+                            $.luck.error(res.msg);
                         }
                     });
                 })
+            });
+            //跳转页面
+            $('#order').on('click','.openoder',function(){
+                var index = $(this).index("#order .openoder")
+                parent.$("iframe").attr('src',"../../../Areas/Member/cashRegister/cashRegister.html?id="+_this.list[index].Id+"&m=1")         
+            });
+            //直接生成订单
+            $('#order').on('click','.adorder',function(){
+                var index = $(this).index("#order .adorder")
+                $.http.post(LuckVipsoft.api.ReservationOpenOrder, {OrderID:_this.list[index].Id}, user.token, function (res) {
+                    if (res.status==1) {
+                        $.luck.success(res.msg,function () {
+                            order.tbList();
+                        })
+                    }else{
+                        $.luck.error(res.msg);
+                    }
+                });
             });
         },
         details:function(){
@@ -327,25 +348,25 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
 
                         layer.open({
                             type: 1,
-                            title: '单据详情',
-                            closeBtn: 1,
-                            shadeClose: false,
-                            shade: 0.3,
-                            btn: ['取消'],
-                            btnAlign: "r",
-                            area: ['880px', '600px'],
-                            maxmin: false,//禁用最大化，最小化按钮
-                            resize: false,//禁用调整大小
-                            move: false,//禁止拖拽
-                            skin: "lomo-details",
-                            content: html
-                        });
+                                    title: '单据详情',
+                                closeBtn: 1,
+                                shadeClose: false,
+                                shade: 0.3,
+                                btn: ['取消'],
+                                btnAlign: "r",
+                                area: ['880px', '600px'],
+                                maxmin: false,//禁用最大化，最小化按钮
+                                resize: false,//禁用调整大小
+                                move: false,//禁止拖拽
+                                skin: "lomo-details",
+                                content: html
+                            });
 
-                    }
+                            }
+                    });
                 });
-            });
-        }
-    }
+            }
+            }
 
 
     order.start();
@@ -356,40 +377,40 @@ layui.use(['laydate', 'laypage', 'form', 'jquery'], function () {
         
     
     laydate.render({
-        elem: '#timeFrame',
-        range: true,
-        theme: '#41c060',
-        done: function (value, date, endDate) {
-            order.STime = value.substring(0, 10);
+    elem: '#timeFrame',
+                            range: true,
+                        theme: '#41c060',
+                        done: function (value, date, endDate) {
+                            order.STime = value.substring(0, 10);
             order.ETime = value.substring(13);
         }
-    });
+        });
 
     $("#addRes").click(function () {
         layer.open({
-            type: 1,
-            title: '单据详情',
-            closeBtn: 1,
-            shadeClose: false,
-            shade: 0.3,
-            btnAlign: "r",
-            area: ['880px', '560px'],
-            maxmin: false,//禁用最大化，最小化按钮
-            resize: false,//禁用调整大小
-            move: false,//禁止拖拽
-            skin: "lomo-details",
-            content: $("#lomo-yuyue"),
-        });
-    });        
+                            type: 1,
+                                title: '单据详情',
+                                    closeBtn: 1,
+                                shadeClose: false,
+                                    shade: 0.3,
+                                    btnAlign: "r",
+                                    area: ['880px', '560px'],
+                                maxmin: false,//禁用最大化，最小化按钮
+                                resize: false,//禁用调整大小
+                                move: false,//禁止拖拽
+                                skin: "lomo-details",
+                                content: $("#lomo-yuyue"),
+                    });
+                            });        
     
-    $("#cancelBtn").click(function () {
+            $("#cancelBtn").click(function () {
         layer.closeAll('page');
-    })
+        })
 
     function goDetail(id) {
         $.http.post(LuckVipsoft.api.GetOrderInfo, {id:id}, user.token, function (res) {
             console.log(res.data)
-        });
+            });
     }
-})
+    })
 

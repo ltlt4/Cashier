@@ -714,7 +714,15 @@
 <!--结算信息-->
 <script id="payInfoTmp" type="text/html">
 	<ul class="cashier-num-a">
-		<li><span class="inline">应收<em></em></span><b>¥{{amount}}</b></li>
+		<li><span class="inline">应收
+			{{if isOpenZero == '1'}}
+				{{if isZero == '1' }}
+				<em class='settingZero active' ></em>			
+				{{else}}
+				<em class='settingZero' ></em>
+				{{/if}}
+			{{/if}}
+		</span><b>¥{{amount}}</b></li>
 		<li><span>待收</span><b>¥{{paid}}</b></li>
 		<li><span>优惠</span><b>¥{{discount}}</b></li>
 	</ul>
@@ -724,9 +732,9 @@
 				<li data-code='{{item.code}}' class="active">
 					<span>{{item.name }}<b> 
 						{{if item.code =='999'}}
-						<input readonly="readonly" value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' /></b>
+						<input readonly="readonly" value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
 						{{else}}
-						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}'/></b>
+						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
 						{{/if}}
 					</span>
 					{{@ item.code | fnPayItemAmount}}
@@ -734,7 +742,7 @@
 			{{else}}
 				<li data-code={{item.code}}>
 					<span>{{item.name }}<b> 
-						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}'/></b></span>
+						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/></b></span>
 					{{@ item.code | fnPayItemAmount}}
 				</li>
 			{{/if}}

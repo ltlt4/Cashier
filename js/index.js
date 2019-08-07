@@ -25,7 +25,6 @@ layui.use(['layer', 'jquery', 'form', 'table'], function () {
         information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
         lock: $.session.get("lock") ? $.session.get("lock") : null
     };
-    
 
     //打开左侧菜单
     $(".lomo-top-logo a").on("click", cashier.throttle(function () {

@@ -165,21 +165,21 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                         }
                     };
                 },
-                returnGoods:function(value, item){
-                    if (value != ""){
+                returnGoods: function (value, item) {
+                    if (value != "") {
                         var reg = /^[1-9]\d*$/;
                         if (!reg.test(value)) {
-                         return '只能输入大于0的整数'
+                            return '只能输入大于0的整数'
                         }
                     }
                 },
                 returnNumber: function (value, item) {
                     if (value != "") {
                         var productNumber = parseInt($("#productNumber").text());
-                        if(value>productNumber){
+                        if (value > productNumber) {
                             return "退货数量不能大于最大退货数"
                         }
-                        
+
                     }
                 }
             });
@@ -360,6 +360,11 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                     if (res.status == 1) {
                         if (type == 0) {
                             var html = that.consumptionDetails(res.data);
+                            if (res.data.Order.RevokeState == 0) {
+                                var btn=['取消','整单撤单']
+                            }else{
+                                var btn=['确认']
+                            }
                         } else if (type == 1) {
                             var details = res.data;
                             var preferential = function (data) {
@@ -369,6 +374,11 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 }
                                 return html;
                             };
+                            if (res.data.RevokeState == 0) {
+                                var btn=['取消','整单撤单']
+                            }else{
+                                var btn=['确认']
+                            }
                             var html = `<div class="lomo-gd order-cd cd-info" style="margin: 0;width: 100%;height: 100%;">
                         <div class="order-cd-info">
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable"
@@ -432,6 +442,11 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 }
                                 return _html
                             }
+                            if (res.data.Order.RevokeState == 0) {
+                                var btn=['取消','整单撤单']
+                            }else{
+                                var btn=['确认']
+                            }
                             var html = `<div class="lomo-gd order-cd cd-info"  style="margin: 0;width: 100%;height: 100%;"><div class="order-cd-info">
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable"style="background: #F2F2F2;">
                                 <tr>
@@ -479,6 +494,11 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                     </tr>`
                                 }
                                 return _html
+                            }
+                            if (res.data.Order.RevokeState == 0) {
+                                var btn=['取消','整单撤单']
+                            }else{
+                                var btn=['确认']
                             }
                             var html = `<div class="lomo-gd order-cd cd-info"  style="margin: 0;width: 100%;height: 100%;">
                             <div class="order-cd-info">
@@ -537,13 +557,14 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                             </div>
                           </div>`
                         }
+
                         layer.open({
                             type: 1,
                             title: '单据详情',
                             closeBtn: 1,
                             shadeClose: false,
                             shade: 0.3,
-                            btn: ['取消', '整单撤单'],
+                            btn: btn,
                             btnAlign: "r",
                             area: ['880px', '660px'],
                             maxmin: false,//禁用最大化，最小化按钮
@@ -646,11 +667,11 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
         }
         //消费订单退货
         returnGoods(data) {
-            var that=this;
+            var that = this;
             var opt = that.payType(0, user.PaymentConfig);
             $("#productName").text(data.GoodsName);
             $("#productNumber").text(data.unumber);
-            $("select[name='PaymentCode2']").html( that.PaymentType(opt));
+            $("select[name='PaymentCode2']").html(that.PaymentType(opt));
             layer.open({
                 type: 1,
                 title: '请填写退货数量，并确认退货',
@@ -669,9 +690,9 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                     layer.close(index);
                 },
                 btn2: function (index, layero) {
-                      return false;
+                    return false;
                 },
-                success: function (layero,index) {
+                success: function (layero, index) {
                     layero.addClass('layui-form');
                     layero.find('.layui-layer-btn1').attr({
                         'lay-filter': 'good',
@@ -693,12 +714,12 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                     form.on('submit(good)', function (data2) {
                         var param = {
                             OrderID: data.orderId,
-                            GoodsType:data.GoodsType,
+                            GoodsType: data.GoodsType,
                             GoodsID: data.GoodsCode,
                             Number: data2.field.returnNumber,
-                            TotalMoney:$("#shouldRetire").text().split("￥")[1],
-                            Source:1,
-                            PaymentCode:data2.field.PaymentCode2 ? data2.field.PaymentCode2 : ""
+                            TotalMoney: $("#shouldRetire").text().split("￥")[1],
+                            Source: 1,
+                            PaymentCode: data2.field.PaymentCode2 ? data2.field.PaymentCode2 : ""
                         }
                         $.http.post(that.url.returnGoods, param, user.token, function (res) {
                             layer.msg(res.msg);
@@ -787,7 +808,7 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                         ${that.PaymentType(opt)}
                         </select></div></li>
                         <li class="layui-form-item"><em>超级密码：</em><span><input name="pwd" type="password" class="cd-form-input pw" lay-verify="required" /></span></li>
-                        <li class="layui-form-item"><em>撤单备注：</em><textarea name="remark" class="cd-form-bz"></textarea></li>
+                        <li class="layui-form-item"><em style="float:left">撤单备注：</em><textarea name="remark" class="cd-form-bz"></textarea></li>
                       </ul>
                     </div>
                   </div>`,

@@ -297,16 +297,21 @@ layui.use(['layer', 'jquery', "form"], function () {
                 $.session.set('LoginMsg', param);
                 $.session.set('Cashier_Token', res.data.Token)
                 $.session.set('Cashier_User', res.data);
+                //数据初始化
                 var MemberMethod = {
                     start: function () {
                         var _this = this
-                        _this.belongShop()
-                            .then(_this.staffClass())
-                            .then(_this.levelList())
-                            .then(_this.sysArgument())
-                            .then(function(){
+                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList()])
+                            .then(function (res) {
+                                // var staffInf={
+                                //     staffInfCard:res[0],
+                                //     staffInfConsump:res[1],
+                                //     staffInfcommodity:res[2],
+                                //     staffInfRecharge:res[3]
+                                // }
+                                // $.session.set('staffInf', staffInf);
                                 window.location.href = "../../Views/home/index.html";
-                            });
+                            })
                     },
                     /*获取所属店铺信息*/
                     belongShop: function () {
@@ -330,8 +335,63 @@ layui.use(['layer', 'jquery', "form"], function () {
                             });
                         });
                     },
+                    /*获取售卡提成员工*/
+                    staffInfCard: function () {
+                        return new Promise(function (resolve, reject) {
+                            var param = {
+                                StaffType: 0,
+                                StaffName: '',
+                            }
+                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    resolve(res.data);
+                                }
+                            });
+                        });
+                    },
+                    /*快速消费提成*/
+                    staffInfConsump: function () {
+                        return new Promise(function (resolve, reject) {
+                            var param = {
+                                StaffType: 1,
+                                StaffName: '',
+                            }
+                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    resolve(res.data);
+                                }
+                            });
+                        });
+                    },
+                    /*商品消费提成*/
+                    staffInfcommodity: function () {
+                        return new Promise(function (resolve, reject) {
+                            var param = {
+                                StaffType: 2,
+                                StaffName: '',
+                            }
+                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                                if (res.status == 1) {
+                                    resolve(res.data);
+                                }
+                            });
+                        });
+                    },
+                    /*充值充次提成*/
+                    staffInfRecharge: function () {
+                        return new Promise(function (resolve, reject) {
+                            var param = {
+                                StaffType: 3,
+                                StaffName: '',
+                            }
+                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                                if (res.status == 1) {
 
-
+                                    resolve(res.data);
+                                }
+                            });
+                        });
+                    },
                     /*获取等级信息*/
                     levelList: function () {
                         return new Promise(function (resolve, reject) {

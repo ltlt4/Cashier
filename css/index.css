@@ -4372,7 +4372,7 @@
 	text-align: center;
 	width: 66%;
 	margin: 0 auto;
-	height: 51px;
+	height: 53px;
 	line-height: 55px;
 	cursor: pointer;
 	border-radius: 4px;
@@ -4479,7 +4479,7 @@
 }
 .lomo-logistics{
 	padding: 10px;
-	border: 2px  solid #41C060;
+	border: 1px  solid #41C060;
 	overflow: auto;
 }
 
