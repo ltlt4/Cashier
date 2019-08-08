@@ -108,7 +108,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                     DeliveryStatus: data.field.type ? data.field.type : "",
                 }
                 var param = {
-                    Page: 1,
+                    Page: data.field.Page ? data.field.Page : 1,
                     Rows: 7,
                     Filter: JSON.stringify(Filter)
                 }
@@ -139,6 +139,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             limit: 7,  //每页条数
                             count: res.data.total, //总页数
                             theme: "#41c060",//颜色
+                            curr:param.Page,
                             jump: function (obj, first) {
                                 if (!first) {
                                     var _param = {
@@ -196,12 +197,14 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             }
                             return _html
                         }
-                        if (_this.list[i].Status == 0||_this.list[i].Status == 8) {
+                        if (_this.list[i].Status == 0 || _this.list[i].Status == 8) {
                             var btn = ['确定']
                         } else if (_this.list[i].Status == 1) {
                             var btn = ['发货', '取消']
-                        } else if (_this.list[i].Status > 1 && _this.list[i].Status<8) {
+                        } else if (_this.list[i].Status > 1 && _this.list[i].Status < 7) {
                             var btn = ['查看物流', '取消']
+                        } else if (_this.list[i].Status == 7) {
+                            var btn = ['确认退货', '取消']
                         }
                         layer.open({
                             type: 1,
@@ -222,10 +225,13 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                                 if (_this.list[i].Status == 1) {
                                     _this.deliverGoods(_this.list[i].Id);
                                     return false;
-                                } else if (_this.list[i].Status > 1) {
+                                } else if (_this.list[i].Status > 1 && _this.list[i].Status < 7) {
                                     _this.logistics(res.data.ExpressNo, res.data.ExpressCode);
                                     return false;
-                                } else {
+                                } else if (_this.list[i].Status == 7) {
+
+                                }
+                                else {
                                     layer.close(index)
                                 }
                             },
@@ -242,7 +248,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                                 $('#ExpressNo').text(res.data.ExpressNo ? res.data.ExpressNo : "");
                                 $('#ExpressName').text(res.data.ExpressName ? res.data.ExpressName : "");
                                 $('#Remark').text(res.data.ExpressName ? res.data.Remark : "");
-                                $('#TotalMoney').text('￥' +( res.data.TotalMoney ? res.data.TotalMoney : ""));
+                                $('#TotalMoney').text('￥' + (res.data.TotalMoney ? res.data.TotalMoney : ""));
                                 $('#Postage').text(res.data.Postage ? res.data.Postage : "");
                                 $('#Payments').html(_this._Payment(res.data.Payments ? res.data.Payments : []));
                                 $('#details').html(_detailed(details ? details : []));
@@ -689,11 +695,12 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             ExpressName: data.field.courierName,
                         };
                         $.http.post(LuckVipsoft.api.DeliverMallOrder, param, user.token, function (res) {
+                            layer.msg(res.msg);
                             if (res.status == 1) {
-                                layer.msg(res.msg);
-                                layer.closeAll('page');
-                            } else {
-                                layer.msg(res.msg);
+                                $('#ExpressNo').text(data.field.courierCode);
+                                $('#ExpressName').text(data.field.courierName);
+                                $('#Remark').text(data.field.courierName);
+                                layer.close(index);
                             }
                         });
                         return false;
@@ -782,6 +789,24 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 }
             });
         },
+        //退货
+        returnGoods:function(){
+
+        },
+        //重新渲染表单
+        render: function (name) {
+            var _this = this;
+            var data = $("#List").serializeArray();
+            var page = $("#orderPage .layui-laypage-em").next().html(); //当前页码值
+            var key = {
+                field: {
+                    BillCode: data[0].value,
+                    DeliveryStatus: data[1].value,
+                    Page:parseInt(page)
+                }
+            }
+            _this.getList(key)
+        }
     };
     order.start();
     //选项卡切换

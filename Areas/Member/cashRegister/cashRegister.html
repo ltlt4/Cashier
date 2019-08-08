@@ -732,18 +732,34 @@
 				<li data-code='{{item.code}}' class="active">
 					<span>{{item.name }}<b> 
 						{{if item.code =='999'}}
-						<input readonly="readonly" value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
+						<input readonly="readonly" data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
 						{{else}}
-						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
+						<input  data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
 						{{/if}}
 					</span>
-					{{@ item.code | fnPayItemAmount}}
+					{{if item.code == '001' && item.amount > 0}}
+						<small>找零 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
+					{{if item.code == '999' }}
+						<em class="paySelectCoupon">重选优惠券</em>
+					{{/if}}				
+					{{if item.code == '003' }}
+						<small>可用 ¥{{item.smallChangePrice}}</small>
+					{{/if}}				
 				</li>
 			{{else}}
 				<li data-code={{item.code}}>
 					<span>{{item.name }}<b> 
-						<input  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/></b></span>
-					{{@ item.code | fnPayItemAmount}}
+						<input  data-old ='{{item.amount}}'  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/></b></span>
+						{{if item.code == '001' && item.amount > 0}}
+						<small>找零 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
+					{{if item.code == '999' }}
+						<em class="paySelectCoupon">重选优惠券</em>
+					{{/if}}			
+					{{if item.code == '003' }}
+						<small>可用 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
 				</li>
 			{{/if}}
 		{{/each}}	

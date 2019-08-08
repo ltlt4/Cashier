@@ -660,3 +660,8 @@ Number.prototype.toFixed = function (d) {
     } return this + "";
 
 }
+//字符出现次数
+function patch(re,s){
+    re=eval("/"+re+"/ig")
+    return s.match(re).length;
+}

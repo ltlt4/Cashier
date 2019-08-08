@@ -37,17 +37,16 @@ $(function(){
             case '002':     //余额
                 return ''   //'<small>可用余额¥50.00</small>'        
             case '003':     //积分
-                return ''   //'<small>可用积分50.00</small>'        
+                return '<small>可抵扣 ¥ 50.00</small>'        
             case '999':     //优惠券
                 return '<em class="paySelectCoupon">重选优惠券</em>'        
             case '001':     //现金
-                return '<small>找零¥ 50.00 </small>'        
+                return '<small>找零¥ 0.00 </small>'        
             default:
                 return ''          
         }    
     }
 })
-
 
 /* 购物车结算计算流程,调用修改原则.外部调用不允许修改内部变量,必须写内部方法修改变量 */
 class payCompose
@@ -79,7 +78,8 @@ class payCompose
         this.conpon = []
        
 
-        this.result = {         
+        this.result = {   
+            //smallChangePrice: 0.00,         //现金找零金额      
             allPayMoney  :0.00 ,            //支付方式总金额
             modificationInfo :{}  ,          //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
             amountDiscountMoney : 0.00, 	//会员折扣总金额 (会出现比原价高时的情况)
@@ -128,6 +128,24 @@ class payCompose
         }     
     }
 
+    //允许输入的最大值 payItem
+    allowPayItemMaxPrice(code)
+    {
+        let that =this
+        let amount = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
+       
+        let tempPrice = 0.00
+        $.each(that.payItem,function(index,ele){
+            if(ele.code != code ){                   
+                let t =  math.chain(tempPrice).add(ele.amount).done()
+                tempPrice = t
+            }
+        })
+        
+        let r = math.chain(amount).subtract(tempPrice).done()
+        return r
+    }
+
     //修改当选中项金额
     changePayMoney(code, m)
     {   
@@ -136,19 +154,79 @@ class payCompose
         {
             return false 
         }
+
        
         let item = Enumerable.From(that.payItem).Where(x=>x.code == code).FirstOrDefault();
-        if(item==undefined)
-        {
+        if(item==undefined){
             return false
         }  
-        else
-        {
-            that.curPayItem = code   //选中支付方式            
-            //排除自己还能输入的金额    
-                 
-            item.amount= parseFloat(m)
-            that.finish();
+        else{
+            that.curPayItem = code   //选中支付方式     
+            //排除自己还能输入的金额  
+            // let amount = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
+            // let allowPrice = that.allowPayItemMaxPrice(code)
+
+            m = parseFloat(m)
+       
+            //现金特殊处理
+            if(code!='001'){
+                let item_001 = Enumerable.From(that.payItem).Where(x=>x.code == '001').FirstOrDefault(); 
+                //重置现金收银
+                if(item_001 != undefined){
+                    item_001.amount = 0
+                    item_001.smallChangePrice = 0
+                    //smallchange = 0 //找零金额
+                }
+                
+                
+                let allowPrice = that.allowPayItemMaxPrice(code)
+                if(allowPrice > m){
+
+                    ///积分和余额最大值处理///
+                    if(code=='002'){
+                        m =  (m > that.chooseMember.Money)? that.chooseMember.Money : m                       
+                    }
+
+                    if(code=='003'){
+                        let smallChangePrice =  math.chain(that.chooseMember.Point).multiply(that.config.PointOffsetCashPrecent).done()
+                        m =  (m > smallChangePrice)? smallChangePrice : m                       
+                    }
+                    ///积分和余额最大值处理///
+
+                    item.amount = m
+                    //剩余的金额回填 001
+                    if(item != undefined){
+                        item_001.amount =  math.chain(allowPrice).subtract(m).done()
+                    }
+                }
+                else{
+                    //当填写金额大于给最大允许金额
+                     item.amount = allowPrice
+                }
+            }
+            else{
+                //当前选择是现金
+                let allowPrice = that.allowPayItemMaxPrice(code)
+                if(allowPrice > m){
+                   item.amount =m
+                   item.smallChangePrice = 0
+                }
+                else{
+                    let t = math.chain(m).subtract(allowPrice).done().toFixed(2)
+                    if(t>100)
+                    {
+                        item.amount = allowPrice
+                        item.smallChangePrice = 0
+                    }
+                    else
+                    {
+                        item.amount = m.toFixed(2)
+                        item.smallChangePrice = t
+                        //smallchange找零金额
+                    }                 
+                }                
+            }          
+            that.finish()  
             return true
         }
     }
@@ -167,7 +245,7 @@ class payCompose
             if(code == '999'){ that.finish();return false;}
 
             //应收金额
-            let amount = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
+            let amount = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
             let addPrice = 0.00
             $.each(that.payItem,function(index,ele){
                 if(ele.code != code ){                   
@@ -184,6 +262,28 @@ class payCompose
             else{
                 item.amount = 0                    
             }
+
+            //积分和余额最大值处理
+            if(code=='002'){
+                if(diffPrice >that.chooseMember.Money )
+                {
+                    item.amount = diffPrice     
+                }
+            }           
+            else if(code=='003'){
+                let smallChangePrice =  math.chain(that.chooseMember.Point).multiply(that.config.PointOffsetCashPrecent).done()
+                if(diffPrice >smallChangePrice)
+                {
+                    item.amount = diffPrice     
+                }  
+            }
+
+            // if(code=='002'){ item.smallChangePrice =  that.chooseMember.Money }
+            // if(code=='003'){ 
+            //     item.smallChangePrice =  math.chain(that.chooseMember.Point).multiply(addPrice).done().toFixed(2) 
+            //     console.log('003', item.smallChangePrice)
+            // }
+
             that.finish()
             return true
             //return diffPrice>0 ? diffPrice:0;
@@ -203,7 +303,7 @@ class payCompose
                 return false
             }  
 
-            console.log('payitem=>undefined',payConfigItem)
+            console.log('payConfigItem',payConfigItem)
             ////////////// 微信支付宝 二选一////////////
             if(code=='010')  
             {
@@ -225,12 +325,28 @@ class payCompose
             ////////////// 微信支付宝 二选一////////////
             that.curPayItem = payConfigItem.code
 
-            if(code=='999')
-            {
+    
+            if(code=='999'){
                 that.payItem.unshift({code: payConfigItem.code , name : payConfigItem.name, amount: 0.00})
             }
-            else
-            {
+            else if(code=='002'){
+                that.payItem.push({
+                    code: payConfigItem.code , 
+                    name : payConfigItem.name, 
+                    amount: 0.00,
+                    smallChangePrice :that.chooseMember.Money
+                })     
+            }
+            else if(code=='003'){
+                let smallChangePrice =  math.chain(that.chooseMember.Point).multiply(that.config.PointOffsetCashPrecent).done()
+                that.payItem.push({
+                    code: payConfigItem.code , 
+                    name : payConfigItem.name, 
+                    amount: 0.00,
+                    smallChangePrice :that.floor( smallChangePrice)
+                })        
+            }
+            else{
                 that.payItem.push({code: payConfigItem.code , name : payConfigItem.name, amount: 0.00})     
             }
         }
@@ -669,7 +785,7 @@ class payCompose
         that.result.amountDiscountMoney = that.moneyPrecision(amountDiscountMoney) //amountDiscountMoney.toFixed(4)
         that.result.goodsNum = goodsNum
         that.result.amountPoint = that.pointPrecision (amountPoint)   //amountPoint.toFixed(4)
-        that.result.amountMoney = that.moneyPrecision(amountDiscountMoney)      // amountMoney.toFixed(4)
+        that.result.amountMoney = that.moneyPrecision(amountMoney)      // amountMoney.toFixed(4)
 
         console.log('会员计算结果 ==>', that.result)
         resolve("setpMember");
@@ -823,9 +939,9 @@ class payCompose
         let that =this         
         //计算抹零 ->当前总结 不计算优惠券
         if(that.result.isZeroAmount == 1){
-            let amountMoney = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
+            let amountDiscountMoney = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
             // that.result.amountMoney - that.result.amountActivityMoney  - that.result.amountModifyMoney            
-            let surAmountMoney = that.zeroPrecision(amountMoney)
+            let surAmountMoney = that.zeroPrecision(amountDiscountMoney)
             that.result.zeroAmount = surAmountMoney
         }
         else{
@@ -853,7 +969,7 @@ class payCompose
             let maxPrice = 0.00
             // let goodsId =''
             let diffModifyMoney = 0.00 //折扣当前循环总价金额
-            let maxMoney = math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
+            let maxMoney = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
             let disMoney = math.chain(that.result.amountActivityMoney).add(that.result.amountModifyMoney).done() // 活动+ 整单优惠金额
 
             if( maxMoney >0 ){
@@ -899,7 +1015,7 @@ class payCompose
     settingModify(amountModifyMoney , modificationInfo )
     {
         let that =this 
-        let maxMoney =math.chain(that.result.amountMoney).subtract(that.result.amountActivityMoney).done()
+        let maxMoney =math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).done()
         
         amountModifyMoney = that.floor(amountModifyMoney)
 
@@ -935,6 +1051,10 @@ class payCompose
         this.result.allPayMoney = 0.00        
         $.each(that.payItem,function(index,item){
             item.amount = 0.00
+            if(item.code == '001')
+            {
+                item.smallChangePrice = 0
+            }
         })
 
         //删除优惠券
@@ -950,6 +1070,8 @@ class payCompose
         that.result.amountModifyMoney =0.00    
         //当前支付总金额  
         this.result.allPayMoney = 0.00
+        //现金找零金额
+        //this.result.smallChangePrice =0.00
         //抹零金额   
         that.result.isZeroAmount = 0
         that.result.zeroAmount = 0.00    
@@ -974,7 +1096,7 @@ class payCompose
         return false
     }
     
-    ////////////////////////////功能函数////////////////////////////
+    ////////////////////////////计算功能函数////////////////////////////
     //日期格式化
     dateFormat(fmt,date){ 
         var o = { 

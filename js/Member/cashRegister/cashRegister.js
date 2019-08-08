@@ -66,7 +66,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			point: (oPayCompose.result.amountPoint - 0).toFixed(2),
 			cutPrice: (oPayCompose.result.amountDiscountMoney - 0).toFixed(2),
 			price: (oPayCompose.result.amountMoney - 0).toFixed(2),
-			activityPrice: (oPayCompose.result.amountActivityMoney - 0).toFixed(2),
+			activityPrice: (oPayCompose.result.amountActivityMoney).toFixed(2),
 		}
 
 		let html2 = template(pageGoodsAmountTempleteId, dataResult);
@@ -84,12 +84,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		let allPayMoney = parseFloat(oPayCompose.result.allPayMoney)
 		let zeroAmount = parseFloat(oPayCompose.result.zeroAmount)
 
+		let paid =math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(zeroAmount).subtract(allPayMoney).done().toFixed(2)
 		//01.payInfoTmp 渲染
 		dataResult = {
 			isZero: oPayCompose.result.isZeroAmount,
 			isOpenZero: oPayCompose.config.IsAllowModifyOrderTotal,
-			amount: amountDiscountMoney.toFixed(2),                      //应收
-			paid: math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(zeroAmount).subtract(allPayMoney).done().toFixed(2), //待收
+			amount: amountDiscountMoney.toFixed(2),	//应收
+			paid: paid>=0 ? paid : 0.00 ,			//待收
 			discount: math.chain(amountActivityMoney).add(amountModifyMoney).add(zeroAmount).done().toFixed(2),				   //优惠
 			payItem: oPayCompose.payItem,				   //支付列表 
 			curPayItem: oPayCompose.curPayItem				   //当前选中支付方式
@@ -104,7 +105,9 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		})
 
 		if (oPayCompose.curPayItem != 999) {
-			$("#pay_input_" + oPayCompose.curPayItem).focus()
+			let oInput = $("#pay_input_" + oPayCompose.curPayItem)
+			let value = oInput.val()
+			oInput.val('').focus().val(value)
 		}
 	}
 
@@ -172,6 +175,11 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			$("#pay").html(html)
 			$(".pay_item").bind("click", function () {
 				let code = $(this).attr('data-code')
+				if(oPayCompose.chooseMember.Id == undefined &&  (code =='002' || code =='003'|| code =='999')){
+					$.luck.error('会员才可用 积分、余额、优惠券 支付')
+					return false
+				}
+
 				if (oPayCompose.payMaxCount(code, 3)) {
 					$.luck.error('最多只能选择3中支付方式')
 					return false
@@ -1074,7 +1082,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			//整单优惠
 			$(".cashier-way .way7").on("click", function () {
 				//应收 ，最大金额			
-				let maxMoney = (oPayCompose.result.amountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
+				let maxMoney = (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
 				$('#single_amount').html(maxMoney)
 				if (oPayCompose.result.amountModifyMoney > 0) {
 					console.log('oPayCompose.modificationInfo', oPayCompose.result.modificationInfo)
@@ -1106,7 +1114,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 						let diffVal = $('#single_discount_money').val()
 						let val = $('#single_discount_val').val()
 						let mode = $('#single_discount_mode').val()
-						let dis = math.chain(oPayCompose.result.amountMoney).subtract(oPayCompose.result.amountActivityMoney).subtract(parseFloat(diffVal)).done().toFixed(2)
+						let dis = math.chain(oPayCompose.result.amountDiscountMoney).subtract(oPayCompose.result.amountActivityMoney).subtract(parseFloat(diffVal)).done().toFixed(2)
 
 						let info = { val: val, mode: mode, money: diffVal }
 						oPayCompose.settingModify(dis, info)
@@ -1124,7 +1132,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					$(this).val('');
 					return false
 				}
-				let maxMoney = (oPayCompose.result.amountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
+				let maxMoney = (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
 				val = parseFloat(val)
 
 				let mode = $('#single_discount_mode').val()
@@ -1239,6 +1247,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 			//点击结算：微信或支付宝付款时用
 			$("body").on("click", "#finishPayBtn", function () {
+
 				layer.open({
 					type: 1,
 					id: "payBox",
@@ -1262,27 +1271,47 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				var result = oPayCompose.selectPayInput(curPayCode)
 			})
 
-			//金额输入框离开
-			$("body").on("input", ".moneyInput", function () {
-				let val = $(this).val()
-				var spos = val.length;
-				if ($('.moneyInput')[0].setSelectionRange) { //兼容火狐,谷歌
-					setTimeout(function () {
-						$('.moneyInput')[0].setSelectionRange(spos, spos);
-						$('.moneyInput').focus();
-					}
-						, 0);
-				} else if ($('.moneyInput')[0].createTextRange) { //兼容IE
-					var rng = $('.moneyInput')[0].createTextRange();
-					rng.move('character', spos);
-					rng.select();
+			//金额输入框
+			$("body").on("input", ".moneyInput", function (event) {
+				console.log(event)
+				let val = $(this).val()	
+				let oldVal = $(this).attr('data-old')
+
+				if(val==''){
+					val = 0 
+					$(this).val(0)	
 				}
-				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
+
+				if(isNaN(val)){
+					val = 0 
+					$(this).val(0)				
+				}
+				console.log('val',val)
+				if(val.charAt(val.length-1)=='.'){return false}	
+			
+
+				// else{					
+				// 	//最后一位小数点
+				// 	if(val.charAt(val.length-1)=='.'){return false}					
+				// 	if(patch('.',val) >2){
+				// 		//截断后面的小数点
+				// 		// $(this).val(new)	
+				// 		return false
+				// 	}
+				// }
+		
+				val = parseFloat(val)		
+				oldVal = parseFloat(oldVal)		
+				console.log('val',val)									
+				if (!/(^[1-9]([0-9]+)?(\.[0-9]{0,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {	
+					$(this).val(oldVal)		
 					$.luck.error('金额只能时2位小数')
 					return false
 				}
-
-				var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, val)
+		
+				if(val!=oldVal){
+					var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, val)
+				}
 			})
 
 			//抹零设置
