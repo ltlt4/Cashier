@@ -235,6 +235,18 @@ var cashier = {
             });
         })
     },
+    //监控数字型
+    clearNoNum: function(obj) {
+         $(obj).val($(obj).val().substr(0,16));
+         $(obj).val($(obj).val().replace(/[^\d.]/g, "")); //清除“数字”和“.”以外的字符   
+         $(obj).val($(obj).val().replace(/^\./g, ""));  //验证第一个字符是数字而不是.
+         $(obj).val($(obj).val().replace(/\.{2,}/g, ".")); //只保留第一个. 清除多余的   
+         $(obj).val($(obj).val().replace(".", "$#$").replace(/\./g, "").replace("$#$", "."));
+         $(obj).val($(obj).val().replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3')); //只能输入两个小数   
+         if ($(obj).val().indexOf(".") < 0 && $(obj).val() != "") { //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+             $(obj).val(parseFloat($(obj).val()));
+         }
+     }
 }
 $.luck = {
     confirm: function (title, func) {
@@ -332,6 +344,28 @@ $.http = {
             },
             error: function (e) {
                 layer.closeAll('loading')
+                layer.msg('请求连接错误', { icon: 0 });
+            }
+        });
+    },
+    post2: function (url, param, token, callback) {
+        url = LuckVipsoft.http + url;
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            beforeSend: function (xrh) {            
+                xrh.setRequestHeader("luck_api_token", token);
+            },
+            data: JSON.stringify(param),
+            url: url,
+            dataType: "json",
+            success: function (res) {
+                if (typeof callback === "function") {
+                    callback(res)
+                }
+            },         
+            error: function (e) {
+           
                 layer.msg('请求连接错误', { icon: 0 });
             }
         });
@@ -451,7 +485,7 @@ http.cashierEnd = {
             html += '<dt><img src="' + imgurl + data.Avatar + '" /></dt>';
         }
         html += '<dd><b>' + data.CardName + '</b><i>(' + data.Mobile + ')</i><span>' + data.LevelName + '</span></dd>';
-        html += '<dd><small>积分: ' + data.Point + '</small><small>余额￥： ' + data.Money + '</small></dd>';
+        html += '<dd><small>积分: ' + data.Point + '</small><small>余额：￥ ' + data.Money + '</small></dd>';
         html += '<div class="vip-delete"><img src="../../../Theme/images/del.png" alt=""></div>';
         $(ele).html(html)
     },

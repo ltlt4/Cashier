@@ -29,9 +29,9 @@
 
 
 .vip-add-form {
-  width: 640px;
+  width: 740px;
   padding: 10px 30px;
-  float: right;
+  float: left;
 }
 
 .vip-add-form ul form {
@@ -52,7 +52,7 @@
 .vip-add-form ul li span.keyIcon {
   border: solid 1px #ddd;
   height: 28px;
-  width: 188px;
+  width: 240px;
   padding: 2px 5px;
   border-radius: 5px;
 }
@@ -146,14 +146,15 @@
 
 .order-cd-form ul li span {
   display: block;
-  width: 200px;
-  float: left
+  width: 252px;
+  float: left;
+  position: relative;
 }
 
 .cd-form-input {
   border: solid 1px #ddd;
   height: 28px;
-  width: 188px;
+  width: 240px;
   padding: 2px 5px;
   border-radius: 5px;
 }
@@ -184,7 +185,7 @@
 .lomo-gd {
   background: #fff;
   border-radius: 5px;
-  width: 850px;
+  width: 940px;
   height: 700px;
   overflow-y: auto
 }
@@ -297,11 +298,39 @@
 .MustCode {
   line-height: 28px;
   color: #ff0000;
-  float: right;
+  position: absolute;
+  left: 254px;
+  top: 5px;
 }
-.video-shoot{
+
+.video-shoot {
   padding: 30px;
 }
-.video-shoot div{
- text-align: center;
+
+.video-shoot div {
+  text-align: center;
+}
+
+.DateType {
+  position: absolute;
+  top: 77px;
+  left: 782px;
+  z-index: 6;
+}
+
+.DateType .layui-form-radio {
+  margin: 0;
+  padding: 0;
+}
+.DateType .layui-form-radio>i{
+  margin: 0;
+}
+#timeBirthday {
+  opacity: 0;
+  position: absolute;
+  z-index: 5;
+}
+#timeBirthdaySon{
+  position: absolute;
+  z-index: 1;
 }

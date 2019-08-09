@@ -9,17 +9,19 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
         staffClass: $.session.get("staffClass") ? $.session.get("staffClass") : null,
     }
+    //选项卡切换
+    $(".lomoTab span").on("click", function () {
+        $(this).addClass("hover").siblings().removeClass("hover");
+        var index = $(this).index();
+        $(".lomoTab-warp").eq(index).show().siblings(".lomoTab-warp").hide();
+        $(".Card-Cancel-keyboard").hide();
+        initial.keyPanel = true;
+    });
     //时间切换
     $(".online-order-time li").on("click", function () {
         var i = $(this).index()
         $(this).addClass("hover").siblings().removeClass("hover");
     })
-    laypage.render({
-        elem: 'paging', //容器名称
-        limit: 8,  //每页条数
-        count: 50, //总页数
-        theme: "#41c060"//颜色
-    });
 
     var order = {
         list: [],
@@ -197,14 +199,14 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             }
                             return _html
                         }
-                        if (_this.list[i].Status == 0 || _this.list[i].Status == 8) {
+                        if (_this.list[i].Status == 0 || _this.list[i].Status == 5 || _this.list[i].Status > 6) {
                             var btn = ['确定']
                         } else if (_this.list[i].Status == 1) {
                             var btn = ['发货', '取消']
-                        } else if (_this.list[i].Status > 1 && _this.list[i].Status < 7) {
+                        } else if (_this.list[i].Status > 1 && _this.list[i].Status < 5) {
                             var btn = ['查看物流', '取消']
-                        } else if (_this.list[i].Status == 7) {
-                            var btn = ['确认退货', '取消']
+                        } else if (_this.list[i].Status == 6) {
+                            var btn = ['同意退款', '拒绝']
                         }
                         layer.open({
                             type: 1,
@@ -225,11 +227,16 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                                 if (_this.list[i].Status == 1) {
                                     _this.deliverGoods(_this.list[i].Id);
                                     return false;
-                                } else if (_this.list[i].Status > 1 && _this.list[i].Status < 7) {
+                                } else if (_this.list[i].Status > 1 && _this.list[i].Status < 5) {
                                     _this.logistics(res.data.ExpressNo, res.data.ExpressCode);
                                     return false;
-                                } else if (_this.list[i].Status == 7) {
-
+                                } else if (_this.list[i].Status == 6) {
+                                    _this.returnGoods({
+                                        orderType: res.data.OrderType,
+                                        orderID: res.data.Id,
+                                        total: res.data.TotalMoney,
+                                        Payments: res.data.Payments ? res.data.Payments : []
+                                    });
                                 }
                                 else {
                                     layer.close(index)
@@ -312,6 +319,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             var dates = (year < 1900 ? (1900 + year) : year) + '-' + month + '-' + day + ' 00:00:00';
             return dates;
         },
+        //订单状态码
         orderStatus: function (type) {
             if (type == 0) {
                 return '待付款'
@@ -335,6 +343,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 return ""
             }
         },
+        //限制日期选择器可选范围
         election: function (minTime, maxTime) {
             var that = this
             $(".online-order-time li").on("click", function () {
@@ -713,12 +722,6 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 },
             });
         },
-        // <span class="card-num-up"></span>
-        // <div class="small-keyboard Card-Cancel-keyboard hide" style="top: 126px;left: 150px;">
-        //   <ul class="small-keyboard-num"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li> <li>9</li><li>0</li><li>00</li><li>.</li><li>←</li><li class="keyboard-remove">清除</li><li class="keyboard-confirm">确认</li></ul>
-        //   <em class="topSjx"></em>
-        // </div>
-        //查询快递公司
         express: function (name) {
             return new Promise(function (resolve, reject) {
                 $.ajax({
@@ -794,9 +797,111 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 }
             });
         },
-        //退货
-        returnGoods: function () {
+        //退款
+        returnGoods: function (record) {
+            var _this = this
+            var opt = _this.payType(user.information.SysArguments.PaymentConfig);
+            $("#refund").hide();
+            var refundType = function (data) {
+                var html = `<li><em for="">应退金额：</em><span class="size-red">￥${record.total}</span></li>`
+                for (var i = 0; i < data.length; i++) {
+                    html += `<li><em for="">${data[i].PaymentName}：</em><span class="size-red">￥${data[i].PayAmount}</span></li>`
+                };
 
+                return html;
+            }
+            if (record.orderType == 8) {
+                var url = LuckVipsoft.api.RevokeRedeemOrder;
+            } else {
+                var url = LuckVipsoft.api.RevokeConsumeOrder;
+            }
+            layer.open({
+                type: 1,
+                title: '确认撤单',
+                closeBtn: 1,
+                shadeClose: false,
+                shade: 0.3,
+                btnAlign: "r",
+                btn: ['取消', '确定'],
+                area: ['700px', '520px'],
+                maxmin: false,//禁用最大化，最小化按钮
+                resize: false,//禁用调整大小
+                move: false,//禁止拖拽
+                skin: "lomo-ordinary",
+                content: `<div id="lomo-cd" class="lomo-gd order-cd"><div class="order-cd-form"><ul>
+                        ${refundType(record.Payments)}
+                        <li class="layui-form-item hide" style="overflow:visible" id="refund"><label class="layui-form-label">退款至</label>
+                        <div class="layui-input-inline"><select name="PaymentCode" class="yhhd">
+                        ${_this.PaymentType(opt)}
+                        </select></div></li>
+                        <li class="layui-form-item"><em>超级密码：</em><span><input name="pwd" type="password" class="cd-form-input pw" lay-verify="required" /></span></li>
+                        <li class="layui-form-item"><em style="float:left">撤单备注：</em><textarea name="remark" class="cd-form-bz"></textarea></li>
+                      </ul></div></div>`,
+                btn2: function () {
+                    return false
+                },
+                success: function (layero, index) {
+                    layero.addClass('layui-form');
+                    layero.find('.layui-layer-btn1').attr({
+                        'lay-filter': 'cancel',
+                        'lay-submit': ''
+                    });
+                    form.render();
+                    form.on('submit(cancel)', function (data) {
+                        var param = {
+                            OrderID: record.orderID,
+                            Remark: data.field.remark ? data.field.remark : "",
+                            RevokePwd: data.field.pwd,
+                            PaymentCode: data.field.PaymentCode ? data.field.PaymentCode : ""
+                        }
+                        $.http.post(url, param, user.token, function (res) {
+                            layer.msg(res.msg);
+                            if (res.status == 1) {
+                                layer.close(dom);
+                                layer.close(index);
+                                _this.render();
+                            } else if (res.status == 300907) {
+                                layer.msg("退货失败，请重新选择退货方式")
+                                $("#refund").show();
+                            };
+                        });
+                        return false;
+                    });
+
+                },
+            })
+        },
+        //获取需要展示的支付方式
+        payType(entry) {
+            if (!entry.length > 0) { return false; };
+            var list = []
+            for (var key in entry) {
+                if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020') {
+                    list.push(entry[key]);
+                };
+            };
+            return list;
+            // if (type == 0 || type == 2) {
+
+            // } 
+            // else if (type == 1) {
+            //     var list = []
+            //     for (var key in entry) {
+            //         if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020' && entry[key].code != '002') {
+            //             list.push(entry[key]);
+            //         };
+            //     };
+            //     return list;
+            // } else {
+            //     return [];
+            // }
+        },
+        PaymentType(data) {
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += `<option value="${data[i].code}">${data[i].name}</option>`
+            };
+            return html;
         },
         //重新渲染表单
         render: function (name) {
@@ -814,13 +919,6 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         }
     };
     order.start();
-    //选项卡切换
-    $(".lomoTab span").on("click", function () {
-        $(this).addClass("hover").siblings().removeClass("hover");
-        var index = $(this).index();
-        $(".lomoTab-warp").eq(index).show().siblings(".lomoTab-warp").hide();
-        $(".Card-Cancel-keyboard").hide();
-        initial.keyPanel = true;
-    });
+
 
 })

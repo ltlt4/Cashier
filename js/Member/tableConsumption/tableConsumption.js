@@ -1,5 +1,5 @@
-﻿layui.use(['layer', 'jquery', "form", 'table'], function () {
-    var layer = layui.layer, $ = layui.$, form = layui.form, table = layui.table;
+﻿layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
+    var layer = layui.layer, element = layui.element, $ = layui.$, form = layui.form, table = layui.table;
 
     var user = {
         token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
@@ -8,6 +8,7 @@
         staffInf: $.session.get("staffInf") ? $.session.get("staffInf") : null,
         sysArgument: $.session.get("sysArgument") ? $.session.get("sysArgument") : null,
     }
+   // var oPayCompose = new payCompose(user.sysArgument);
     var proPageTotalNum = 1;
     var graph = true; //判断是否开启无图模式
     var member = null; //会员信息
@@ -22,16 +23,22 @@
     var venue = {
         pageIndex: 1,
         pageSize: 10,
+        timer: new Object(),
+        countdown: 120,//倒计时时间/秒
         searchType:1,//1商品 2套餐
         key: '', //商品条码
         classId: '', //产品类目Id(一级，二级)
         regionId: '', //区域ID
         parent: [],//一级菜单
         children: [],//二级菜单
+        StaffClassList: [],//员工分类
+        StaffList: [],//提成员工
         venue: null,//选中的场馆信息
         changedVenueType: 1,//1场地更换 2合并账单
         venueRestingGoods: null,//挂单数据
-
+        shoppingCar:null,//购物车数据
+        chooseBirthdayActivity : {}, //生日优惠
+        chooseActivity : {}, //活动方案
         orderVenueDetailList: [//场馆购物车列表
             {
                 Id: "",//场馆消费订单详情ID
@@ -41,6 +48,7 @@
                 Price: 0,//单价
                 Specials: 0,//会员特价
                 StartTime: 0,//计时产品开始时间
+                EndTime: 0,//计时产品结束时间
                 IsMainVenue: 1,//是否主场馆
                 VenueGoodsList: [
                     //{
@@ -59,19 +67,37 @@
                     //    Point: 0,//积分数量
                     //    GoodsClass: "",//商品分类
                     //    TotalMoney: 0,//折后金额
-                    //    StockNum:0//库存
+                    //    StockNum:0,//库存
+                    //    IsModify:0是否修改价格
                     //}
                 ]
             }
+        ],
+        VenueMoney: [//场地金额
+            //{
+            //    VenueID:"",//场馆ID
+            //    TotalMoney: 0,//总金额
+            //    DiscountMoney: 0,//实付金额
+            //    TotalPoint: 0,//获得积分
+            //}
         ],
         payMoneyInfo:{//结算信息
             TotalMoney :0,//总金额
             DiscountMoney :0,//实付金额
             TotalPoint :0,//获得积分
             PreferentialAmount :0,//优惠金额
-            GoodsNum: 0//商品数量
+            GoodsNum: 0,//商品数量
+            amountActivityMoney: 0,//活动减金额
+            amountActivityPoint: 0//活动获得积分
         },
-        //"Venue":"{\"Id\":开台ID,\"VenueID\":场馆ID,\"VenueName\":场馆名称,\"Price\":单价,\"StartTime\":开始时间,\"EndTime\":结束时间,\"TotalMoney\":总金额,\"DiscountAmount\":优惠金额,\"CouponAmount\":优惠券优惠金额,\"MemID\":会员ID}","Details":"[{\"DiscountAmount\":优惠金额,\"CouponAmount\":优惠券优惠金额,\"Staffs\":提成员工,\"BatchCode\":批次号,\"GoodsID\":商品ID,\"GoodsType\":商品类型,\"GoodsCode\":商品编号,\"GoodsName\":商品名称,\"DiscountPrice\":折扣价,\"Number\":数量,\"TotalMoney\":总价}]"
+        choosedStaffAry: [//商品提成员工信息
+            //{
+            //    StaffId: "",//提成员工id
+            //    StaffName:"",//提成员工名称
+            //    CommissionMoney: 0.0,//自定义提成金额
+            //    Remark: null//备注
+            //}
+        ],
         init: function () {
             var _this = this;
             _this.initClick();//点击事件
@@ -79,15 +105,23 @@
             _this.GetVenueRegionList();//获取场馆区域列表
             _this.VenueRegionSlide();//场馆区域滑动
             _this.searchMemCard();//查询会员
+            _this.editShopcarProduct();//编辑购物车产品
+            new Promise(_this.GetStaffClassList.bind(_this))//获取提成员工
+               .then(function (res) {
+                   return new Promise(_this.GetStaffList.bind(_this))
+               })
+               .then(function (res) {
+                   _this.chooseMembergetCommission()
+               });
         },
         //点击事件
         initClick:function(){
             _this=this;
             /*清除获取的会员*/
             $("body").on("click",'.vip-delete img',function (e) {
-                member=null;
+                member = null;
+                _this.BindMemVenue();
                 http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
-                $(".check-box-list .birthday").remove();
                 $(".lomo-order").css({"top":"0","margin-top":"0"});
             });
             //切换无图模式
@@ -143,16 +177,24 @@
                 //$(".venue_btn [data-type='VenueUnionBill']").hide();//合并账单
                 //0-维修 1-正常 2使用中 3待清台
                 if (status == 0) {
-
+                    member = null;
+                    http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
+                    $(".lomo-order").css({ "top": "0", "margin-top": "0" });
+                    _this.closePopup();
+                    $(".lomo-mian-left .venue-product-area,.lomo-mian-left .vipInfo,.lomo-mian-left .venue-area").hide();
                 } else if (status == 1) {
+                    $(".lomo-mian-left .venue-product-area,.lomo-mian-left .vipInfo,.lomo-mian-left .venue-area").show();
                     _this.BindOpenVenueHtml();
                 } else if (status == 2) {
-                    _this.GetVenueOrderInfo();
+                    $(".lomo-mian-left .venue-product-area,.lomo-mian-left .vipInfo,.lomo-mian-left .venue-area").show();
+                    _this.GetVenueOrderInfo(2);
                 } else if (status == 3) {
-
+                    member = null;
+                    http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
+                    $(".lomo-order").css({ "top": "0", "margin-top": "0" });
+                    _this.closePopup();
+                    $(".lomo-mian-left .venue-product-area,.lomo-mian-left .vipInfo,.lomo-mian-left .venue-area").hide();
                 }
-
-                
             });
             //场地更换,场地状态,合并账单
             $(".venue_btn").on("click", function () {
@@ -201,7 +243,7 @@
                 $(this).addClass("active").siblings().removeClass("active");
             });
             //确认场地更换
-            $("#subChangedVenue").on("clcik", function () {
+            $("#subChangedVenue").on("click", function () {
                 _this.ChangeVenue();
             });
             //账单合并
@@ -216,6 +258,8 @@
             $("body").on("click", "#addProductVenue", function () {
                 $(".venue-product-area").show();
                 $(".venue-area").hide();
+              
+                _this.closePopup();
                 _this.countProductNum(2);
                 _this.BindVenueRestingHtml();
                 _this.GetGoodsClassList();//获取商品分类
@@ -224,8 +268,6 @@
             });
             //挂单产品切换到场地
             $("body").on("click", "#backVenue", function () {
-                $(".venue-product-area").hide();
-                $(".venue-area").show();
                 _this.SaveVenueRestingGoods();
             }); 
             //商品点击加入购物车
@@ -248,50 +290,53 @@
                     Point: 0,//积分数量
                     GoodsClass: goodsData.GoodsClass,//商品分类
                     TotalMoney: 0,//折后金额
-                    StockNum: goodsData.StockNum//库存
+                    StockNum: goodsData.StockNum,//库存
+                    IsModify: 0//是否修改价格
                 };
                 var flag = 0;
-                //判断购物车中是否存在
-                if (_this.venueRestingGoods.VenueGoodsList.length > 0) {
-                    $.each(_this.venueRestingGoods.VenueGoodsList, function (index, item) {
-                        if (item.Id == VenueGoods.Id) {
-                            flag=1;
-                            var num=accAdd(item.Number,1);
-                            if (num > item.StockNum && item.GoodsType == 1) {
-                                $.luck.error("产品库存不足");
-                                return false;
-                            }
-                            item.Number = num;
-                            //item.TotalMoney = accMul(item.DiscountPrice, num);
-                            $(".venue-product-area .venue-pro-list [data-id='" + item.Id + "']").find(".order-nub").text(num);
-                            return false;
-                        }
-                    })
-                }
-                if (_this.venueRestingGoods.VenueGoodsList.length == 0 || flag == 0) {
-                    _this.venueRestingGoods.VenueGoodsList.push(VenueGoods);
-                    var html = '';
 
-                    html += '<dl data-id="' + VenueGoods.Id + '" data-stocknum="' + VenueGoods.StockNum + '">';
-                    html += '<dt> <span class="order-reduce">-</span> <span class="order-nub">1</span> <span class="order-add">+</span> </dt>';
-                    html += '<dd>';
-                    if (VenueGoods.GoodsType == 1) {
-                        html += '<i class="colorIcon blue">库</i>';
+                //获取购物车中该商品已有数量
+                var goodsNumber = 0;
+                $.each(_this.orderVenueDetailList, function (index, item) {
+                    var number = Enumerable.From(item.VenueGoodsList).Where(function (x) {
+                        if (x.Id == VenueGoods.Id) {
+                            return true;
+                        }
+                        return false;
+                    }).Sum(function (x) {
+                        return x.Number;
+                    });
+                    goodsNumber += parseFloat(number);
+                });
+
+                //判断购物车中是否存在
+                $.each(_this.orderVenueDetailList, function (index,item) {
+                    if (item.IsMainVenue == 1) {
+                        if (item.VenueGoodsList.length > 0) {
+                            $.each(item.VenueGoodsList, function (inx, itm) {
+                                //判断购物车中是否存在 且未被修改价格
+                                if (itm.Id == VenueGoods.Id && itm.IsModify == 0) {
+                                    flag = 1;
+                                    var num = accAdd(goodsNumber, 1);
+                                    if (num > itm.StockNum && itm.GoodsType == 1) {
+                                        flag = 2;
+                                        $.luck.error("产品库存不足");
+                                        return false;
+                                    }
+                                    itm.Number = accAdd(itm.Number, 1);
+                                    return false;
+                                }
+                            })
+                        }
+                        if (item.VenueGoodsList.length == 0 || flag == 0) {
+                            item.VenueGoodsList.push(VenueGoods);
+                        }
+                        return false;
                     }
-                    if (VenueGoods.GoodsType == 2) {
-                        html += '<i class="colorIcon green">服</i>';
-                    }
-                    html += '<div class="order-name">';
-                    html += '<h1>' + VenueGoods.GoodsName + '</h1>';
-                    if (member == null) {
-                        html += '<span>单价: <i>¥' + VenueGoods.Price + '</i></span>';
-                    } else {
-                        html += '<span>单价: <i>¥' + VenueGoods.Specials + '</i> <b>¥' + VenueGoods.Price + '</b></span>';
-                    }
-                    html += '</div>';
-                    html += '</dd>';
-                    html += '</dl>';
-                    $(".venue-product-area .venue-pro-list").append(html);
+                })
+                
+                if (flag != 2) {
+                    _this.BindVenueRestingHtml();
                 }
             });
             //购物车增加数量
@@ -299,39 +344,65 @@
                 var dl = $(this).parent().parent();
                 var goodId = $(dl).attr("data-id");
                 var stocknum = $(dl).attr("data-stocknum");
-                $.each(_this.venueRestingGoods.VenueGoodsList, function (index, item) {
-                    if (item.Id == goodId) {
-                        var num = accAdd(item.Number, 1);
-                        if (num > stocknum && item.GoodsType == 1) {
-                            $.luck.error("产品库存不足");
-                            return;
+                var gid = $(dl).attr("data-gid");
+                var flag = 1;
+                //获取购物车中该商品已有数量
+                var goodsNumber = 0;
+                $.each(_this.orderVenueDetailList, function (index, item) {
+                    var number = Enumerable.From(item.VenueGoodsList).Where(function (x) {
+                        if (x.Id == goodId) {
+                            return true;
                         }
-                        item.Number = num;
-                        //item.TotalMoney = accMul(item.DiscountPrice, num);
+                        return false;
+                    }).Sum(function (x) {
+                        return x.Number;
+                    });
+                    goodsNumber += parseFloat(number);
+                });
 
-                        $(".venue-product-area .venue-pro-list [data-id='" + item.Id + "']").find(".order-nub").text(num);
-                        return;
+                $.each(_this.orderVenueDetailList, function (index,item) {
+                    if (item.IsMainVenue == 1) {
+                        $.each(item.VenueGoodsList, function (inx, itm) {
+                            if (itm.Id == goodId && itm.GID == gid) {
+                                var num = accAdd(goodsNumber, 1);
+                                if (num > stocknum && itm.GoodsType == 1) {
+                                    flag = 2;
+                                    $.luck.error("产品库存不足");
+                                    return false;
+                                }
+                                itm.Number = accAdd(itm.Number, 1);
+                                return false;
+                            }
+                        })
+                        return false;
                     }
                 })
+                if (flag != 2) {
+                    _this.BindVenueRestingHtml();
+                }
             });
             //购物车减少数量
             $("body").on("click", ".order-reduce", function () {
                 var dl = $(this).parent().parent();
                 var goodId = $(dl).attr("data-id");
-                $.each(_this.venueRestingGoods.VenueGoodsList, function (index, item) {
-                    if (item.Id == goodId) {
-                        var num = accSub(item.Number, 1);
-                        if (num == 0) {
-                            _this.venueRestingGoods.VenueGoodsList.splice(index, 1);
-                            $(".venue-product-area .venue-pro-list dl[data-id=" + item.Id + "]").remove();
-                            return false;
-                        }
-                        item.Number = num;
-                       // item.TotalMoney = accMul(item.DiscountPrice, num);
-                        $(".venue-product-area .venue-pro-list [data-id='" + item.Id + "']").find(".order-nub").text(num);
+                var gid = $(dl).attr("data-gid");
+                $.each(_this.orderVenueDetailList, function (index, item) {
+                    if (item.IsMainVenue == 1) {
+                        $.each(item.VenueGoodsList, function (inx, itm) {
+                            if (itm.Id == goodId && itm.GID == gid) {
+                                var num = accSub(itm.Number, 1);
+                                if (num == 0) {
+                                    item.VenueGoodsList.splice(inx, 1);
+                                    return false;
+                                }
+                                itm.Number = num;
+                                return false;
+                            }
+                        })
                         return false;
                     }
                 })
+                _this.BindVenueRestingHtml();
             });
             //套餐商品 返回产品列表
             $(".change-product-nav").on("click", function () {
@@ -349,13 +420,18 @@
                 _this.countProductNum(2);
             })
 
+            //刷新计价
+            $("#btnRefreshMoney").on("click", function () {
+                _this.GetVenueOrderInfo(2);
+            });
+
             //关闭弹出框
             $(".divTitle span").on("click", function () {
                 var box = $(this).parent().parent();
                 cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
             });
-            $(".submit-bt-clear").on("click", function () {
-                var box = $(this).parent().parent().parent().parent()
+            $("body").on("click",".submit-bt-clear", function () {
+                var box = $(this).parents('.fadeIn');
                 cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
             });
         },
@@ -485,7 +561,7 @@
                         html += '<div><span style="' + style + '">' + item.VenueName + '</span></div>';
                         html += '<div><span style="' + style + '">' + state + '</span></div>';
                         if(item.VenueStatus == 2){
-                            html += '<div><span>' + item.CardName + ' ' + item.LevelName + '</span>';
+                            html += '<div><span>' + item.CardName + ' ' + item.CardID + '</span>';
                             //html += '<span style="float: right">1小时30分</span>';
                             html += '</div>';
                         }
@@ -713,6 +789,98 @@
                 $(".goods-page .numb").html(_this.pageIndex + '/' + proPageTotalNum);
             })
         },
+        //获取店铺优惠活动 (有会员时会返回会员可用)
+        getShopActivity: function () {
+            var _this = this;
+            var param = {
+                ActType: 1,//1-消费返利、2-充值有礼
+                MemID: member == null ? "" : member.Id,
+            }
+            $.http.post(LuckVipsoft.api.getActivityList, param, user.token, function (res) {
+                if (res.data.length > 0) {					
+                    hasShopAcivity = true;				
+                    $(".order-select").html("请选择优惠活动").next().removeClass("gray")
+                    var html = template("activityTmp",res.data);   
+                    $('.check-box-list').html(html)
+                    $(".activity-list").hide();
+
+                    //选择优惠活动
+                    $(".order-select").unbind().bind('click',function(){
+                        if (hasShopAcivity) {
+                            $(".activity-list").toggle();
+                        }
+                    })
+
+                    //选择项
+                    $(".check-box-list li").unbind().bind('click',function(){					
+                        var act=$(this).attr("data-obj");	
+                        var result	= _this.selectActivity(act)  // .chooseActivity(act)						
+                        if (result) {
+                            _this.BindActivity();
+                        }
+                        else
+                        {
+                            $.luck.error("未达到活动规则")
+                        }	
+                    })
+                } else {
+                    hasShopAcivity = false;
+                    $(".order-select").html("暂无优惠活动")
+                    $(".activity-list").hide();
+                }
+            })
+        },
+        //优惠券是否可以使用（店铺和会员接口已经过滤）->判断可用时间、生日优惠策略、全局配置
+        //1-生日优先、2-系统活动优先、3-系统活动上叠加
+        //opt选择取消 true,false
+        selectActivity: function (activity) {
+            var _this = this
+            activity =JSON.parse(activity)
+            if(activity.ValidType == 4 && _this.chooseBirthdayActivity.Id ==activity.Id)
+            {
+                _this.chooseBirthdayActivity={}
+                _this.setpActivity()
+                return true
+            }
+            else if(_this.chooseActivity.Id ==activity.Id)
+            {
+                _this.chooseActivity={}
+                _this.setpActivity()
+                return true
+            }
+            // 生日活动使用规则：1-生日优先、2-系统活动优先、3-系统活动上叠加
+            var birthdayActivityRule = user.sysArgument.BirthdayActivityRule;
+            var currentPrice = _this.payMoneyInfo.DiscountMoney;
+ 
+            if( activity.LimitUsedAmount > currentPrice)
+            {              
+                console.log("未达到优惠额度") 
+                return false
+            }
+       
+            if(activity.ValidType == 4)
+            {          
+                if(member.IsBirthday == 0 )
+                {
+                    return false
+                }
+                else
+                {
+                    if (birthdayActivityRule != 3) { _this.chooseActivity = {} }   //全局
+                    _this.chooseBirthdayActivity = activity
+                    _this.setpActivity()
+                    return true
+                }           
+            }
+            else
+            {             
+                if (birthdayActivityRule != 3) { _this.chooseBirthdayActivity = {} } //全局
+                _this.chooseActivity = activity
+                _this.setpActivity()
+                return true
+            }     
+        },
+
         //查询选择会员
         searchMemCard: function () {
             var _this = this;
@@ -729,7 +897,7 @@
                             if (res.data.length == 1) {
                                 http.cashierEnd.seleMembers(res.data[0], user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
                                 member = res.data[0];
-                                _this.BindMemVenueHtml();
+                                _this.GetVenueOrderInfo(1);
                                 $(".timescount").show();
                                 $(".lomo-order").css({"top":"84px","margin-top":"11px"});
                             } else {
@@ -758,7 +926,7 @@
                                                     http.cashierEnd.seleMembers(res.data[_index], user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
 													
                                                     member = res.data[_index];
-                                                    _this.BindMemVenueHtml();
+                                                    _this.GetVenueOrderInfo(1);
                                                     $(".lomo-order").css({"top":"84px","margin-top":"11px"});
                                                 }
                                             });
@@ -969,7 +1137,7 @@
             }
             var param = {
                 MainVenueID: _this.venue.Id,
-                UnionVenueIds: venueId
+                UnionVenueID: venueId
             }
             $.http.post(LuckVipsoft.api.VenueUnionBill, param, user.token, function(res) {
                 if(res.status==1){
@@ -1015,7 +1183,9 @@
                             VenueName: detail.VenueName,//场馆名称
                             Price: detail.Price,//单价
                             Specials: detail.Specials,//会员特价
+                            VenueStatus: 2,//1-正常 0-维修 2-使用 3待清台
                             StartTime: detail.StartTime,//计时产品开始时间
+                            EndTime: detail.EndTime,//计时产品结束时间
                             IsMainVenue: 1,//是否主场馆
                             VenueGoodsList:[]
                         }
@@ -1032,21 +1202,46 @@
                 })
             })
         },
-        //点击场地取单
-        GetVenueOrderInfo: function () {
+        //取单 type==1 会员取单 type==2场地取单
+        GetVenueOrderInfo: function (type) {
             var _this = this;
-            if (_this.venue == null) {
-                $.luck.error("请先选择场地");
-                return false;
+            var url = "";
+            var param = {};
+            if (type == 1) {
+                if (member == null) {
+                    $.luck.error("请先选择会员");
+                    return false;
+                }
+                url = LuckVipsoft.api.GetVenueMemberAndGoodsInfoByMemID;
+                param = {
+                    MemID: member.Id
+                }
+            } else {
+                if (_this.venue == null) {
+                    $.luck.error("请先选择场地");
+                    return false;
+                }
+                url = LuckVipsoft.api.GetVenueMemberAndGoodsInfoByVenueID;
+                param = {
+                    VenueID: _this.venue.Id
+                }
             }
-            $.http.post(LuckVipsoft.api.GetVenueMemberAndGoodsInfo, { VenueID: _this.venue.Id }, user.token, function (res) {
+
+            $.http.post(url, param, user.token, function (res) {
+                if (type == 1) {
+                    if (res.status == 2) {
+                        _this.BindMemVenue();
+                        return false;
+                    }
+                }
                 if (res.status == 1) {
                     member = res.data.memInfo;
                     _this.orderVenueDetailList = [];
                     _this.orderVenueDetailList = res.data.venueList;
-                    _this.payMoneyInfo = res.data.payMoneyInfo;
-                    _this.BindConsumeVenueHtml();
+                    _this.VenueMoney = res.data.venuePayMoneyList;
 
+                    _this.BindConsumeVenueHtml();
+                    _this.BtnCountDown($("#btnVenueConsume"));
                     $.luck.success(function () {
                         layer.closeAll();
                     });
@@ -1074,25 +1269,25 @@
             };
             var Details = [];
             //场馆商品信息
-            if (venueRG.VenueGoodsList == null && venueRG.VenueGoodsList.length == 0) {
-                return;
+            if (venueRG.VenueGoodsList != null && venueRG.VenueGoodsList.length > 0) {
+                $.each(venueRG.VenueGoodsList, function (index, item) {
+                    var details = {
+                        DiscountAmount: 0,
+                        CouponAmount: 0,
+                        Staffs: "",
+                        BatchCode: "",
+                        GoodsID: item.Id,
+                        GoodsType: item.GoodsType,
+                        GoodsCode: item.GoodsCode,
+                        GoodsName: item.GoodsName,
+                        DiscountPrice: item.Specials,
+                        Number: item.Number,
+                        TotalMoney: item.TotalMoney,
+                        IsModify: item.IsModify
+                    }
+                    Details.push(details);
+                })
             }
-            $.each(venueRG.VenueGoodsList, function (index, item) {
-                var details = {
-                    DiscountAmount: 0,
-                    CouponAmount: 0,
-                    Staffs: "",
-                    BatchCode: "",
-                    GoodsID: item.Id,
-                    GoodsType: item.GoodsType,
-                    GoodsCode: item.GoodsCode,
-                    GoodsName: item.GoodsName,
-                    DiscountPrice: item.Specials,
-                    Number: item.Number,
-                    TotalMoney: item.TotalMoney
-                }
-                Details.push(details);
-            })
             
             var param = {
                 Venue: Venue,
@@ -1101,8 +1296,13 @@
             $.http.post(LuckVipsoft.api.SaveVenueRestingGoods, param, user.token, function (res) {
                 if (res.status == 1) {
                     _this.countProductNum(1);
-                    _this.GetVenueOrderInfo();
-                    $.luck.success();
+                    //_this.GetVenueOrderInfo();
+                    _this.countdown = 120;
+                    _this.BindConsumeVenueHtml();
+                    $.luck.success(function () {
+                        $(".venue-product-area").hide();
+                        $(".venue-area").show();
+                    });
                 } else {
                     $.luck.error(res.msg);
                 }
@@ -1110,16 +1310,351 @@
 
         },
 
+        //左侧购物车产品相关弹层
+        editShopcarProduct: function () {
+            //左侧菜单详细列表
+            $("body").on("click", ".venue-area .lomo-order .venue-pro-list>dl", function () {
+                var _left = $(this).offset().left;
+                var _top = $(this).offset().top;
+                var winHeight = $(window).height();
+                var showHeight = $(".lomo-tcyg").height();
+
+                $(".left-arrow-white").css({ "left": '410px', "top": '' + (_top - 50) + 'px' });
+				if (winHeight - _top <= showHeight) {
+				    $(".lomo-tcyg").css({ "left": '' + (_left + 400) + 'px', "bottom": "0", "top": "auto" })
+                } else {
+				    $(".lomo-tcyg").css({ "left": '' + (_left + 400) + 'px', "top": '' + (_top - 50) + 'px', "bottom": "auto" })
+                }
+				$(".left-arrow-white").show();
+
+
+				var data = JSON.parse($(this).attr("data-obj"));
+				var venueId = $(this).attr("data-venueid");
+				var imagesUrl = '../../../Theme/images/goodsPic.png';
+				if (data.Images) {//不存在产品图时，使用默认图
+				    imagesUrl = user.information.ImageServerPath + item.Images;
+				}
+				var isMem = 0;
+				if (member != null && member.Id != undefined) {
+				    isMem = 1;
+				}
+				var goodsStaffsData = {
+				    GID:data.GID,//唯一标识
+				    venueId: venueId,//场馆ID
+				    Id: data.Id,// 产品ID  
+				    GoodsName: data.GoodsName,//产品名称
+				    Price: parseFloat(data.Price).toFixed(2),//零售价格
+				    Specials: parseFloat(data.Specials).toFixed(2),//产品特价
+				    Images: imagesUrl,//产品图片
+				    Number: data.Number,//购买数量
+				    TotalMoney: parseFloat(data.TotalMoney).toFixed(2),//折后金额
+				    isMem: isMem,//是否会员
+				    IsModify :data.IsModify ,// 是否修改价格
+				    Staffs: data.Staffs==null?[]: data.Staffs
+				};
+				_this.choosedStaffAry = data.Staffs;
+				if(_this.choosedStaffAry==null){
+				    _this.choosedStaffAry=[];
+				}
+				var html = template('goodsStaffsTmp', goodsStaffsData);
+				$('#goodsStaffs').html(html)
+
+                cashier.open(".lomo-tcyg", 'fadeIn', 'fadeOut', ".lomo-mask-left")
+            })
+            //确认提成员工选择
+            $("body").on("click", ".staffSubmit", function () {
+                var goodId = $(this).parent().attr("data-goodid");
+                var venueId = $(this).parent().attr("data-venueid");
+                var gId = $(this).parent().attr("data-gid");
+                var bprice = $(this).parent().parent().find(".change-price").html();
+
+                var venueitem = Enumerable.From(_this.orderVenueDetailList).Where(function (x) {
+                    return x.VenueID == venueId;
+                }).FirstOrDefault();
+                var venuegoods = Enumerable.From(venueitem.VenueGoodsList).Where(function (x) {
+                    if (x.Id == goodId && x.GID == gId) {
+                        return true;
+                    }
+                    return false;
+                }).FirstOrDefault();
+                if (member == null) {
+                    if (venuegoods.IsModify == 0 && parseFloat(venuegoods.Price) != parseFloat(bprice)) {
+                        venuegoods.Specials = parseFloat(bprice);
+                    } else if (venuegoods.IsModify == 1 && parseFloat(venuegoods.Specials) != parseFloat(bprice)) {
+                        venuegoods.Specials = parseFloat(bprice);
+                    }
+                } else {
+                    if (parseFloat(venuegoods.Specials) != parseFloat(bprice)) {
+                        venuegoods.Specials = parseFloat(bprice);
+                    }
+                }
+                venuegoods.Staffs=_this.choosedStaffAry;
+                _this.BindConsumeVenueHtml();
+                var box = $(this).parents('.fadeIn');
+                cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
+            })
+            //赠送商品
+            $("body").on("click", ".giveGoods", function () {
+                var that = $(this);
+                var goodId = $(this).parent().attr("data-goodid");
+                var venueId = $(this).parent().attr("data-venueid");
+                var gId = $(this).parent().attr("data-gid");
+                $.luck.confirm("是否确认赠送该商品？", function () {
+                    var venueitem = Enumerable.From(_this.orderVenueDetailList).Where(function (x) {
+                        return x.VenueID == venueId;
+                    }).FirstOrDefault();
+                    var venuegoods = Enumerable.From(venueitem.VenueGoodsList).Where(function (x) {
+                        if (x.Id == goodId && x.GID == gId) {
+                            return true;
+                        }
+                        return false;
+                    }).FirstOrDefault();
+                    venuegoods.Specials = 0;
+                    venuegoods.TotalMoney = 0;
+                    venuegoods.IsModify = 1;
+                    _this.BindConsumeVenueHtml();
+                    var box = that.parents('.fadeIn');
+                    cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
+                });
+            });
+            //删除商品
+            $("body").on("click", ".deleteGoods", function () {
+                var that = $(this);
+                var goodId = $(this).parent().attr("data-goodid");
+                var venueId = $(this).parent().attr("data-venueid");
+                var gId = $(this).parent().attr("data-gid");
+                $.luck.confirm("是否确认删除该商品？", function () {
+                    var venueitem = Enumerable.From(_this.orderVenueDetailList).Where(function (x) {
+                        return x.VenueID == venueId;
+                    }).FirstOrDefault();
+                    var venuegoods = Enumerable.From(venueitem.VenueGoodsList).Where(function (x) {
+                        if (x.Id == goodId && x.GID == gId) {
+                            return true;
+                        }
+                        return false;
+                    }).FirstOrDefault();
+                    var index = venueitem.VenueGoodsList.indexOf(venuegoods);
+                    venueitem.VenueGoodsList.splice(index, 1)
+                    _this.BindConsumeVenueHtml();
+                    var box = that.parents('.fadeIn');
+                    cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
+                });
+            })
+            //修改购物车商品价格
+            $("body").on("click", ".change-price", function () {
+                var dome = $(this);
+                luckKeyboard.showSmallkeyboard(dome, function (res) {
+                    //res=res.substr(0, 16);
+                    //res=res.replace(/[^\d.]/g, ""); //清除“数字”和“.”以外的字符  
+                    //res=res.replace(/^\./g, ""); //验证第一个字符是数字而不是.
+                    //res=res.replace(/\.{2,}/g, ".");//只保留第一个. 清除多余的   
+                    //res=res.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+                    //res=res.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');//只能输入两个小数   
+                    //if (res.indexOf(".") < 0 && res != "") { //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+                    //    res = parseFloat(res);
+                    //}
+                    if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(res)) {
+                        $.luck.error('金额只能是2位小数')
+                        return false
+                    }
+                    dome.html(res)
+                })
+            })
+        },
+        //获取员工分类
+        GetStaffClassList: function (resolve, reject) {
+            //员工分类
+            $.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
+                if (res.status == 1) {
+                    _this.StaffClassList = res.data;
+                    resolve();
+                }
+            });
+        },
+        //获取提成员工
+        GetStaffList: function (resolve, reject) {
+            //提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
+            $.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
+                if (res.status == 1) {
+                    _this.StaffList = res.data;
+                    resolve();
+                }
+            });
+        },
+        //提成员工
+        chooseMembergetCommission: function () {
+            var _this = this;
+            var choosedStaffAry=[];
+            var html = '';
+            //员工树形列表
+            if (_this.StaffClassList.length > 0) {
+                $.each(_this.StaffClassList, function (index, item) {
+                    html += '<div class="layui-collapse">'
+                    html += '<div class="layui-colla-item">'
+                    html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
+                    html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
+                    if (_this.StaffList.length > 0) {
+                        $.each(_this.StaffList, function (n, items) {
+                            if (items.StaffClassId == item.Id) {
+                                html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
+                            }
+                        })
+                    }
+                    html += '</div>'
+                    html += '</div>'
+                    html += '</div>'
+                })
+            }
+            $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
+            //已选择员工列表
+            var tab_staff = table.render({
+                elem: '#StaffList',
+               // data: _this.choosedStaffAry,
+                cellMinWidth: 95,
+                cols: [
+                    [
+                        { field: 'StaffName', title: '姓名', align: 'center' },
+                        { field: 'CommissionMoney', title: '自定义提成金额', edit: 'text', align: 'center',event: "money"  },
+                        { field: 'Remark', title: '备注', edit: 'text', align: 'center' },
+                        {
+                            title: '操作', align: 'center', templet: function (d) {
+                                var html = '';
+                                html += '<a class="layui-btn layui-btn-xs tb-btn-deleat" lay-event="delete">删除</a> ';
+                                return html;
+                            }
+                        },
+                    ]
+                ]
+            });
+            table.on('tool(StaffList)', function (obj) {
+                var layEvent = obj.event;
+                switch (layEvent) {
+                    case "delete":
+                        //layer.confirm('真的删除行么', function(index){
+                        $.each(choosedStaffAry, function (index, item) {
+                            if (item.StaffId == obj.data.StaffId) {
+                                choosedStaffAry.splice(index, 1)
+                                return
+                            }
+                        })
+                        $("body").find('.staff-list li[data-id="' + obj.data.StaffId + '"]').removeAttr("class");
+                        obj.del();
+                        //layer.close(index);
+                        //});
+                        break;
+                    case "money":
+                        $(obj.tr).find(".layui-table-edit").keyup(function () {
+                            var val = $(this).val();
+                            cashier.clearNoNum(this);
+                            //if (val == "") $(this).val("不填默认使用提成方案")
+                        });
+                        break;
+                }
+            })
+            table.on('edit(StaffList)', function (obj) {
+                $.each(choosedStaffAry, function (index, item) {
+                    if (item.StaffId == obj.data.StaffId) {
+                        choosedStaffAry.splice(index, 1, obj.data)
+                        return
+                    }
+                })
+            });
+            $("body").on("click", ".choose-member", function () {
+                layer.open({
+                    type: 1,
+                    id: "searchMemCard",
+                    title: '选择提成员工',
+                    closeBtn: 1,
+                    shadeClose: false,
+                    shade: 0.3,
+                    maxmin: false,//禁用最大化，最小化按钮
+                    resize: false,//禁用调整大小
+                    area: ['90%', '80%'],
+                    btn: ['确认', '清除'],
+                    skin: "lomo-ordinary",
+                    content: $(".lomo-xztcyg"),
+                    success: function () {
+                        choosedStaffAry= Object.assign([], _this.choosedStaffAry) ;
+                        $("body").find('.staff-list li').removeAttr("class");
+                        $.each(choosedStaffAry, function (index, item) {
+                            $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
+                        })
+                        tab_staff.reload({
+                            data: choosedStaffAry
+                        });
+                        element.render();
+                    },
+                    yes: function (index) {
+                        layer.close(index)
+                        var html = '';
+                        $(".staffname").remove();
+                        _this.choosedStaffAry=Object.assign([],choosedStaffAry)  
+                        $.each(_this.choosedStaffAry, function (index, item) {
+                            html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
+                        })
+                        $(".lomo-tcyg .nameTitle").after(html);
+                    },
+                })
+            });
+            //商品页面删除提成员工
+            $("body").on("click", ".deletStaff", function () {
+                var id = $(this).parent(".name").attr("data-id");
+                
+                $.each(_this.choosedStaffAry, function (index, item) {
+                    if (item.StaffId == id) {
+                        $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').removeAttr("class");
+                        _this.choosedStaffAry.splice(index, 1)
+                        return false;
+                    }
+                })
+                $(this).parent(".name").remove();
+            })
+            //点击员工分类
+            $("body").on("click", ".staff-list li", function () {
+                var id = $(this).attr("data-id"), name = $(this).attr("data-name");
+                var newData = {
+                    "StaffId": id,
+                    "StaffName": name,
+                    "CommissionMoney": '不填默认使用提成方案',
+                    "Remark": '',
+                }
+                $(this).toggleClass("active");
+                if ($(this).attr("class").indexOf("active") >= 0) {
+                    choosedStaffAry.push(newData);
+                } else {
+                    $.each(_this.choosedStaffAry, function (index, item) {
+                        if (item.StaffId == id) {
+                            choosedStaffAry.splice(index, 1)
+                            return
+                        }
+                    })
+                }
+                tab_staff.reload({
+                    data: choosedStaffAry
+                });
+            })
+        },
+      
 
         //结算购物车界面
         BindConsumeVenueHtml: function () {
+            var _this = this;
+            _this.MemberSpecials();//计算价格
+            _this.getShopActivity();//获取店铺优惠活动
             var html = "";
-            if (_this.orderVenueDetailList.length > 0 && _this.orderVenueDetailList.Id != "") {
-                $.each(_this.orderVenueDetailList, function (index, item) {
+            if (_this.shoppingCar.length > 0 && _this.shoppingCar.Id != "") {
+                $.each(_this.shoppingCar, function (index, item) {
                     html += '<div class="order-list">';
                     //场地信息
                     html += '<dl>';
                     if (item.IsMainVenue == 1) {
+                        _this.venue = {
+                            Id: item.VenueID,//场馆Id
+                            name: item.VenueName,//场馆名称
+                            status: item.VenueStatus,//场馆状态
+                            price: item.Price,//单价
+                            specials: item.Specials //特价
+                        };
                         html += '<dt class="addnew"><button id="addProductVenue" class="add-bt" style="width: 100%;">添加商品</button></dt>';
                     }
                     html += '<dd>';
@@ -1128,15 +1663,22 @@
                     html += '<h1>' + item.VenueName + '</h1>';
                     var starttime = cashier.dateFormat(item.StartTime).replace(/-/g, "/");
                     var t1 = new Date(starttime);
-                    var t2 = new Date();//luck.dateFormat(item.EndTime).replace(/-/g, "/")
+                    var t2 = new Date();
+                    if (item.IsMainVenue != 1) {
+                        var endtime = cashier.dateFormat(item.EndTime).replace(/-/g, "/");
+                        t2 = new Date(endtime);
+                    }
                     var time = t2.getTime() - t1.getTime();
                     var daytime = cashier.millisecondToTime(time);
                     html += ' <span class="size-gray">累计时长: <i class="size-green">' + daytime + '</i></span>';
                     html += ' <span class="size-gray">开始时间: <i style="color:#000">' + cashier.dateFormat(item.StartTime) + '</i></span>';
+                    if (item.IsMainVenue != 1) {
+                        html += ' <span class="size-gray">结束时间: <i style="color:#000">' + cashier.dateFormat(item.EndTime) + '</i></span>';
+                    }
                     if (member == null) {
-                        html += '<span class="size-gray">单价: <i>¥' + item.Price + '</i></span>';
+                        html += '<span class="size-gray">单价: <i>¥' + parseFloat(item.Price).toFixed(2) + '</i></span>';
                     } else {
-                        html += '<span class="size-gray">单价: <i>¥' + item.Specials + '</i> <b>¥' + item.Price + '</b></span>';
+                        html += '<span class="size-gray">单价: <i>¥' + parseFloat(item.Specials).toFixed(2) + '</i> <b>¥' + parseFloat(item.Price).toFixed(2) + '</b></span>';
                     }
                     html += '</div>';
                     html += '</dd>';
@@ -1145,20 +1687,27 @@
                     html += '<div class="order-list venue-pro-list">';
                     if (item.VenueGoodsList != null && item.VenueGoodsList.length > 0) {
                         $.each(item.VenueGoodsList, function (inx,itm) {
-                            html += '<dl>';
+                            var data = JSON.stringify(itm);
+                            html += '<dl data-obj=\'' + data + '\' data-venueid="' + item.VenueID + '">';
                             html += '<dt><span class="order-nub fr">' + itm.Number + '</span></dt>';
                             html += '<dd>';
                             if(itm.GoodsType==1){//普通产品
                                 html += '<i class="colorIcon blue">库</i>';
-                            } else if (item.GoodsType == 2) {//服务
+                            } else if (itm.GoodsType == 2) {//服务
                                 html += '<i class="colorIcon green">服</i>';
+                            } else if (itm.GoodsType == 5) {//套餐
+                                html += '<i class="colorIcon red">套</i>';
                             }
                             html += '<div class="order-name">';
                             html += '<h1>' + itm.GoodsName + '</h1>';
                             if (member == null) {
-                                html += '<span>单价: <i>¥' + itm.Price + '</i></span>';
+                                if (item.IsModify == 1) {
+                                    html += '<span>单价: <i>¥' + parseFloat(itm.Specials).toFixed(2) + '</i></span>';
+                                } else {
+                                    html += '<span>单价: <i>¥' + parseFloat(itm.Price).toFixed(2) + '</i></span>';
+                                }
                             } else {
-                                html += '<span>单价: <i>¥' + itm.Specials + '</i> <b>¥' + itm.Price + '</b></span>';
+                                html += '<span>单价: <i>¥' + parseFloat(itm.Specials).toFixed(2) + '</i> <b>¥' + parseFloat(itm.Price).toFixed(2) + '</b></span>';
                             }
                             html += '</div>';
                             html += '</dd>';
@@ -1172,16 +1721,16 @@
 
                 //结算信息
                 $("#spanGoodsNum").html(_this.payMoneyInfo.GoodsNum);
-                $("#spanTotalPoint").html(cashier.MoneyPrecision(_this.payMoneyInfo.TotalPoint));
+                $("#spanTotalPoint").html(parseFloat(_this.payMoneyInfo.TotalPoint).toFixed(2));
                 if (member == null) {
-                    $("#spanDiscountMoney").html(cashier.MoneyPrecision(_this.payMoneyInfo.TotalMoney));
+                    $("#spanDiscountMoney").html(parseFloat(_this.payMoneyInfo.TotalMoney).toFixed(2));
                     $("#smallTotalMoney").hide();
                 } else {
-                    $("#spanDiscountMoney").html(cashier.MoneyPrecision(_this.payMoneyInfo.DiscountMoney));
-                    $("#spanTotalMoney").html(cashier.MoneyPrecision(_this.payMoneyInfo.TotalMoney));
+                    $("#spanDiscountMoney").html(parseFloat(_this.payMoneyInfo.DiscountMoney).toFixed(2));
+                    $("#spanTotalMoney").html(parseFloat(_this.payMoneyInfo.TotalMoney).toFixed(2));
                     $("#smallTotalMoney").show();
                 }
-                $("#spanPreferentialAmount").html(cashier.MoneyPrecision(_this.payMoneyInfo.PreferentialAmount));
+                $("#spanPreferentialAmount").html(parseFloat(_this.payMoneyInfo.PreferentialAmount).toFixed(2));
                 if (member != null) {
                     http.cashierEnd.seleMembers(member, user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
                     $(".timescount").show();
@@ -1198,9 +1747,10 @@
         //挂单购物车界面
         BindVenueRestingHtml: function () {
             var _this = this;
+            _this.MemberSpecials();//计算价格
             var html = "";
-            if (_this.orderVenueDetailList.length > 0 && _this.orderVenueDetailList.Id != "") {
-                $.each(_this.orderVenueDetailList, function (index, item) {
+            if (_this.shoppingCar.length > 0 && _this.shoppingCar.Id != "") {
+                $.each(_this.shoppingCar, function (index, item) {
                     if (item.IsMainVenue == 1) {
                         _this.venueRestingGoods = item;
                         html += '<div class="order-list">';
@@ -1218,9 +1768,9 @@
                         html += ' <span class="size-gray">累计时长: <i class="size-green">' + daytime + '</i></span>';
                         html += ' <span class="size-gray">开始时间: <i style="color:#000">' + cashier.dateFormat(item.StartTime) + '</i></span>';
                         if (member == null) {
-                            html += '<span class="size-gray">单价: <i>¥' + item.Price + '</i></span>';
+                            html += '<span class="size-gray">单价: <i>¥' + parseFloat(item.Price).toFixed(2) + '</i></span>';
                         } else {
-                            html += '<span class="size-gray">单价: <i>¥' + item.Specials + '</i> <b>¥' + item.Price + '</b></span>';
+                            html += '<span class="size-gray">单价: <i>¥' + parseFloat(item.Specials).toFixed(2) + '</i> <b>¥' + parseFloat(item.Price).toFixed(2) + '</b></span>';
                         }
                         html += '</div>';
                         html += '</dd>';
@@ -1229,7 +1779,7 @@
                         html += '<div class="order-list venue-pro-list">';
                         if (item.VenueGoodsList != null && item.VenueGoodsList.length > 0) {
                             $.each(item.VenueGoodsList, function (inx, itm) {
-                                html += '<dl data-id="' + itm.GoodsID + '" data-stocknum="' + itm.StockNum + '">';
+                                html += '<dl data-id="' + itm.Id + '" data-stocknum="' + itm.StockNum + '" data-gid="' + itm.GID + '">';
                                 html += '<dt>';
                                 html += '<span class="order-reduce">-</span>';
                                 html += '<span class="order-nub">' + itm.Number + '</span>';
@@ -1238,15 +1788,21 @@
                                 html += '<dd>';
                                 if (itm.GoodsType == 1) {//普通产品
                                     html += '<i class="colorIcon blue">库</i>';
-                                } else if (item.GoodsType == 2) {//服务
+                                } else if (itm.GoodsType == 2) {//服务
                                     html += '<i class="colorIcon green">服</i>';
+                                } else if (itm.GoodsType == 5) {//套餐
+                                    html += '<i class="colorIcon red">套</i>';
                                 }
                                 html += '<div class="order-name">';
                                 html += '<h1>' + itm.GoodsName + '</h1>';
                                 if (member == null) {
-                                    html += '<span>单价: <i>¥' + itm.Price + '</i></span>';
+                                    if (item.IsModify == 1) {
+                                        html += '<span class="size-gray">单价: <i>¥' + parseFloat(itm.Specials).toFixed(2) + '</i></span>';
+                                    } else {
+                                        html += '<span class="size-gray">单价: <i>¥' + parseFloat(itm.Price).toFixed(2) + '</i></span>';
+                                    }
                                 } else {
-                                    html += '<span>单价: <i>¥' + itm.Specials + '</i> <b>¥' + itm.Price + '</b></span>';
+                                    html += '<span>单价: <i>¥' + parseFloat(itm.Specials).toFixed(2) + '</i> <b>¥' + parseFloat(itm.Price).toFixed(2) + '</b></span>';
                                 }
                                 html += '</div>';
                                 html += '</dd>';
@@ -1276,9 +1832,9 @@
             html += '<div class="order-name">';
             html += '<h1>' + _this.venue.name + '</h1>';
             if (member == null) {
-                html += '<span class="size-gray">单价: <i>¥' + _this.venue.price + '</i></span>';
+                html += '<span class="size-gray">单价: <i>¥' + parseFloat(_this.venue.price).toFixed(2) + '</i></span>';
             } else {
-                html += '<span class="size-gray">单价: <i>¥' + _this.venue.specials + '</i> <b>¥' + _this.venue.price + '</b></span>';
+                html += '<span class="size-gray">单价: <i>¥' + parseFloat(_this.venue.specials).toFixed(2) + '</i> <b>¥' + parseFloat(_this.venue.price).toFixed(2) + '</b></span>';
             }
             html += '</div>';
             html += '</dd>';
@@ -1295,27 +1851,309 @@
                 $("#btnOpenVenue").show();
                 $("#btnVenueRestingGoods").hide();
                 $("#btnVenueConsume").hide();
+                $("#btnRefreshMoney").hide();
             } else if (type == 2) {//结账
                 $("#divOrderPayItem").show();
                 $("#btnOpenVenue").hide();
                 $("#btnVenueRestingGoods").hide();
                 $("#btnVenueConsume").show();
+                $("#btnRefreshMoney").hide();
+            } else if (type == 3) {//刷新计价
+                $("#divOrderPayItem").show();
+                $("#btnOpenVenue").hide();
+                $("#btnVenueRestingGoods").hide();
+                $("#btnVenueConsume").hide();
+                $("#btnRefreshMoney").show();
             }
         },
-        //会员刷卡场馆信息变更
-        BindMemVenueHtml: function () {
+        //会员刷卡场馆购物车信息变更
+        BindMemVenue: function () {
             var _this = this;
-            if (member == null) {
-                $.luck.error("请先刷会员卡");
-                return false;
+            if (_this.shoppingCar == null) {
+                _this.IsShowBtn(1);
+            } else {
+                _this.BindConsumeVenueHtml();
             }
-            _this.BindOpenVenueHtml();
-
         },
         //会员价格计算
         MemberSpecials: function () {
+            var _this = this;
 
+            _this.shoppingCar = [];
+            var TotalMoney = 0.00;//总金额
+            var DiscountMoney= 0.00;//实付金额
+            var TotalPoint = 0.00;//获得积分
+            var GoodsNum = 0.00;//商品数量
+            //特殊折扣规则集合
+            var classRules = null;
+            if (member != null) {
+                classRules = member.ClassDiscountRulesList != undefined ? member.ClassDiscountRulesList : null;
+            }
+            $.each(_this.orderVenueDetailList, function (index, item) {
+                var shoppingCar = {
+                    Id: item.Id,//场馆消费订单详情ID
+                    MainID: item.MainID,//主开台ID
+                    VenueID: item.VenueID,//场馆ID
+                    VenueName: item.VenueName,//场馆名称
+                    Price: item.Price,//单价
+                    Specials: item.Specials,//会员特价
+                    VenueStatus: item.VenueStatus,//1-正常 0-维修 2-使用 3待清台
+                    StartTime: item.StartTime,//计时产品开始时间
+                    EndTime: item.EndTime,//计时产品结束时间
+                    IsMainVenue: item.IsMainVenue,//是否主场馆
+                    VenueGoodsList: []
+                }
+                //场馆场地信息
+                var VenueGoodsList = item.VenueGoodsList;
+                if (VenueGoodsList != null && VenueGoodsList.length > 0) {
+                    $.each(VenueGoodsList, function (inx, itm) {
+                        itm.GID=uuid();
+                        var discount = 1; //记录最低,默认为会员等级折扣
+                        var goodsPoint = 0.00;//单品获得积分
+                        var Specials = 0.00;//商品特价
+                        if (member == null) {
+                            Specials = itm.Price;
+                            if (itm.IsModify == 1) {
+                                Specials = itm.Specials;
+                            }
+                            shoppingCar.VenueGoodsList.push({
+                                GID:itm.GID,//唯一标识
+                                Id: itm.Id,// 产品ID  
+                                GoodsType: itm.GoodsType,//商品类型
+                                GoodsCode: itm.GoodsCode,//产品编号
+                                GoodsName: itm.GoodsName,//产品名称
+                                Price: itm.Price,//零售价格
+                                Specials: Specials,//产品特价
+                                Images: itm.Images,//产品图片
+                                IsPoint: itm.IsPoint,//是否积分
+                                PointType: itm.PointType,//积分方式
+                                MinDiscount: itm.MinDiscount,//最低折扣
+                                IsDiscount: itm.IsDiscount,//是否打折
+                                Number: itm.Number,//购买数量
+                                Point: 0.00,//积分数量
+                                GoodsClass: itm.GoodsClass,//商品分类
+                                TotalMoney: (Specials * itm.Number).toFixed(4),//折后金额
+                                StockNum: itm.StockNum,//库存  
+                                IsModify:itm.IsModify,//是否修改价格
+                                memberSchemes: '散客',
+                                Staffs: itm.Staffs==undefined?null:itm.Staffs//提成员工
+                            })
+                            DiscountMoney += (Specials * itm.Number);
+                            GoodsNum += itm.Number;
+                            TotalMoney += (Specials * itm.Number);
+                        } else {
+                            var memberSchemes = '';
+                            if (itm.Specials > 0) {
+                                Specials = itm.Specials;//商品特价
+                                memberSchemes = "商品特价";
+                            } else {
+                                memberSchemes = "商品折扣";
+                                var classDiscount = 1;   //商品分类折扣
+                                //商品分类折扣计算
+                                if (itm.GoodsClass !== undefined && classRules != null) {
+                                    $.each(classRules, function (i, it) {
+                                        if (it.GoodsClassId == itm.GoodsClass) {
+                                            classDiscount = itm.Discount;
+                                            return false;
+                                        }
+                                    })
+                                }
+                                //商品折扣
+                                if (itm.IsDiscount == 0) //是否折扣
+                                {
+                                    if (classDiscount < 1) {
+                                        discount = classDiscount;
+                                        memberSchemes = "会员商品分类折扣(未启用商品折扣)"
+                                    }
+                                    else {
+                                        discount = member.DiscountPercent;
+                                        memberSchemes = "会员默认折扣(未启用商品折扣)"
+                                    }
+                                } else {
+                                    if (classDiscount < 1) {
+                                        // 商品最低折扣  会员商品分类 比较
+                                        if (itm.MinDiscount > classDiscount) {
+                                            memberSchemes = "会员商品分类折扣(启用商品折扣)"
+                                            discount = classDiscount
+                                        }
+                                        else {
+                                            memberSchemes = "商品最低折扣(启用商品折扣)"
+                                            discount = itm.MinDiscount
+                                        }
+                                    } else {
+                                        //商品最低折扣 会员默认折扣 比较
+                                        if (itm.MinDiscount > member.DiscountPercent) {
+                                            memberSchemes = "会员默认折扣(启用商品折扣)"
+                                            discount = member.DiscountPercent
+                                        }
+                                        else {
+                                            memberSchemes = "商品最低折扣(启用商品折扣)"
+                                            discount = itm.MinDiscount
+                                        }
+                                    }
+                                }
+                                Specials = (itm.Price * discount).toFixed(4)
+                            }
+                            //获取积分计算
+                            if (itm.IsPoint == 1) {
+                                goodsPoint = (itm.PointType * itm.Number)
+                                TotalPoint = TotalPoint + goodsPoint
+                            }
+                            else if (member.PointPercent > 0) {
+                                goodsPoint = (memberPrice * itm.Number * member.PointPercent).toFixed(4)
+                                TotalPoint = TotalPoint + goodsPoint;// 按折后金额给积分
+                            }
+                            if (itm.IsModify == 1) {
+                                Specials = itm.Specials;
+                            }
+                            shoppingCar.VenueGoodsList.push({
+                                GID:itm.GID,//唯一标识
+                                Id: itm.Id,// 产品ID  
+                                GoodsType: itm.GoodsType,//商品类型
+                                GoodsCode: itm.GoodsCode,//产品编号
+                                GoodsName: itm.GoodsName,//产品名称
+                                Price: itm.Price,//零售价格
+                                Specials: Specials,//产品特价
+                                Images: itm.Images,//产品图片
+                                IsPoint: itm.IsPoint,//是否积分
+                                PointType: itm.PointType,//积分方式
+                                MinDiscount: itm.MinDiscount,//最低折扣
+                                IsDiscount: itm.IsDiscount,//是否打折
+                                Number: itm.Number,//购买数量
+                                Point: goodsPoint,//积分数量
+                                GoodsClass: itm.GoodsClass,//商品分类
+                                TotalMoney: (Specials * itm.Number).toFixed(4),//折后金额
+                                StockNum: itm.StockNum,//库存  
+                                IsModify:itm.IsModify,//是否修改价格
+                                memberSchemes: memberSchemes,
+                                Staffs:  itm.Staffs==undefined?null:itm.Staffs//提成员工
+                            })
+                            DiscountMoney += (Specials * itm.Number);
+                            GoodsNum += itm.Number;
+                            TotalMoney += (itm.Price * itm.Number);
+                        }
+
+                    })
+                }
+                _this.shoppingCar.push(shoppingCar);
+            })
+
+            //合计场馆金额
+            $.each(_this.VenueMoney, function (i, it) {
+                TotalMoney = TotalMoney + it.TotalMoney;
+                if (member != null) {
+                    DiscountMoney = DiscountMoney + it.DiscountMoney;
+                } else {
+                    DiscountMoney = DiscountMoney + it.TotalMoney;
+                }
+                TotalPoint = TotalPoint + it.TotalPoint;
+            })
+
+            //PreferentialAmount = TotalMoney - DiscountMoney;
+            PreferentialAmount = 0;
+            _this.payMoneyInfo = {
+                TotalMoney: TotalMoney.toFixed(4),//总金额
+                DiscountMoney: DiscountMoney.toFixed(4),//实付金额
+                TotalPoint: TotalPoint.toFixed(4),//获得积分
+                PreferentialAmount: PreferentialAmount.toFixed(4),//优惠金额
+                GoodsNum: GoodsNum,//商品数量
+                amountActivityMoney: 0,//活动减金额
+                amountActivityPoint: 0//活动获得积分
+            };
         },
+        //活动优惠价格计算
+        setpActivity: function () {
+            var _this =this 
+            var currentPrice = _this.payMoneyInfo.DiscountMoney //当前总价
+        
+            _this.payMoneyInfo.amountActivityMoney = 0.0000 //活动减金额
+            _this.payMoneyInfo.amountActivityPoint = 0.0000 //活动获得积分
+
+            if (_this.chooseActivity.Id != undefined){
+                if (_this.chooseActivity.LimitUsedAmount <= currentPrice){           
+                    if (_this.chooseActivity.IsReduceAmount == 1) {
+                        _this.payMoneyInfo.amountActivityMoney += _this.chooseActivity.ReduceAmount
+                    }
+                    if (_this.chooseActivity.IsGivePoint == 1) {
+                        _this.payMoneyInfo.amountActivityPoint += that.chooseActivity.GivePoint
+                    }              
+                }else{
+                    _this.chooseActivity = {}
+                    console.log("活动不满足金额->清空")
+                }
+            }
+
+            if (_this.chooseBirthdayActivity.Id != undefined){
+                if (_this.chooseBirthdayActivity.LimitUsedAmount <= currentPrice) {
+                    if (_this.chooseBirthdayActivity.IsReduceAmount == 1) {
+                        _this.payMoneyInfo.amountActivityMoney += _this.chooseBirthdayActivity.ReduceAmount
+                    }
+
+                    if (_this.chooseBirthdayActivity.IsGivePoint == 1) {
+                        _this.payMoneyInfo.amountActivityPoint += _this.chooseBirthdayActivity.GivePoint
+                    }              
+                }else{
+                    _this.chooseBirthdayActivity = {}
+                    console.log("活动不满足金额(生日)");
+                }
+            }
+            console.log('活动计算结果 ==>', _this.payMoneyInfo)
+        },
+        //结算按钮倒计时
+        BtnCountDown: function (dom) {
+            var _this = this;
+            if (_this.countdown == 0) {
+                _this.IsShowBtn(3);
+                _this.countdown = 120;
+                return;
+            } else {
+                dom.attr('disabled', true);
+                dom.text("立即结账(" + _this.countdown + ")");
+                _this.countdown--;
+            }
+            _this.timer = setTimeout(function () {
+                _this.BtnCountDown(dom)
+            }, 1000)
+        },
+        //优惠活动页面渲染
+        BindActivity: function () {
+            var _this = this;
+            //活动勾选状态 
+            $('.act_item').removeClass('checked')
+            var actHtml = ''
+            if (_this.chooseBirthdayActivity.Id != undefined) {
+                actHtml += '<i class="shopAct">' + _this.chooseBirthdayActivity.ActName + '</i>'
+                $('#act_' + _this.chooseBirthdayActivity.Id).addClass('checked')
+            }
+
+            if (_this.chooseActivity.Id != undefined) {
+                actHtml += '<i class="shopAct">' + _this.chooseActivity.ActName + '</i>'
+                $('#act_' + _this.chooseActivity.Id).addClass('checked')
+            }
+
+            if (actHtml == '') {
+                if (hasShopAcivity) {
+                    $(".order-select").html('请选择优惠活动')
+                }
+                else {
+                    $(".order-select").html('暂无优惠活动')
+                }
+            }
+            else {
+                $(".order-select").html(actHtml)
+            }
+
+            //结算信息
+            TotalPoint = _this.payMoneyInfo.TotalPoint + _this.payMoneyInfo.amountActivityPoint;
+            PreferentialAmount = _this.payMoneyInfo.amountActivityMoney;
+            $("#spanTotalPoint").html(cashier.MoneyPrecision(TotalPoint));
+            $("#spanPreferentialAmount").html(cashier.MoneyPrecision(PreferentialAmount));
+        },
+        //关闭弹窗
+        closePopup: function () {
+            var box = $(".submit-bt-clear").parents('.fadeIn');
+            cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-body');
+        }
     }
 
     initPage();

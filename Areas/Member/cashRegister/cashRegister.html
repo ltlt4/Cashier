@@ -569,11 +569,11 @@
 		<!--支付弹层/微信/支付宝-->
 		<div class="pop-area paybox hide pd20" id="paybox">
 			<h3><img src="../../../Theme/images/tool013.png" /> 支付宝支付</h3>
-			<h3>支付金额：1000元</h3>
+			<h3>支付金额：<span id ='onlinePayMoney'>1000</span>元</h3>
 			<div class="layui-form-item">
 				<label class="layui-form-label">收款码</label>
 				<div class="layui-input-block card-num-form" style="float: none;">
-					<input type="text" class="layui-input" value="" placeholder="请扫面顾客付款二维码" id="paymentCode" />
+					<input type="text" class="layui-input" value="" placeholder="请扫面顾客付款二维码" id="paymentCode" autocomplete='off' />
 					<span class="keyboard-icon" onclick="luckKeyboard.showSmallkeyboard(this)"></span>
 				</div>
 			</div>
@@ -584,7 +584,7 @@
         <div class="lomo-mask-left hide"></div>
         <!--遮罩层5 start-->
         <div class="lomo-mask-body5 hide"></div>
-    </div>
+	</div>	
 </body>
 <script src="../../../Theme/script/jquery3.4.1.min.js"></script>
 <script src="../../../Theme/plugins/layui/layui.js"></script>

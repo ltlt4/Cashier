@@ -191,22 +191,6 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             $('#Staff').find('select').html(_html)
         })
         .then(customList())
-    // if ($.session.get('staffInf') && $.session.get('staffClass')) {
-    //     var staffInf = $.session.get('staffInf')
-    //     var staffClass = $.session.get('staffClass')
-    //     var _html = '<option value="">请选择提成员工</option>'
-    //     for (i = 0; i < staffClass.length; i++) {
-    //         _html += `<optgroup label="${staffClass[i].ClassName}">`
-    //         for (g = 0; g < staffInf.length; g++) {
-    //             if (staffInf[g].StaffClassId == staffClass[i].Id) {
-    //                 _html += `<option value="${staffInf[g].id}">${staffInf[g].StaffName}</option>`
-    //                 staffInf[g].ClassName = staffClass[i].ClassName
-    //             }
-    //         }
-    //         _html += ` </optgroup>`
-    //     }
-    //     $('#Staff').find('select').html(_html)
-    // }
 
     //获取自定义字段
     function customList() {
@@ -246,7 +230,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
                                     html += '<li class="layui-form-item" id="PassWord2">'
                                     html += '<em>确认密码：</em>'
                                     html += '<span>'
-                                    html += '<input name="addPassWord2" type="text" placeholder="再次输入会员密码" class="cd-form-input" lay-verify="repass" />'
+                                    html += '<input name="addPassWord2" type="password" placeholder="再次输入会员密码" class="cd-form-input" lay-verify="repass2|pwd" />'
                                     html += '</span></li>'
                                 } else {
                                     html += list[i].html
@@ -305,9 +289,8 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
                         }
                     }
                     html += `<li style="text-align:right;width: 100%">
-                <button type="button" class="submit-bt-clear">取消[ESC]</button>
-                <button  class="submit-bt" lay-submit="" lay-filter="addMem">保存[F5]</button>
-            </li>`
+                <button type="button" class="submit-bt-clear">取消</button>
+                <button  class="submit-bt" lay-submit="" lay-filter="addMem">保存</button></li>`
 
                     $('.layui-form').html(html);
                     if (html.indexOf('Birthday') != -1) {
@@ -317,10 +300,25 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
                             theme: '#41c060',
                             type: 'date',
                             done: function (value, date, endDate) {
-
+                                if ($("input[name='MemReg_BirthdayType']:checked").val() == 1) {
+                                    $("#timeBirthdaySon").val(value);
+                                } else if ($("input[name='MemReg_BirthdayType']:checked").val() == 0) {
+                                    var date = value.split('-')
+                                    var _date = LunarCalendar.solarToLunar(date[0], date[1], date[2]);
+                                    $("#timeBirthdaySon").val(_date.lunarYearName + _date.lunarMonthName + _date.lunarDayName)
+                                }
                             }
                         });
                     }
+                    form.on('radio(MemReg_BirthdayType)', function (data) {
+                        if (data.value == 1) {
+                            $("#timeBirthdaySon").val($("#timeBirthday").val());
+                        } else if (data.value == 0 && $("#timeBirthday").val() != '') {
+                            var date = $("#timeBirthday").val().split('-')
+                            var _date = LunarCalendar.solarToLunar(date[0], date[1], date[2]);
+                            $("#timeBirthdaySon").val(_date.lunarYearName + _date.lunarMonthName + _date.lunarDayName)
+                        }
+                    });
                     for (var i = 0; i < dateSelect.length; i++) {
                         laydate.render({
                             elem: dateSelect[i],
@@ -337,7 +335,6 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             })
         })
     }
-
 
     //编辑输入规则
     form.verify({
@@ -384,8 +381,17 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             }
         },
         repass: function (value, item) {
+            var psw2 = $('#PassWord').find('input').val()
+            if (value != '') {
+                if (!new RegExp(psw2).test(value)) {
+                    return '两次输入的密码不一致';
+                }
+            }
+        },
+        repass2: function (value, item) {
             var psw = $('#PassWord').find('input').val()
-            if (psw != '' && value != '') {
+            console.log(psw)
+            if (value != '') {
                 if (!new RegExp(psw).test(value)) {
                     return '两次输入的密码不一致';
                 }
@@ -406,11 +412,21 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
     });
     //提交表单
     form.on('submit(addMem)', function (data) {
+        BirthdayType = $("input[name='MemReg_BirthdayType']:checked").val();
         if (data.field.addBirthday) {
             var Birthday = data.field.addBirthday
-            var BirthdayYear = Birthday.split('-')[0],
-                BirthdayMonth = Birthday.split('-')[1],
-                BirthdayDay = Birthday.split('-')[2];
+            if (BirthdayType == 1) {
+                var BirthdayYear = Birthday.split('-')[0],
+                    BirthdayMonth = Birthday.split('-')[1],
+                    BirthdayDay = Birthday.split('-')[2];
+            } else if (BirthdayType == 2) {
+                var date = Birthday.split('-');
+                var _date = LunarCalendar.solarToLunar(date[0], date[1], date[2]);
+                var BirthdayYear = _date.lunarYear,
+                    BirthdayMonth = _date.lunarMonth,
+                    BirthdayDay = _date.lunarDay;
+            }
+
         } else {
             var BirthdayYear = 0,
                 BirthdayMonth = 0,
@@ -431,7 +447,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
         if (data.field.addShopID && $.session.get('Cashier_User').MShopID == $.session.get('Cashier_User').ShopID) {
             shopID = data.field.addShopID;
         } else if (!data.field.addShopID && $.session.get('Cashier_User').MShopID == $.session.get('Cashier_User').ShopID) {
-            shopID = $.session.get('Cashier_User').ShopID
+            shopID = $.session.get('Cashier_User').ShopID;
         } else if (!data.field.addShopID && $.session.get('Cashier_User').MShopID != $.session.get('Cashier_User').ShopID) {
             shopID = $.session.get('Cashier_User').MShopID;
         }
@@ -445,7 +461,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             PassWord: data.field.addPassWord ? data.field.addPassWord : "",
             Sex: data.field.addSex ? data.field.addSex : "",
             IdentityCode: data.field.addIdentityCode ? data.field.addIdentityCode : "",
-            BirthdayType: 1,
+            BirthdayType: BirthdayType,
             BirthdayYear: BirthdayYear,
             BirthdayMonth: BirthdayMonth,
             BirthdayDay: BirthdayDay,

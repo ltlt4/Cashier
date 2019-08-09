@@ -86,7 +86,6 @@
                 <dl class="vipInfo">
                     <!--会员信息-->
                 </dl>
-
                 <!--场地产品购物车-->
                 <div class="venue-product-area hide">
                     <div class="lomo-order">
@@ -183,17 +182,23 @@
                         </div>-->
                     </div>
                     <div class="jf-tool">
-                        <div id="divOrderPayItem">
+                        <div class="hide" id="divOrderPayItem">
                             <dl class="order-page">
                                 <dt>
-                                    <select name="" class="order-select">
-                                        <option>暂无优惠活动</option>
-                                    </select>
+                                    <p class="order-select">
+        						        暂无优惠活动
+        					        </p>
+        					        <span class="triangle_border_right gray"></span>
                                 </dt>
                                 <dd>
                                     <div class="order-page-down"><span></span></div>
                                     <div class="order-page-up"><span></span></div>
                                 </dd>
+        				        <div class="activity-list">
+        					        <ul class="check-box-list">
+        						
+        					        </ul>
+        				        </div>
                             </dl>
                             <div class="order-Pay">
                                 <ul>
@@ -208,10 +213,12 @@
                             <button type="button" class="add-bt" id="btnOpenVenue" style="width: 80%;margin-left:0; display:none">立即开台</button>
                             <button type="button" class="add-bt" id="btnVenueRestingGoods" style="width: 80%;margin-left:0; display:none">挂单并返回桌台</button>
                             <button type="button" class="add-bt" id="btnVenueConsume" style="width: 80%;margin-left:0; display:none">立即结账</button>
+                            <button type="button" class="add-bt" id="btnRefreshMoney" style="width: 80%;margin-left:0; display:none">刷新计价</button>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="lomo-mian-right">
                 <div class="goods-list venue-area">
                      <!--场地主体-->
@@ -353,6 +360,23 @@
             <div class="lomo-mask-body hide"></div>
             <!--遮罩层 end-->
 
+            <!--提成员工 start-->
+		    <p class="left-arrow-white"></p>
+		    <dl class="lomo-tcyg hide" id="goodsStaffs">
+		        <!--goodsStaffsTmp-->
+		    </dl>
+		    <!--选择提成员工 start-->
+		    <div class="lomo-xztcyg hide" style="padding: 10px;">
+			    <div class="layui-row layui-col-space10">
+				    <div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
+					
+				    </div>
+				    <div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
+					    <table id="StaffList" lay-filter="StaffList"></table>
+				    </div>
+			    </div>
+		    </div>
+
             <!--会员搜索弹层-->
 		    <div id="lomo-members-search" class="lomo-members-search lomo-search hide">
 			    <dl class="members-search-form">
@@ -390,5 +414,83 @@
     <script type="text/javascript" src="../../../Theme/script/verify.js"></script>
     <script type="text/javascript" src="../../../Theme/script/common.js"></script>
     <script type="text/javascript" src="../../../Theme/script/keyboard.js"></script>
+    <script type="text/javascript" src="../../../Scripts/linq.min.js"></script>
+    <script type="text/javascript" src="../../../Scripts/math.min.js"></script>
+    <script type="text/javascript" src="../../../Scripts/template-web.js"></script>
     <script type="text/javascript" src="../../../js/Member/tableConsumption/tableConsumption.js"></script>
+    <script type="text/javascript" src="../../../Theme/script/payCompose.js"></script>
+
+    <!--购物车商品信息模板-->
+    <script id="goodsStaffsTmp" type="text/html"> 
+        <dd>
+	        <div class="lomo-tcyg-goodsInfo"> <img src="{{Images}}">
+		        <div class="tcyg-goodsInfo">
+			        <h1>{{GoodsName}}</h1>
+			        <span>单价：¥{{Price}}</span><span>会员价：<i>¥{{Specials}}</i></span>
+			        <div class="tcyg-goodsInfo-bt" data-goodid="{{Id}}" data-venueid="{{venueId}}" data-gid="{{GID}}">
+                        {{if IsModify  == 1 }}
+                            <button type="button" class="add-bt deleteGoods">删除</button>
+                        {{else}}
+                            <button type="button" class="add-bt giveGoods">赠送</button>
+				            <button type="button" class="add-bt deleteGoods">删除</button>
+                        {{/if}}
+			        </div>
+		        </div>
+	        </div>
+	        <div class="tcyg-goodsInfo-price">
+		        <ul class="card-num-form">
+				    <li>现价
+                        <b class="change-price" >
+                        {{if isMem == 1 }}
+                        {{Specials}}
+                        {{else}}
+                        {{Price}}
+                        {{/if}}
+				        </b>
+                        <input type="hidden" value="" />
+				    </li>
+			        <li>数量<b>{{Number}}</b></li>
+			        <li>总价<b>{{TotalMoney}}</b></li>
+		        </ul>
+	        </div>
+	        <div class="lomo-tcyg-add clearfix m-t-20">
+		        <span class="name nameTitle">提成员工：</span>
+                {{each Staffs as item i}} 			
+		            <span class="name staffname" data-id="{{item.StaffId}}">{{item.StaffName}}<i class="deletStaff">x</i></span>
+                {{/each}}	
+		        <span class="add choose-member">+</span>
+	        </div>
+	        <div class="tcyg-form-bt" data-goodid="{{Id}}" data-venueid="{{venueId}}" data-gid="{{GID}}">
+		        <button type="button" class="submit-bt-clear">取消</button>
+		        <button type="button" class="submit-bt staffSubmit">确认</button>
+	        </div>
+        </dd>
+    </script> 
+
+
+    <!--优惠活动模板-->
+    <script id="activityTmp" type="text/html">  	
+		{{each $data as item i}} 		
+			<li class="act_item {{@ item.ValidType|fnActMode}}" id="act_{{item.Id}}"  data-id ='{{item.Id}}' data-obj='{{item}}'><h3>{{item.ActName}}</h3>
+				<p>
+					消费满 {{item.LimitUsedAmount}} 
+					{{if item.IsReduceAmount==1}} 
+						减免{{item.ReduceAmount}}元
+					{{/if}}
+					{{if item.IsGiveMoney==1}} 					
+						赠送余额{{res.GiveMoney}}元
+					{{/if}}
+					{{if item.IsGivePoint==1}} 					
+						赠送积分{{item.GivePoint}}
+					{{/if}}
+					{{if item.IsGiveConpon==1}} 
+						{{each $data. as item2 k}}
+							赠送 {{item2.Name}} {{item2.Qty}}张
+						{{/each}}								
+					{{/if}}					
+				</p>
+			</li>
+		{{/each}}	
+   </script>
+
 </html>

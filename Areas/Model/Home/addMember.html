@@ -38,9 +38,9 @@
                 <form action="" class="layui-form">
                     <li id="CardID" class="layui-form-item">
                         <em>会员卡号：</em>
-                        <span class="keyIcon">
+                        <span>
                             <input name="addCardID" type="text" placeholder="输入会员卡号(F2)" class="cd-form-input"
-                                lay-verify="required|cardID" autocomplete="off" />
+                                lay-verify="required|cardID" autocomplete="off" maxlength="20" />
                             <small class="col_red MustCode">*</small>
                         </span>
                     </li>
@@ -48,14 +48,14 @@
                         <em>会员姓名：</em>
                         <span>
                             <input name="addCardName" type="text" placeholder="输入会员姓名" class="cd-form-input"
-                                lay-verify="name" />
+                                lay-verify="name" maxlength="20" />
                         </span>
                     </li>
                     <li id="Mobile" class="layui-form-item">
                         <em>手机号码：</em>
-                        <span class="keyIcon">
+                        <span>
                             <input name="addMobile" type="text" placeholder="输入会员手机号" class="cd-form-input"
-                                lay-verify="required|phone" autocomplete="off" />
+                                lay-verify="required|phone" autocomplete="off" maxlength="11" />
                             <small class="col_red MustCode">*</small>
                         </span>
                     </li>
@@ -63,8 +63,23 @@
                         <em>生日：</em>
                         <span>
                             <input name="addBirthday" type="text" class="cd-form-input" id="timeBirthday"
-                                lay-verify="timer" />
+                                autocomplete="off" lay-verify="timer" maxlength="15" />
+                            <input name="addBirthdaySon" type="text" class="cd-form-input" id="timeBirthdaySon"
+                                autocomplete="off" lay-verify="timer" maxlength="15" readonly/>
                         </span>
+                        <div class="DateType">
+                            <input type="radio" id="MemReg_BirthdayType1" lay-filter="MemReg_BirthdayType"
+                                name="MemReg_BirthdayType" value="1" title="公历" checked="checked">
+                            <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                                <div>公历</div>
+                            </div>
+                            <input type="radio" id="MemReg_BirthdayType2" lay-filter="MemReg_BirthdayType"
+                                name="MemReg_BirthdayType" value="0" title="农历">
+                            <div class="layui-unselect layui-form-radio layui-form-radioed"><i
+                                    class="layui-anim layui-icon layui-anim-scaleSpring"></i>
+                                <div>农历</div>
+                            </div>
+                        </div>
                     </li>
                     <li id="Sex" class="layui-form-item">
                         <em>性别：</em>
@@ -75,7 +90,7 @@
                     </li>
                     <li id="LevelID" class="layui-form-item"><em>会员等级：</em>
                         <span>
-                            <select name="addLevelID" class="cd-form-select">
+                            <select name="addLevelID" class="cd-form-select" lay-search>
                                 <option value="0">储蓄卡</option>
                                 <option value="1">不知道</option>
                             </select>
@@ -91,39 +106,40 @@
                     </li>
                     <li class="layui-form-item" id="PassWord"><em>会员密码：</em><span>
                             <input name="addPassWord" type="password" placeholder="输入会员密码" class="cd-form-input"
-                                lay-verify="pwd" />
+                                lay-verify="pwd" maxlength="20" />
                         </span>
                     </li>
                     <li class="layui-form-item" id="PassWord2">
                         <em>确认密码：</em><span>
                             <input name="addPassWord2" type="password" placeholder="再次输入会员密码" class="cd-form-input"
-                                lay-verify="pwd|repass" />
+                                lay-verify="pwd|repass" maxlength="20" />
                         </span>
                     </li>
                     <li class="layui-form-item" id="OutCardID"><em>卡面号：</em><span>
                             <input name="addOutCardID" type="text" placeholder="输入会员卡号" class="cd-form-input"
-                                lay-verify="cardID" />
+                                lay-verify="cardID" maxlength="20" />
                         </span>
                     </li>
                     <li id='CardMoney' class="layui-form-item">
                         <em>售卡金额：</em><span>
                             <input name="addCardMoney" type="text" placeholder="0" class="cd-form-input"
-                                lay-verify="onlynum" />
+                                lay-verify="onlynum" maxlength="11" />
                         </span>
                     </li>
                     <li id="Money" class="layui-form-item"><em>账户余额：</em><span>
-                            <input name="addMoney" type="text" class="cd-form-input" lay-verify="onlynum" value="0" />
+                            <input name="addMoney" type="text" class="cd-form-input" lay-verify="onlynum" value="0"
+                                maxlength="11" />
                         </span>
                     </li>
                     <li id="Point" class="layui-form-item">
                         <em>账户积分：</em><span>
                             <input name="addPoint" type="text" placeholder="0" class="cd-form-input"
-                                lay-verify="onlynum" />
+                                lay-verify="onlynum" maxlength="11" />
                         </span>
                     </li>
                     <li id="RefererCardID" class="layui-form-item"><em>推荐人：</em><span>
                             <input name="addRefererCardID" type="text" placeholder="推荐人姓名" class="cd-form-input"
-                                lay-verify="name" />
+                                lay-verify="name" maxlength="20" />
                         </span>
                     </li>
                     <li id="Staff" class="layui-form-item">
@@ -135,37 +151,38 @@
                     </li>
                     <li id="IdentityCode" class="layui-form-item"><em>身份证：</em><span>
                             <input name="addIdentityCode" type="text" placeholder="输入会员身份证号码" class="cd-form-input"
-                                lay-verify="identity" />
+                                lay-verify="identity" maxlength="18" />
                         </span>
                     </li>
                     <li class="layui-form-item">
                         <em>邮箱：</em><span>
-                            <input name="" type="text" placeholder="输入会员邮箱" class="cd-form-input" lay-verify="email" />
+                            <input name="" type="text" placeholder="输入会员邮箱" class="cd-form-input" lay-verify="email"
+                                maxlength="50" />
                         </span>
                     </li>
                     <li class="layui-form-item"><em>固定电话：</em><span>
-                            <input name="" type="text" placeholder="输入会员电话" class="cd-form-input" />
+                            <input name="" type="text" placeholder="输入会员电话" class="cd-form-input" maxlength="11" />
                         </span>
                     </li>
                     <li id="PlateNumber" class="layui-form-item">
                         <em>车牌号：</em><span>
                             <input name="addPlateNumber" type="text" placeholder="输入会员车牌号" class="cd-form-input"
-                                lay-verify="vehicleNumber" />
+                                lay-verify="vehicleNumber" maxlength="8" />
                         </span>
                     </li>
                     <li id="Address" class="layui-form-item" style="width: 100%">
                         <em>地址：</em>
                         <span>
                             <input name="addAddress" type="text" placeholder="输入会员详细地址" class="cd-form-input pw"
-                                max="100" />
+                                maxlength="100" />
                         </span>
                     </li>
                     <li id="Remark" style="width: 100%" class="layui-form-item"><em>备注：</em><span>
-                            <textarea name="addRemark" class="cd-form-bz"></textarea>
+                            <textarea name="addRemark" class="cd-form-bz" maxlength="250"></textarea>
                         </span></li>
                     <li style="text-align:right;width: 100%;margin-top: 30px;">
-                        <button type="button" class="submit-bt-clear">取消[ESC]</button>
-                        <button class="submit-bt" lay-submit="" lay-filter="addMem">保存[F5]</button>
+                        <button type="button" class="submit-bt-clear">取消</button>
+                        <button class="submit-bt" lay-submit="" lay-filter="addMem">保存</button>
                     </li>
                 </form>
             </ul>
@@ -181,11 +198,10 @@
 <script src="../../../Theme/script/jquery3.4.1.min.js"></script>
 <script src="../../../Theme/plugins/layui/layui.js"></script>
 <script src="../../../Theme/script/Luck.Vipsoft.js"></script>
+<script src="../../../Scripts/LunarCalendar.js"></script>
 <script src="../../../Theme/plugins/ImgCropping/js/cropper.min.js"></script>
 <script src="../../../Theme/script/verify.js"></script>
 <script src="../../../Theme/script/common.js"></script>
-<script src="../../../Theme/script/keyboard.js"></script>
-
 <script src="../../../js/Model/Home/addMember.js"></script>
 
 </html>

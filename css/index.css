@@ -16,31 +16,33 @@
 	padding-top: 10px;
 }
 
-.card-num {
+body .card-num {
 	float: left;
 	margin-left: 20px;
 }
 
-.card-num-form {
+body .card-num-form {
 	float: left;
 }
 
-.card-num-form dt {
+body .card-num-form dt {
 	float: right;
 	margin-left: 10px;
 	border: solid 1px #eee;
 	border-radius: 5px;
 }
 
-.card-num-form dd {
+body .card-num-form dd {
 	float: left;
 	background: #f3f3f3;
 	border: solid 1px #eee;
 	border-radius: 5px;
 	height: 30px;
+    width:inherit;
+    padding:0;
 }
 
-.card-num-form dd input.input {
+body .card-num-form dd input.input {
 	background: none;
 	border: none;
 	font-size: 14px;
@@ -51,7 +53,7 @@
 	float: left;
 }
 
-.card-num-form dd a.card-num-up {
+body .card-num-form dd a.card-num-up {
 	background: url(../Theme/images/icon08.png) no-repeat left center;
 	height: 30px;
 	display: block;
@@ -60,7 +62,7 @@
 	margin-left: 8px;
 }
 
-.card-num-form dd button.bt {
+body .card-num-form dd button.bt {
 	background: #41c060;
 	border: none;
 	color: #fff;
@@ -1838,31 +1840,32 @@
 	font-size: 16px;
 	margin-top: 30px;
 }
-
-.small-keyboard {
+/****************键盘******************/
+body .small-keyboard {
 	box-shadow: 0px 1px 5px #888;
 	background: #fff;
 	z-index: 8888;
 	width: 365px;
+    height:370px;
 	padding: 20px 0;
 	border-radius: 5px;
 }
 
-.big-keyboard {
+body .big-keyboard {
 	width: 800px;
 }
 
-.big-keyboard dd input.input {
+body .big-keyboard dd input.input {
 	width: 590px;
 }
 
-.small-keyboard-num {
+body .small-keyboard-num {
 	overflow: hidden;
 	margin-left: 23px;
 	margin-right: 13px;
 }
 
-.small-keyboard-num li {
+body .small-keyboard-num li {
 	width: 99px;
 	height: 56px;
 	line-height: 56px;
@@ -1875,30 +1878,32 @@
 	margin-bottom: 10px;
 	border-radius: 5px;
 	cursor: pointer;
+    padding:0;
+    border-width:0;
 }
 
-.big-keyboard li {
+body .big-keyboard li {
 	width: 60px;
 	height: 50px;
 	line-height: 50px;
 	font-size: 25px;
 }
 
-.big-keyboard li.small-kb {
+body .big-keyboard li.small-kb {
 	font-size: 14px;
 }
 
-.small-keyboard-num li.keyboard-remove {
+body .small-keyboard-num li.keyboard-remove {
 	background: #41c060;
 	font-size: 20px;
 }
 
-.small-keyboard-num li.keyboard-confirm {
+body .small-keyboard-num li.keyboard-confirm {
 	background: #faa800;
 	font-size: 20px;
 }
 
-.small-keyboard-num li.keyboard-confirm-big {
+body .small-keyboard-num li.keyboard-confirm-big {
 	height: 110px;
 	line-height: 110px;
 }
@@ -1930,19 +1935,19 @@
 	left: 320px;
 }
 
-.card-num-form .small-keyboard-form {
+body .card-num-form .small-keyboard-form {
 	overflow: hidden;
 	margin-left: 23px;
 	margin-bottom: 13px;
 }
 
-.small-keyboard-l {
+body .small-keyboard-l {
 	float: left;
 	width: 700px;
 	margin-right: 0;
 }
 
-.small-keyboard-r {
+body .small-keyboard-r {
 	float: left;
 	width: 60px;
 	margin: 0;
@@ -3042,19 +3047,19 @@
 	margin-top: 30px;
 }
 
-/* @keyframes base_show {
+@keyframes base_show {
 	0% {
-		opacity: 0
+		top:76px
 	}
 
 	100% {
-		opacity: 1;
+		top:48px
 	}
 }
 
 .tool-service:hover .Customer-center {
-	transform: translate(0, -28px);
-} */
+	display: block;
+}
 
 .Customer-center {
 	width: 280px;
@@ -3062,7 +3067,7 @@
 	position: absolute;
 	background-image: url(../Theme/images/ContactCustomerService.png);
 	background-size: 100%;
-	top: 76px;
+	top: 48px;
 	left: -205px;
 	cursor: default;
 	transition: 0.2s linear;
@@ -4581,3 +4586,20 @@
 	border: 1px solid #41C060;
 	overflow: auto;
 }
+/**购物车编辑价格隐藏开启全键盘**/
+.lomo-tcyg .change-big{
+    visibility:hidden;
+}
+.lomo-tcyg .topSjx {
+    display:none;
+}
+.lomo-tcyg .index-keyboard {
+    position:absolute;
+    right:-325px;
+    bottom:0;
+    left:inherit;
+    top:inherit;
+}
+
+
+

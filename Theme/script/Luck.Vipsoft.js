@@ -1,6 +1,6 @@
 var LuckVipsoft = {}
 //LuckVipsoft.http = "http://192.168.0.13:8088"
-LuckVipsoft.http = "http://192.168.0.102"
+LuckVipsoft.http = "http://192.168.0.111"
 LuckVipsoft.api = {
     /* 登录、注册*/
     retrievePasswordSendCode: '/api/GeneralInterface/RetrievePasswordSendCode', //发送验证码
@@ -32,6 +32,8 @@ LuckVipsoft.api = {
     getActivityList: '/api/GeneralInterface/BindActivityListSelect', //获取优惠活动数据
     DeleteConpon: '/api/GeneralInterface/DeleteConpon',//删除优惠活动
     SaveClassDiscountRulesList: '/api/GeneralInterface/SaveClassDiscountRulesList',//保存特殊折扣
+    CalculateConponAmount: '/api/GeneralInterface/CalculateConponAmount',//计算订单优惠券优惠金额
+
 
     /*快速扣次*/
     SaveDeductFixedCountOrder: '/api/GeneralInterface/SaveDeductFixedCountOrder',//快速扣次
@@ -120,7 +122,8 @@ LuckVipsoft.api = {
     GetVenueInfoPage: '/api/GeneralInterface/GetVenueInfoPage',//获取场馆列表
     ModifyVenueState: '/api/GeneralInterface/ModifyVenueState',//修改场馆状态
     GetVenueInfoSelList: '/api/GeneralInterface/GetVenueInfoSelList',//获取绑定下拉场馆列表
-    GetVenueMemberAndGoodsInfo: '/api/GeneralInterface/GetVenueMemberAndGoodsInfo',//获取已开台场地会员信息及场馆信息(取单)
+    GetVenueMemberAndGoodsInfoByVenueID: '/api/GeneralInterface/GetVenueMemberAndGoodsInfoByVenueID',//获取已开台场地会员信息及场馆信息(根据场馆取单)
+    GetVenueMemberAndGoodsInfoByMemID: '/api/GeneralInterface/GetVenueMemberAndGoodsInfoByMemID',//获取已开台场地会员信息及场馆信息(根据会员取单)
     ChangeVenue: '/api/GeneralInterface/ChangeVenue',//更换场地
     VenueUnionBill: '/api/GeneralInterface/VenueUnionBill',//场馆合并账单
     SaveVenueRestingGoods: '/api/GeneralInterface/SaveVenueRestingGoods',//场馆挂单
@@ -129,6 +132,12 @@ LuckVipsoft.api = {
     /*支付 */
     ComboBarcodePay: '/api/GeneralInterface/ComboBarcodePay',//聚合条码支付
     QueryPay: '/api/GeneralInterface/QueryPay',//支付查询
+    RefundPay: '/api/GeneralInterface/Refund',//退款
+
+    //商品消费、计次消费、套餐消费
+    GoodsConsume: '/api/GeneralInterface/GoodsConsume',//退款
+    
+    
 }
 LuckVipsoft.lan = {
     ER0000: '系统登录失败',

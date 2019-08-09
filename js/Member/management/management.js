@@ -771,6 +771,7 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
         };
         //撤单
         cancelOrder(dom, record, url, type) {
+            console.log(record)
             var that = this
             var opt = that.payType(type, user.PaymentConfig);
             $("#refund").hide();
@@ -835,7 +836,7 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 layer.close(dom);
                                 layer.close(index);
                             } else if (res.status == 300907) {
-                                layer.msg("退款失败，请重新选择退款方式")
+                                layer.msg("退货失败，请重新选择退货方式")
                                 $("#refund").show();
                             };
                         });

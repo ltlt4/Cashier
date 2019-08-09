@@ -70,96 +70,63 @@ layui.use(['layer', 'jquery', 'form', 'table'], function () {
         iframe.attr('src', router);
         initial.shut();
     });
-    $(".tool-service").hover(function () {
-        $(".Customer-center").animate({ top: '48px' },200).show()
-    }, function () {
-        $(".Customer-center").animate({ top: '76px' },200).hide()
-    });
-    $(".lomo-topTool li .lomo-eject").on("click", function () {
-        var index = $(this).index('.lomo-topTool li .lomo-eject');
-        $(this).blur();
-
-        switch (index) {
-            case 0:
-                $.http.post(LuckVipsoft.api.GetMasterInfo, {}, user.token, function (res) {
-                    if (res.status == 1) {
-                        layer.open({
-                            type: 1,
-                            title: '客服中心',
-                            closeBtn: 1,
-                            shadeClose: false,
-                            shade: 0.3,
-                            area: ['280px', '374px'],
-                            maxmin: false,
-                            //禁用最大化，最小化按钮
-                            resize: false,
-                            //禁用调整大小
-                            move: false,
-                            //禁止拖拽
-                            skin: "lomo-ordinary",
-                            content: `<div class="Customer-center"><ul>
-                                <li class="phone">${res.data.HotLine}</li>
-                                <li class="qq">${res.data.CustomerQQ}</li>
-                                <li class="wx"><img src="${user.information.ImageServerPath}${res.data.QrCode}" /></li>
-                                <li>扫一扫加我微信号</li>
-                            </ul>
-                        </div>`
-                        });
-                    }
-                });
-                break;
-
-            case 1:
-                layer.open({
-                    type: 1,
-                    title: '意见反馈',
-                    closeBtn: 1,
-                    shadeClose: false,
-                    shade: 0.3,
-                    btnAlign: "c",
-                    area: ['450px', '400px'],
-                    maxmin: false,
-                    resize: false,
-                    move: false,
-                    skin: "lomo-alone",
-                    content: $(".feedback").html(),
-                    yes: function yes() {
-                        return false;
-                    },
-                    success: function success(layero, index) {
-                        form.render();
-                        form.verify({
-                            name: function name(value, item) {
-                                if (value != "") {
-                                    if (!verify.name[0].test(value)) return '姓名输入错误';
-                                }
-                            },
-                            phone: function phone(value, item) {
-                                if (value != "") {
-                                    if (!verify.phone[0].test(value)) return verify.phone[1];
-                                }
-                            }
-                        });
-                        form.on('submit(opinion)', function (data) {
-                            var param = {
-                                Name: data.field.contacts,
-                                Phone: data.field.contactInf,
-                                Message: data.field.describe,
-                                MessageType: data.field.mesType
-                            };
-                            $.http.post(LuckVipsoft.api.SaveUserFeedBackData, param, user.token, function (res) {
-                                layer.msg(res.msg);
-                                if (res.status == 1) {
-                                    layer.close(index);
-                                }
-                            });
-                            return false;
-                        });
-                    }
-                });
-                break;
+    //加载客服中心
+    $.http.post(LuckVipsoft.api.GetMasterInfo, {}, user.token, function (res) {
+        if (res.status == 1) {
+            $("#CustomerMobile").text(res.data.HotLine);
+            $("#CustomerQQ").text(res.data.CustomerQQ);
         }
     });
+    //意见反馈
+    $("#feedbackBut").click(function () {
+        layer.open({
+            type: 1,
+            title: '意见反馈',
+            closeBtn: 1,
+            shadeClose: false,
+            shade: 0.3,
+            btnAlign: "c",
+            area: ['450px', '400px'],
+            maxmin: false,
+            resize: false,
+            move: false,
+            skin: "lomo-alone",
+            content: $(".feedback").html(),
+            yes: function yes() {
+                return false;
+            },
+            success: function success(layero, index) {
+                form.render();
+                form.verify({
+                    name: function name(value, item) {
+                        if (value != "") {
+                            if (!verify.name[0].test(value)) return '姓名输入错误';
+                        }
+                    },
+                    phone: function phone(value, item) {
+                        if (value != "") {
+                            if (!verify.phone[0].test(value)) return verify.phone[1];
+                        }
+                    }
+                });
+                form.on('submit(opinion)', function (data) {
+                    var param = {
+                        Name: data.field.contacts,
+                        Phone: data.field.contactInf,
+                        Message: data.field.describe,
+                        MessageType: data.field.mesType
+                    };
+                    $.http.post(LuckVipsoft.api.SaveUserFeedBackData, param, user.token, function (res) {
+                        layer.msg(res.msg);
+                        if (res.status == 1) {
+                            layer.close(index);
+                        }
+                    });
+                    return false;
+                });
+            }
+        });
+    })
     /*交班*/
     $('.tool-man').click(function () {
         $.http.post(LuckVipsoft.api.GetShiftTurnOverData, {}, user.token, function (res) {

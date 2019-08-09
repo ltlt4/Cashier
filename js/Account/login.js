@@ -301,7 +301,7 @@ layui.use(['layer', 'jquery', "form"], function () {
                 var MemberMethod = {
                     start: function () {
                         var _this = this
-                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList()])
+                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(),_this.sysArgument()])
                             .then(function (res) {
                                 // var staffInf={
                                 //     staffInfCard:res[0],

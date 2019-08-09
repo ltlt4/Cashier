@@ -1,6 +1,6 @@
 layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 	var layer = layui.layer, element = layui.element, $ = layui.$, form = layui.form, table = layui.table;
-
+	
 	var user = {
 		token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
 		information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
@@ -285,7 +285,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					maxmin: false,//禁用最大化，最小化按钮
 					resize: false,//禁用调整大小
 					move: false,//禁止拖拽
-					area: ['850px', '740px'],
+					area: ['940px', '740px'],
 					skin: "lomo-ordinary",
 					btnAlign: "r",
 					content: '../../../Areas/Model/Home/addMember.html',
@@ -1191,7 +1191,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				oPayCompose.cancelModify()
 			})
 
-			//整单单位选中
+			//整单提成单位选中
 			form.on('select(single_discount_money)', function (data) {
 				$('#single_discount_val').val('0.00')
 				$('#single_discount_money').val('0.00')
@@ -1278,23 +1278,56 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 							]
 						}); 
 					},
+					yes: function (index, layero) {
+						console.log('chooseAry',oPayCompose.pageChooseConpon)
+						if(oPayCompose.pageChooseConpon.length>0){
+							let postData = oPayCompose.postCouponData() //获取优惠券提交数据
+							console.log('postData',JSON.stringify(postData))
+							$.http.post(LuckVipsoft.api.CalculateConponAmount, postData, user.token, function (res) {
+								if(res.status ==1){
+								 	if(oPayCompose.settingCoupon(res.data)){
+										layer.close(index)
+									}
+									else{
+										$.luck.error('优惠卷计算错误')
+									}
+								}
+								else{
+									$.luck.error(res.msg)
+								}
+							})
+						}
+						return false
+					}
 				})
-				var chooseAry = [];
-				table.on('checkbox(coupoonList)', function (obj) {
+				//var chooseAry = [];
+				table.on('checkbox(coupoonList)', function (obj) {	
+					let paidMoney = parseFloat(oPayCompose.paidMoney())		
+					
+					var checkStatus = table.checkStatus('coupoonList');
 					if (obj.type=="one") {
 						if (obj.checked == true) {
-							chooseAry.push(obj.data)
+							if(obj.data.WithUseAmount >	paidMoney){
+								$.luck.error('当前优惠券不满足使用条件');
+								$(this).prop("checked",false);
+								form.render('checkbox')
+								return false
+							}else{						
+								oPayCompose.pageChooseConpon.push(obj.data);
+							}
 						}else {
-							$.each(chooseAry, function (index, item) {
+							$.each(oPayCompose.pageChooseConpon, function (index, item) {
 								if (item.Id == obj.data.Id) {
-									chooseAry.splice(index, 1)
+									oPayCompose.pageChooseConpon.splice(index, 1)
 									return
 								}
 							})
 						}
+						console.log(oPayCompose.pageChooseConpon)
 					}else { // 表示全选
 						if (obj.checked == true) {
-							
+							var data = checkStatus.data;
+							layer.alert(JSON.stringify(data));
 						}else {
 							
 						}
@@ -1314,7 +1347,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 				let item = Enumerable.From(oPayCompose.payItem).Where(x=>x.code == '020' || x.code == '010' ).FirstOrDefault();
 				if(item!=undefined){
-					$('#paymentCode').val('')					
+					$('#paymentCode').val('')		
+					$('#onlinePayMoney').html(item.amount)			
 					//item.amount
 					layer.open({
 						type: 1,
@@ -1334,19 +1368,39 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 								$.luck.error('请输入付款码')
 								return false
 							}
-							else{
-								let code = $('#paymentCode').val()
-								$.http.post(LuckVipsoft.api.ComboBarcodePay,{ PayMoney:item.amount, AuthNo:code }, user.token, function (res) {
-									console.log('patResult' ,res)		
-									if (res.status == 1) {																		
-										item.PayContent = data.out_trade_no
-										let  result = oPayCompose.postPay(pwd)									
+							else{							
+								let payCode= $('#paymentCode').val()
+								let result = onlinePay(item.amount, item.code ,payCode ,user.token).then(
+									function(res){
+										console.log('res->then',res)
+										if(res.status ==1){										
+											let postData = oPayCompose.postPayData(pwd,'')
+											$.http.post2(LuckVipsoft.api.GoodsConsume, postData , user.token ,function (res2) {
+												if(res2.status ==1){
+													layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) { 
+														_this.getGoodsListPageList()
+														oPayCompose.chooseMember ={}
+														oPayCompose.clearShoppingCar()												
+														layer.closeAll()
+													});
+												}
+												else{
+													layer.alert(res2.msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+														layer.close(index)									
+													});
+												}									
+											})
+										}
+										else if(res.status == 3){											
+											//let queryResult = setTimeout(queryPay(outTradeNo,payType,token), 2000); 																		 
+										}
+										else{		
+											layer.alert(res.return_msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+												layer.close(index)									
+											});							
+										}	
 									}
-									else{
-										$.luck.error('支付请求失败')
-										//退款接口
-									}
-								});
+								)				
 							}													
 						},
 						btn2: function (index, layero) {
@@ -1357,9 +1411,24 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				}
 				else{
 					//格式化代码
-					let  result = oPayCompose.postPay(pwd,'')
+					let postData = oPayCompose.postPayData(pwd,'')
+					$.http.post(LuckVipsoft.api.GoodsConsume, postData , user.token ,function (res) {
+						if(res.status ==1){
+							layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) { 
+								_this.getGoodsListPageList()
+								oPayCompose.chooseMember ={}
+								oPayCompose.clearShoppingCar()												
+								layer.closeAll()
+							});
+						}
+						else
+						{
+							layer.alert(res.msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+								layer.close(index)									
+							});
+						}									
+					})
 				}
-
 			})
 
 			//输入框选中
@@ -1450,7 +1519,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 				oldVal = parseFloat(oldVal)
 				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(oldVal)) {
-					$.luck.error('金额只能时2位小数')
+					$.luck.error('金额只能是2位小数')
 					return false
 				}
 

@@ -10,12 +10,12 @@ var luckKeyboard = {
 		<li class="small-kb">大写</li><li class="l">a</li><li class="l">s</li><li class="l">d</li><li class="l">f</li><li class="l">g</li><li class="l">h</li><li class="l">j</li><li class="l">k</li><li class="l">l</li>
 		<li class="small-kb change-small">小键盘</li><li class="l">z</li><li class="l">x</li><li class="l">c</li><li class="l">v</li><li class="l">b</li><li class="l">n</li><li class="l">m</li><li>.</li><li class="small-kb" data-type="empty">空格</li></ul>
 		<ul class="small-keyboard-num small-keyboard-r"><li data-type="back">←</li><li class="keyboard-remove" data-type="clear">清除</li><li class="keyboard-confirm keyboard-confirm-big" data-type="confirm">确认</li></ul><em class="topSjx"></em></div>`,
-		showSmallkeyboard:function(e){
+		showSmallkeyboard:function(e,callback){
 			var _this = $(e);
 			var X = _this.offset().left;
 			var Y = _this.offset().top; 
 			var isUppercase = false;
-			
+
 			$('.minor-keyboard,.big-keyboard').remove();
 			_this.after(luckKeyboard.smallKeyBoard);
 			luckKeyboard.keyBoardPosition(X,Y);
@@ -26,15 +26,15 @@ var luckKeyboard = {
 				$('.minor-keyboard,.big-keyboard').remove();
 				_this.after(luckKeyboard.bigKeyBoard);
 				luckKeyboard.keyBoardPosition(X,Y,'big');
-				luckKeyboard.clickKeyBoardVal(isUppercase);
+				luckKeyboard.clickKeyBoardVal(isUppercase,callback);
 			})
 			$("body").on("click",".change-small",function(){
 				$('.minor-keyboard,.big-keyboard').remove();
 				_this.after(luckKeyboard.smallKeyBoard);
 				luckKeyboard.keyBoardPosition(X,Y);
-				luckKeyboard.clickKeyBoardVal(isUppercase);
+				luckKeyboard.clickKeyBoardVal(isUppercase,callback);
 			})
-			luckKeyboard.clickKeyBoardVal(isUppercase);
+			luckKeyboard.clickKeyBoardVal(isUppercase,callback);
 		},
 		keyBoardPosition:function(X,Y,type){
 			var winHeight = window.innerHeight;
@@ -53,7 +53,7 @@ var luckKeyboard = {
 				}
 			}
 		},
-		clickKeyBoardVal:function(isUppercase){
+        clickKeyBoardVal:function(isUppercase,callback){
 			$(".small-keyboard-num li").on("click",function(){
 				var val = $(this).text();
 				var setValInput = $(this).parents(".small-keyboard").find(".small-keyboard-form input");
@@ -69,6 +69,9 @@ var luckKeyboard = {
 				}else if(type=="confirm"){//确认
 					$(this).parents(".small-keyboard").siblings("input").val(hasVal).focus();
 					$('.minor-keyboard,.big-keyboard').remove();
+                    if (typeof callback === "function") {
+                        callback(hasVal)
+                    }
 				}else{
 					if(val=="大写"){
 						isUppercase = true;
