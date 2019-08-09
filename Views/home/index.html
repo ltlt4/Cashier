@@ -31,11 +31,11 @@
         border: 2px solid #fff;
     }
 
-        ::-webkit-scrollbar-thumb:hover {
-            height: 50px;
-            background-color: #9f9f9f;
-            -webkit-border-radius: 4px;
-        }
+    ::-webkit-scrollbar-thumb:hover {
+        height: 50px;
+        background-color: #9f9f9f;
+        -webkit-border-radius: 4px;
+    }
 
 
     html,
@@ -56,6 +56,7 @@
         right: 0;
     }
 </style>
+
 <body>
     <!-- 头部 -->
     <div id="page">
@@ -76,9 +77,37 @@
                         </div>
                     </dd>
                     <dd>
+                        <a href="javascript:void(0);" class="tool-service">
+                            <span class="Customer-center hide">
+                                <dl>
+                                    <div class="contact">
+                                        <span>联系客服</span>
+                                    </div>
+                                    <div class="service">
+                                        <div class="service-1"><span>我们将会全心全意为您提供满意周到的咨询服务,也希望您能支持和监督我们的服务</span></div>
+                                        <div class="service-2">
+                                            <img src="../../Theme/images/phoneIcon.png" alt="">
+                                            <span id="CustomerMobile">
+                                                1385020135946
+                                            </span>
+                                        </div>
+                                        <div class="service-2">
+                                            <img src="../../Theme/images/qqicon.png" alt="">
+                                            <span id="CustomerMobile">
+                                                1385020135946
+                                            </span>
+                                        </div>
+                                        <div  class="service-3">
+                                            <button>意见反馈</button>
+                                        </div>
+                                    </div>
+                                </dl>
+                            </span>
+                        </a>
                         <a href="javascript:void(0);" class="tool-lock"></a>
                         <a href="javascript:void(0);" class="tool-web"></a>
-                        <a href="javascript:void(0);" class="tool-man"></a></dd>
+                        <a href="javascript:void(0);" class="tool-man"></a>
+                    </dd>
                     <dt>超级管理员</dt>
                 </dl>
             </div>
@@ -90,30 +119,31 @@
         <h1>收银</h1>
         <ul>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/cashRegister/cashRegister.html'
-                class="tool1 lomo-skip">消费收银</a></li>
+                    class="tool1 lomo-skip">消费收银</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/rechargeStroke/rechargeStroke.html'
-                class="tool2 lomo-skip">充值充次</a></li>
+                    class="tool2 lomo-skip">充值充次</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Order/writeOff/writeOff.html'
-                class="tool3 lomo-skip">卡券核销</a></li>
+                    class="tool3 lomo-skip">卡券核销</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Order/onlineOrder/onlineOrder.html'
-                class="tool4 lomo-skip">线上订单</a></li>
+                    class="tool4 lomo-skip">线上订单</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/exchange/exchange.html'
-                class="tool5 lomo-skip">积分兑现</a></li>
+                    class="tool5 lomo-skip">积分兑现</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/management/management.html'
-                class="tool6 lomo-skip">单据管理</a></li>
+                    class="tool6 lomo-skip">单据管理</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/tableConsumption/tableConsumption.html'
-                class="tool11 lomo-skip">场地消费</a></li>
+                    class="tool11 lomo-skip">场地消费</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Member/quickCount/quickCount.html'
-                class="tool12 lomo-skip">快速计次</a></li>
+                    class="tool12 lomo-skip">快速计次</a></li>
             <li><a href="javascript:void(0);" data-route='../../Areas/Order/reservation/reservation.html'
-                class="tool13 lomo-skip">预约项目</a></li>
+                    class="tool13 lomo-skip">预约项目</a></li>
         </ul>
         <h1>其他</h1>
         <ul>
-            <li><a href="javascript:void(0);" data-route='../../Areas/Settings/settings/settings.html' class="tool7 lomo-skip">系统设置</a></li>
+            <li><a href="javascript:void(0);" data-route='../../Areas/Settings/settings/settings.html'
+                    class="tool7 lomo-skip">系统设置</a></li>
             <li><a href="javascript:void(0);" class="tool8" onclick="GoToBackstage() ">进入后台</a></li>
-            <li><a href="javascript:void(0);" class="tool9 lomo-eject">客服中心</a></li>
-            <li><a href="javascript:void(0);" class="tool10 lomo-eject">意见反馈</a></li>
+            <!-- <li><a href="javascript:void(0);" class="tool9 lomo-eject">客服中心</a></li>
+            <li><a href="javascript:void(0);" class="tool10 lomo-eject">意见反馈</a></li> -->
         </ul>
     </div>
     <!--顶部功能菜单 end-->

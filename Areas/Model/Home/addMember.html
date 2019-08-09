@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="../../../Theme/plugins/layui/css/layui.css">
 </head>
 <style>
-	body{
-		background: none;
-	}
+    body {
+        background: none;
+    }
+
     .layui-form-select dl dd.layui-this {
         background: #41c060
     }
@@ -30,11 +31,11 @@
             <form action="" method="POST" id="upload-form">
                 <input type="file" id="userUpload" class="hide">
             </form>
-            <button type="button" class="add-bt">拍照</button>
+            <button type="button" class="add-bt" id="Photograph">拍照</button>
         </div>
         <div class="order-cd-form vip-add-form">
-            <ul >
-                <form action="" class="layui-form" >
+            <ul>
+                <form action="" class="layui-form">
                     <li id="CardID" class="layui-form-item">
                         <em>会员卡号：</em>
                         <span class="keyIcon">
@@ -46,7 +47,8 @@
                     <li id="CardName" class="layui-form-item">
                         <em>会员姓名：</em>
                         <span>
-                            <input name="addCardName" type="text" placeholder="输入会员姓名" class="cd-form-input" lay-verify="name" />
+                            <input name="addCardName" type="text" placeholder="输入会员姓名" class="cd-form-input"
+                                lay-verify="name" />
                         </span>
                     </li>
                     <li id="Mobile" class="layui-form-item">
@@ -60,7 +62,8 @@
                     <li id="Birthday" class="layui-form-item">
                         <em>生日：</em>
                         <span>
-                            <input name="addBirthday" type="text" class="cd-form-input" id="timeBirthday"  lay-verify="timer"/>
+                            <input name="addBirthday" type="text" class="cd-form-input" id="timeBirthday"
+                                lay-verify="timer" />
                         </span>
                     </li>
                     <li id="Sex" class="layui-form-item">
@@ -81,51 +84,58 @@
                     <li id="ShopID" class="layui-form-item">
                         <em>所属店铺：</em>
                         <span>
-                            <select name="addShopID" class="cd-form-select">
+                            <select name="addShopID" class="cd-form-select" lay-search>
                                 <option>俱乐部</option>
                             </select>
                         </span>
                     </li>
                     <li class="layui-form-item" id="PassWord"><em>会员密码：</em><span>
-                            <input name="addPassWord" type="text" placeholder="输入会员密码" class="cd-form-input" lay-verify="pwd" />
+                            <input name="addPassWord" type="password" placeholder="输入会员密码" class="cd-form-input"
+                                lay-verify="pwd" />
                         </span>
                     </li>
                     <li class="layui-form-item" id="PassWord2">
                         <em>确认密码：</em><span>
-                            <input name="addPassWord2" type="text" placeholder="再次输入会员密码" class="cd-form-input" lay-verify="pwd|repass"/>
+                            <input name="addPassWord2" type="password" placeholder="再次输入会员密码" class="cd-form-input"
+                                lay-verify="pwd|repass" />
                         </span>
                     </li>
                     <li class="layui-form-item" id="OutCardID"><em>卡面号：</em><span>
-                            <input name="addOutCardID" type="text" placeholder="输入会员卡号" class="cd-form-input" lay-verify="cardID"/>
+                            <input name="addOutCardID" type="text" placeholder="输入会员卡号" class="cd-form-input"
+                                lay-verify="cardID" />
                         </span>
                     </li>
                     <li id='CardMoney' class="layui-form-item">
                         <em>售卡金额：</em><span>
-                            <input name="addCardMoney" type="text" placeholder="0" class="cd-form-input" lay-verify="onlynum" />
+                            <input name="addCardMoney" type="text" placeholder="0" class="cd-form-input"
+                                lay-verify="onlynum" />
                         </span>
                     </li>
                     <li id="Money" class="layui-form-item"><em>账户余额：</em><span>
-                            <input name="addMoney" type="text" class="cd-form-input" lay-verify="onlynum" />
+                            <input name="addMoney" type="text" class="cd-form-input" lay-verify="onlynum" value="0" />
                         </span>
                     </li>
                     <li id="Point" class="layui-form-item">
-                        <em>积分数量：</em><span>
-                            <input name="addPoint" type="text" placeholder="0" class="cd-form-input" lay-verify="onlynum" />
+                        <em>账户积分：</em><span>
+                            <input name="addPoint" type="text" placeholder="0" class="cd-form-input"
+                                lay-verify="onlynum" />
                         </span>
                     </li>
                     <li id="RefererCardID" class="layui-form-item"><em>推荐人：</em><span>
-                            <input name="addRefererCardID" type="text" placeholder="推荐人姓名" class="cd-form-input" lay-verify="name" />
+                            <input name="addRefererCardID" type="text" placeholder="推荐人姓名" class="cd-form-input"
+                                lay-verify="name" />
                         </span>
                     </li>
                     <li id="Staff" class="layui-form-item">
                         <em>提成员工：</em><span>
-                            <select name="addStaff" class="cd-form-select">
-                                
+                            <select name="addStaff" class="cd-form-select" lay-search>
+
                             </select>
                         </span>
                     </li>
                     <li id="IdentityCode" class="layui-form-item"><em>身份证：</em><span>
-                            <input name="addIdentityCode" type="text" placeholder="输入会员身份证号码" class="cd-form-input" lay-verify="identity" />
+                            <input name="addIdentityCode" type="text" placeholder="输入会员身份证号码" class="cd-form-input"
+                                lay-verify="identity" />
                         </span>
                     </li>
                     <li class="layui-form-item">
@@ -139,13 +149,15 @@
                     </li>
                     <li id="PlateNumber" class="layui-form-item">
                         <em>车牌号：</em><span>
-                            <input name="addPlateNumber" type="text" placeholder="输入会员车牌号" class="cd-form-input" lay-verify="vehicleNumber"/>
+                            <input name="addPlateNumber" type="text" placeholder="输入会员车牌号" class="cd-form-input"
+                                lay-verify="vehicleNumber" />
                         </span>
                     </li>
                     <li id="Address" class="layui-form-item" style="width: 100%">
                         <em>地址：</em>
                         <span>
-                            <input name="addAddress" type="text" placeholder="输入会员详细地址" class="cd-form-input pw"  max="100" />
+                            <input name="addAddress" type="text" placeholder="输入会员详细地址" class="cd-form-input pw"
+                                max="100" />
                         </span>
                     </li>
                     <li id="Remark" style="width: 100%" class="layui-form-item"><em>备注：</em><span>
@@ -157,6 +169,12 @@
                     </li>
                 </form>
             </ul>
+        </div>
+    </div>
+    <div class="hide video-shoot">
+        <div>
+            <video id="video" width="500px" height="500px" autoplay="autoplay"></video>
+            <canvas id="videoCanvas" width="500px" height="500px" class="hide"></canvas>
         </div>
     </div>
 </body>

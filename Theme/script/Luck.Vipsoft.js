@@ -26,6 +26,7 @@ LuckVipsoft.api = {
     GetShiftTurnOverData: '/api/GeneralInterface/GetShiftTurnOverData',//获取交班数
 
     /*优惠 */
+	GetMemConponList:'/api/GeneralInterface/GetMemConponList',//获取用户所有优惠券
     GetConponListPage: '/api/GeneralInterface/GetConponListPage',//获取优惠券列表分页数据
     SaveConponData: '/api/GeneralInterface/SaveConponData',//保存优惠券数据
     getActivityList: '/api/GeneralInterface/BindActivityListSelect', //获取优惠活动数据
@@ -124,6 +125,10 @@ LuckVipsoft.api = {
     VenueUnionBill: '/api/GeneralInterface/VenueUnionBill',//场馆合并账单
     SaveVenueRestingGoods: '/api/GeneralInterface/SaveVenueRestingGoods',//场馆挂单
     OpenVenue: '/api/GeneralInterface/OpenVenue',//场馆开台
+
+    /*支付 */
+    ComboBarcodePay: '/api/GeneralInterface/ComboBarcodePay',//聚合条码支付
+    QueryPay: '/api/GeneralInterface/QueryPay',//支付查询
 }
 LuckVipsoft.lan = {
     ER0000: '系统登录失败',
@@ -151,5 +156,6 @@ LuckVipsoft.lan = {
     ER0022: "请选择会员",
     ER0023: "未找到符号条件的订单",
     ER0024: "请输入正确的快递公司",
+    ER0025: "请打开摄像头",
 }
 LuckVipsoft.network = new Array()

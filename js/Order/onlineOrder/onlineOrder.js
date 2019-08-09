@@ -139,7 +139,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                             limit: 7,  //每页条数
                             count: res.data.total, //总页数
                             theme: "#41c060",//颜色
-                            curr:param.Page,
+                            curr: param.Page,
                             jump: function (obj, first) {
                                 if (!first) {
                                     var _param = {
@@ -498,85 +498,90 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         destruction: function (type, data) {
             var _this = this;
             var html = '';
-            layer.msg('请选择提成员工')
-            //员工树形列表
-            if (user.staffClass && user.staffInf[0]) {
-                $.each(user.staffClass, function (index, item) {
-                    html += '<div class="layui-collapse">'
-                    html += '<div class="layui-colla-item">'
-                    html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
-                    html += '<div class="layui-colla-content layui-show"><ul class="">'
-                    $.each(user.staffInf, function (n, items) {
-                        if (items.StaffClassId == item.Id) {
-                            html += '<li>' + items.StaffName + '</li>'
-                        }
-                    })
-                    html += '</div>'
-                    html += '</div>'
-                    html += '</div>'
-                })
-            }
-            $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
-            //已选择员工列表
-            var grid_conpon = table.render({
-                elem: '#List',
-                data: user.staffInf[0],
-                cellMinWidth: 95,
-                cols: [
-                    [
-                        { field: 'StaffName', title: '姓名', align: 'center' },
-                        { field: 'money', title: '提成金额', edit: 'text', align: 'center' },
-                        { field: 'remark', title: '备注', edit: 'text', align: 'center' },
-                        {
-                            title: '操作', align: 'center', templet: function (d) {
-                                var html = '';
-                                html += '<a class="layui-btn layui-btn-xs tb-btn-deleat" lay-event="delete">删除</a> ';
-                                return html;
-                            }
-                        },
-                    ]
-                ]
-            });
-            layer.open({
-                type: 1,
-                id: "searchMemCard",
-                title: '商品核销',
-                closeBtn: 1,
-                shadeClose: false,
-                shade: 0.3,
-                maxmin: false,//禁用最大化，最小化按钮
-                resize: false,//禁用调整大小
-                area: ['90%', '80%'],
-                btn: ['确认核销', '取消'],
-                skin: "lomo-ordinary",
-                btnAlign: "r",
-                content: $(".lomo-xztcyg"),
-                yes: function (index, layero) {
-                    var staffs = [{ StaffId: '', CommissionMoney: 10.0, Remark: '' }]
-                    var param = {
-                        WriteOffType: type,
-                        WriteOffId: data,
-                        Staffs: JSON.stringify(staffs)
+            cashier.staffInf(0, user.token)
+                .then(function (result) {
+                    var staffInf = result;
+                    //员工树形列表
+                    if (user.staffClass && staffInf) {
+                        $.each(user.staffClass, function (index, item) {
+                            html += '<div class="layui-collapse">'
+                            html += '<div class="layui-colla-item">'
+                            html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
+                            html += '<div class="layui-colla-content layui-show"><ul class="">'
+                            $.each(staffInf, function (n, items) {
+                                if (items.StaffClassId == item.Id) {
+                                    html += '<li>' + items.StaffName + '</li>'
+                                }
+                            })
+                            html += '</div>'
+                            html += '</div>'
+                            html += '</div>'
+                        })
                     }
-                    $.http.post(LuckVipsoft.api.WriteOffMallOrder, param, user.token, function (res) {
-
+                    $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
+                    //已选择员工列表
+                    var grid_conpon = table.render({
+                        elem: '#orderList',
+                        data: staffInf,
+                        cellMinWidth: 95,
+                        cols: [
+                            [
+                                { field: 'StaffName', title: '姓名', align: 'center' },
+                                { field: 'money', title: '提成金额', edit: 'text', align: 'center' },
+                                { field: 'remark', title: '备注', edit: 'text', align: 'center' },
+                                {
+                                    title: '操作', align: 'center', templet: function (d) {
+                                        var html = '';
+                                        html += '<a class="layui-btn layui-btn-xs tb-btn-deleat" lay-event="delete">删除</a> ';
+                                        return html;
+                                    }
+                                },
+                            ]
+                        ]
                     });
-                    return false;
-                },
-                success: function () {
-                    grid_conpon.reload();
-                    element.render();
-                    table.on('tool(List)', function (obj, index) {
-                        if (obj.event == 'delete') {
-                            obj.del(index);
+                    layer.open({
+                        type: 1,
+                        id: "searchMemCard",
+                        title: '商品核销',
+                        closeBtn: 1,
+                        shadeClose: false,
+                        shade: 0.3,
+                        maxmin: false,//禁用最大化，最小化按钮
+                        resize: false,//禁用调整大小
+                        area: ['90%', '80%'],
+                        btn: ['确认核销', '取消'],
+                        skin: "lomo-ordinary",
+                        btnAlign: "r",
+                        content: $(".lomo-xztcyg"),
+                        yes: function (index, layero) {
+                            var staffs = [{ StaffId: '', CommissionMoney: 10.0, Remark: '' }]
+                            var param = {
+                                WriteOffType: type,
+                                WriteOffId: data,
+                                Staffs: JSON.stringify(staffs)
+                            }
+                            $.http.post(LuckVipsoft.api.WriteOffMallOrder, param, user.token, function (res) {
+
+                            });
+                            return false;
+                        },
+                        success: function () {
+                            grid_conpon.reload();
+                            element.render();
+                            table.on('tool(orderList)', function (obj, index) {
+                                if (obj.event == 'delete') {
+                                    obj.del(index);
+                                }
+                            });
+
+                            $('body').on('click', '.layui-colla-content li', function () {
+                                var i = $(this).index('.layui-colla-content li');
+                            })
                         }
                     });
+                    layer.msg('请选择提成员工')
+                })
 
-                    $('body').on('click', '.layui-colla-content li', function () {
-                        var i = $(this).index('.layui-colla-content li');
-                    })
-                }
-            })
         },
         //键盘操作
         keyboard: function () {
@@ -790,7 +795,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             });
         },
         //退货
-        returnGoods:function(){
+        returnGoods: function () {
 
         },
         //重新渲染表单
@@ -802,7 +807,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 field: {
                     BillCode: data[0].value,
                     DeliveryStatus: data[1].value,
-                    Page:parseInt(page)
+                    Page: parseInt(page)
                 }
             }
             _this.getList(key)

@@ -349,9 +349,10 @@
 		            </ul>
 		        </div>
 		        <div class="cashier-end">
-		            <input name="" type="text" placeholder="请输入会员密码" class="input" />
+					<input name="" type="text" placeholder="请输入会员密码" class="input"  id="pay_pwd"/>					
 		            <button type="button" id="finishPayBtn" class="add-bt">完成结算</button>
-		        </div>
+				</div>
+				<div><input name="" type="text" class="input"  id="order_info"/>	</div>
 		    </div>
 		</div>
 		
@@ -410,29 +411,18 @@
 		        </dd>
 		    </dl>
 		    <div class="members-search-list">
-		        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
-		            <tr>
-		                <th>名称</th>
-		                <th>券号</th>
-		                <th>券类型</th>
-		                <th>优惠金额</th>
-		                <th>最低消费</th>
-		            </tr>
-		            <tr>
-		                <td>国庆大酬宾</td>
-		                <td>42065236524</td>
-		                <td>全场券</td>
-		                <td>7折</td>
-		                <td> 500</td>
-		            </tr>
-		            <tr>
-		                <td>国庆大酬宾</td>
-		                <td>42065236524</td>
-		                <td>全场券</td>
-		                <td>7折</td>
-		                <td> 500</td>
-		            </tr>
-		        </table>
+				<table id="coupoonList" lay-filter="coupoonList"></table>
+		        <!-- <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+					<thead>
+						<tr>
+							<th>名称</th>
+							<th>券号</th>
+							<th>券类型</th>
+							<th>优惠金额</th>
+							<th>最低消费</th>
+						</tr>
+					</thead>
+		        </table> -->
 		    </div> 
 		</div>
 		<!--无产品收银 start-->
@@ -511,7 +501,7 @@
 				</div>
 		        <div class="tcyg-form-bt">
 		            <button type="button" class="submit-bt-clear">取消</button>
-		            <button type="button" class="submit-bt">结账</button>
+		            <button type="button" class="submit-bt">确定</button>
 		        </div>
 		        <!--小键盘 start-->
 		        <div class="small-keyboard lomo-tcyg-keyboard hide">
@@ -577,13 +567,13 @@
 		    </div>
 		</div>
 		<!--支付弹层/微信/支付宝-->
-		<div class="pop-area paybox hide pd20">
+		<div class="pop-area paybox hide pd20" id="paybox">
 			<h3><img src="../../../Theme/images/tool013.png" /> 支付宝支付</h3>
 			<h3>支付金额：1000元</h3>
 			<div class="layui-form-item">
 				<label class="layui-form-label">收款码</label>
 				<div class="layui-input-block card-num-form" style="float: none;">
-					<input type="text" class="layui-input" value="" placeholder="请扫面顾客付款二维码" />
+					<input type="text" class="layui-input" value="" placeholder="请扫面顾客付款二维码" id="paymentCode" />
 					<span class="keyboard-icon" onclick="luckKeyboard.showSmallkeyboard(this)"></span>
 				</div>
 			</div>
@@ -611,16 +601,19 @@
 <!--局部模板渲染-->
 <script id="goodsTmp" type="text/html">     
     {{each $data as item i}} 
-	<dl  data-stocknum='{{item.source.StockNum}}'  data-id='{{item.goodsId}}' data-num='{{item.num}}' data-mode='{{item.goodsMode}}'>
+	<dl  data-stocknum='{{item.source.StockNum}}'  data-uuid='{{item.uuid}}'  data-id='{{item.goodsId}}' data-num='{{item.num}}' data-mode='{{item.goodsMode}}'>
 		<dt> 
 			<span class="order-reduce" >-</span> 
 			<span class="order-nub"><input class="order-change-num" oninput="if(value.length>3)value=value.slice(0,3)" type="text" value='{{item.num}}' /></span> 
 			<span class="order-add" >+</span>
-		</dt>		
+		</dt>
 		<dd> 
 			{{@ item.goodsMode | fnGoodsMode }}		
 			<div class="order-name">
-				<h1>{{item.source.GoodsName}} </h1>
+				<h1>
+					{{item.source.GoodsName}} 
+					{{if item.isCustomPrice ==1}}(改){{/if}}
+				</h1>
 				<span>单价: <i> ¥ {{item.memberPrice | fnToFixed}} </i> 
 					{{if item.price != item.memberPrice }}   
 					<b>¥ {{item.price | fnToFixed}} </b>
@@ -707,7 +700,7 @@
 	</div>
 	<div class="tcyg-form-bt">
 		<button type="button" class="submit-bt-clear">取消</button>
-		<button type="button" class="submit-bt">结账</button>
+		<button type="button" class="submit-bt">确定</button>
 	</div>
 </dd>
 </script> 	
@@ -726,16 +719,18 @@
 		<li><span>待收</span><b>¥{{paid}}</b></li>
 		<li><span>优惠</span><b>¥{{discount}}</b></li>
 	</ul>
-	<ul class="cashier-num-b">		
+	<ul class="cashier-num-b">
 		{{each payItem as item i}} 	
 			{{if item.code == curPayItem }}
 				<li data-code='{{item.code}}' class="active">
-					<span>{{item.name }}<b> 
+					<span>{{item.name }}
+					<b> 
 						{{if item.code =='999'}}
-						<input readonly="readonly" data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
+						<input readonly="readonly" data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/>
 						{{else}}
-						<input  data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/></b>
+						<input  data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/>
 						{{/if}}
+					</b>
 					</span>
 					{{if item.code == '001' && item.amount > 0}}
 						<small>找零 ¥{{item.smallChangePrice}}</small>
@@ -749,8 +744,11 @@
 				</li>
 			{{else}}
 				<li data-code={{item.code}}>
-					<span>{{item.name }}<b> 
-						<input  data-old ='{{item.amount}}'  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/></b></span>
+					<span>{{item.name }}
+						<b> 
+						<input  data-old ='{{item.amount}}'  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/>
+						</b>
+					</span>
 						{{if item.code == '001' && item.amount > 0}}
 						<small>找零 ¥{{item.smallChangePrice}}</small>
 					{{/if}}

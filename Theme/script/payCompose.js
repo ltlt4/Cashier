@@ -195,7 +195,7 @@ class payCompose
 
                     item.amount = m
                     //剩余的金额回填 001
-                    if(item != undefined){
+                    if(item_001 != undefined){
                         item_001.amount =  math.chain(allowPrice).subtract(m).done()
                     }
                 }
@@ -435,7 +435,7 @@ class payCompose
     //设置result 
     setConponData(result)
     {   
-        //写订单结构
+        //写优惠券结构
     }
  
     //优惠券是否可以使用（店铺和会员接口已经过滤）->判断可用时间、生日优惠策略、全局配置
@@ -502,6 +502,12 @@ class payCompose
            console.log("finish")
        })
 
+
+
+       console.log('this.chooseBirthdayActivity',that.chooseBirthdayActivity )
+       console.log('this.chooseActivity',that.chooseActivity )
+
+      
       
         //  let res = new Promise(that.setpModify.bind(that))
         //  .then(function(res){         
@@ -552,13 +558,15 @@ class payCompose
 
     //添加购物车
     selectItem(goods){
-        let item = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == goods.Id).FirstOrDefault();     
-        if(item === undefined)
-        { 
+        let item = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == goods.Id && x.goodsMode ==goods.GoodsType && x.isCustomPrice ==0).FirstOrDefault();     
+        if(item === undefined){ 
             let price = goods.Price //其他类型可能不是Price
-
-            this.shoppingCar.push( { 
-                price:goods.Price,
+            let uuid = this.dateFormat("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
+            this.shoppingCar.push( {
+                uuid :uuid,
+                isCustomPrice : 0,
+                customPrice : 0.00,
+                price: goods.Price,
                 goodsId :goods.Id,                
                 goodsMode: goods.GoodsType,//mode,	        //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐
                 num : 1,               
@@ -571,52 +579,107 @@ class payCompose
                 activityPoint : 0.00,       //活动获取积分（总）
                 conponMoney :0.00,          //优惠券优惠金额（总）
                 conponDiscount :0.00,       //优惠券折扣
-                modifyMoney :0.00,          //整单优惠修改分摊金额（总）
+                modifyMoney :0.00,          //整单优惠修改分摊金额（总）+抹零+活动
                 staffs: [],
                 source:goods,
             })
         }
         else{
-            if(item.goodsMode==1)
-            {
-                if(  item.num == item.source.StockNum){                  
+            //库存检测
+            // if(item.goodsMode==1){
+            //     if(  item.num == item.source.StockNum){                  
+            //         return false;
+            //     }
+            // }
+            // item.num++
+            //商品库存
+            if(item.goodsMode==4){
+                if(parseInt(num) > item.source.StockNum){
+                    item.num = item.source.StockNum
                     return false;
                 }
+                else{
+                    item.num++
+                }               
             }
-            item.num++
+            else if(item.goodsMode==1){
+                let allNum = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == item.goodsId && x.goodsMode==1).Sum(x=>x.num);                       
+                if(parseInt(allNum+1) > item.source.StockNum){
+                    item.num = item.source.StockNum
+                    return false;
+                }           
+               item.num ++                              
+            }
+            else{
+               item.num ++   
+            }
+             //商品库存
         }  
         this.process()  
-        return true
-        //console.log("chooseItem->",this.shoppingCar)
+        return true       
     }
 
+
     //修改数量
-    changeItemNum( goodsId , num ) {
+    changeItemNum(uuid,num ) {
         num = parseInt(num)
         let that =this 
-        let item = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == goodsId).FirstOrDefault();     
-        if(item === undefined)
-        {
+        //let item = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == goodsId && x.goodsMode==mode).FirstOrDefault();   
+        let item = Enumerable.From(this.shoppingCar).Where(x=>x.uuid == uuid).FirstOrDefault();      
+        if(item === undefined){
+            console.log('undefined')
             return false
         }
-        else
-        {
+        else{           
             if(num == 0){
                 let index = that.shoppingCar.indexOf(item);               
                 that.shoppingCar.splice(index, 1)                            
             }
             else{
-                if(item.goodsMode==1){
-                    if( (num-0) >item.source.StockNum){
+                //计算库存               
+                if(item.goodsMode==4){
+                    if(parseInt(num) > item.source.StockNum){
                         item.num = item.source.StockNum
                         return false;
-                    }                    
+                    }
+                    else{
+                        item.num = num
+                    }               
                 }
-                item.num = num
+                else if(item.goodsMode==1){                
+                   if(num > item.num){
+                        let allNum = Enumerable.From(this.shoppingCar).Where(x=>x.goodsId == item.goodsId && x.goodsMode==1).Sum(x=>x.num);                       
+                        if(parseInt(allNum - item.num + num) > item.source.StockNum){
+                            item.num = item.source.StockNum
+                            return false;
+                        } 
+                   }                   
+                   item.num = num                                   
+                }   
+                else{
+                    item.num = num      
+                }
+                 //计算库存             
             }
             that.process()
             return true
         }
+    }
+
+    
+    //手动改价
+    changePrice(uuid,customPrice){
+        let that =this 
+        price = price.toFixed(2)
+        let item = Enumerable.From(this.shoppingCar).Where(x=>x.uuid == uuid).FirstOrDefault();   
+        if(item.price  == customPrice){
+            return false
+        }
+        else{
+            item.customPrice =price
+            item.isCustomPrice =1 
+        }
+        console('changePrice')
     }
   
     //重新选择会员 清空参数带 {}
@@ -633,158 +696,141 @@ class payCompose
    
         let that =this 
    
-        let amountDiscountMoney = 0.00	//会员折扣金额
+        let amountDiscountMoney = 0.00	//购物车会员总价
         let	goodsNum = 0			    //商品数量
         let amountPoint = 0.00			//获得积分
-        let amountMoney = 0.00
+        let amountMoney = 0.00          //购物车总价
         
         let classRules = this.chooseMember.ClassDiscountRulesList!== undefined ? this.chooseMember.ClassDiscountRulesList :null;
   
         $.each (this.shoppingCar ,function (index,element){     
-            //let memberDiscount = 1
-            let discount = 1 //记录最低,默认为会员等级折扣
-            // let memberDiscountMoney = 0.00
-            let goodsPoint = 0.00
-            let amount = 0.00
+    
+            let discount = 1        //记录最低,默认为会员等级折扣
+            let goodsPoint = 0.00   //获取积分
+            let amount = (element.price * element.num).toFixed(2) //商品总价(会员折后或修改)
+
             let price = element.price
             let memberPrice = element.price
-
-            if(member.Id == undefined)
-            {
-                that.result.goods.push({ 
-                    goodsId :element.goodsId,
-                    goodsMode:element.goodsMode,
-                    num : element.num,               
-                    goodsPoint : 0.000,         //商品获得积分（总）
-                    amount :(memberPrice * element.num).toFixed(4) , //商品总价(会员折后)
-                    memberDiscount : 1 ,        //会员折扣率
-                    price : price,
-                    memberPrice: element.price,
-                    //memberDiscountMoney: 0.00 , //会员折扣 （总）
-                    memberSchemes : '散客',
-                    activityMoney : 0.00,        //活动优惠金额（总）
-                    activityPoint : 0.00,       //活动获取积分（总）
-                    conponMoney :0.00,          //优惠券优惠金额（总）
-                    modifyMoney :0.00,          //整单优惠修改分摊金额（总）
-                    staffs: element.staffs,
-                    source: element.source,
-                })
-                goodsNum +=  element.num    
-                amountDiscountMoney += element.num* memberPrice
-                amountMoney  += element.num* memberPrice
+            let memberSchemes = '散客'
+            let goodsItem = {
+                uuid :element.uuid,
+                isCustomPrice : element.isCustomPrice,  //是否手动修改价格
+                goodsId :element.goodsId,
+                goodsMode:element.goodsMode,            //类型
+                num : element.num,               
+                goodsPoint : 0.000,         //商品获得积分（总）
+                amount : amount ,           //商品总价(会员折后)
+                memberDiscount : 1 ,        //会员折扣率
+                price : price,
+                memberPrice: memberPrice,             
+                memberSchemes : '散客',            
+                activityPoint : 0.00,       //活动获取积分（总）
+                conponMoney :0.00,          //优惠券优惠金额（总）
+                modifyMoney :0.00,          //整单优惠修改分摊金额（总） 活动优惠金额+整单优惠+抹零
+                staffs: element.staffs,
+                source: element.source,     //源数据
             }
-            else{                  
-                //if(element.goodsMode == 5 || element.goodsMode == 1 ) //套餐 +商品
-                if(true)
-                {   
-                    let memberSchemes =''
-                   
-                    if(element.source.Specials > 0){  
-                       
-                        memberPrice = element.source.Specials //商品特价
-                        memberSchemes = "商品特价"
+
+            if(element.isCustomPrice == 1){
+                //手动改价
+                memberPrice = element.customPrice.toFixed(2)
+                memberSchemes = '手动修改'
+                amount = (element.customPrice *element.num).toFixed(2)
+            }
+            else if(member.Id != undefined){
+                //会员价
+                //if(element.goodsMode == 5 || element.goodsMode == 1 ) //套餐 +商品              
+                if(element.source.Specials > 0){                      
+                    memberPrice = element.source.Specials //商品特价
+                    memberSchemes = "商品特价"
+                }
+                else
+                {                                      
+                    memberSchemes = "商品折扣"                       
+                    let classDiscount = 1   //商品分类折扣     
+
+                    //商品分类折扣计算
+                    if( element.source.GoodsClass !== undefined  && classRules!=null){
+                        let classRulesItem = Enumerable.From(classRules).Where(x=>x.GoodsClassId == element.source.GoodsClass).FirstOrDefault();  
+                        if(classRulesItem !== undefined)
+                        {
+                            classDiscount = classRulesItem.Discount
+                        }                                                
                     }
-                    else
-                    {                                      
-                        memberSchemes = "商品折扣"                       
-                        let classDiscount = 1   //商品分类折扣     
-    
-                        //商品分类折扣计算
-                        if( element.source.GoodsClass !== undefined  && classRules!=null)
-                        {
-                            let classRulesItem = Enumerable.From(classRules).Where(x=>x.GoodsClassId == element.source.GoodsClass).FirstOrDefault();  
-                            if(classRulesItem !== undefined)
-                            {
-                                classDiscount = classRulesItem.Discount
-                            }                                                
-                        }
-                        
-                        //商品折扣
-                        if(element.source.IsDiscount == 0) //无产品最低折扣
-                        {
-                            if(classDiscount < 1 ){
-                                discount = classDiscount;
-                                memberSchemes = "会员商品分类折扣(未启用商品折扣)"
-                            }
-                            else{
-                                console.log(member.DiscountPercent,member)
-                                discount = member.DiscountPercent;   
-                                memberSchemes = "会员默认折扣(未启用商品折扣)"  
-                            }                                   
+                    
+                    //商品折扣//无产品最低折扣
+                    if(element.source.IsDiscount == 0){
+                        if(classDiscount < 1 ){
+                            discount = classDiscount;
+                            memberSchemes = "会员商品分类折扣(未启用商品折扣)"
                         }
                         else{
-                            if(classDiscount < 1 ){
-                                // 商品最低折扣  会员商品分类 比较
-                                if( element.source.MinDiscount > classDiscount){ 
-                                    memberSchemes = "会员商品分类折扣(启用商品折扣)"
-                                    discount = classDiscount
-                                }
-                                else{
-                                    memberSchemes = "商品最低折扣(启用商品折扣)"
-                                    discount = element.source.MinDiscount
-                                }                          
+                            console.log(member.DiscountPercent,member)
+                            discount = member.DiscountPercent;   
+                            memberSchemes = "会员默认折扣(未启用商品折扣)"  
+                        }                                   
+                    }
+                    else{
+                        if(classDiscount < 1 ){
+                            // 商品最低折扣  会员商品分类 比较
+                            if( element.source.MinDiscount > classDiscount){ 
+                                memberSchemes = "会员商品分类折扣(启用商品折扣)"
+                                discount = classDiscount
                             }
                             else{
-                                //商品最低折扣 会员默认折扣 比较
-                                if(element.source.MinDiscount > member.DiscountPercent){                              
-                                    memberSchemes = "会员默认折扣(启用商品折扣)"
-                                    discount =  member.DiscountPercent
-                                }
-                                else{                             
-                                    memberSchemes = "商品最低折扣(启用商品折扣)"
-                                    discount =  element.source.MinDiscount
-                                }
-                             } 
-                        }    
-                        memberPrice =  (price * discount).toFixed(4)
-                    }
-
-                   
-                    //获取积分计算
-                    if(element.source.IsPoint == 1){                            
-                        goodsPoint =  (element.source.PointType * element.num)
-                        amountPoint = amountPoint + goodsPoint
-                    }                    
-                    else if(member.PointPercent > 0 ){
-                
-                        goodsPoint =  (memberPrice *  element.num * member.PointPercent ).toFixed(4)
-                        //(((price - memberPrice) * element.num )* member.PointPercent ).toFixed(4)
-                        amountPoint += goodsPoint ;// 按折后金额给积分
-                    }  
-
-                    that.result.goods.push({ 
-                        goodsMode:element.goodsMode,
-                        goodsId :element.goodsId,
-                        num : element.num,               
-                        goodsPoint : goodsPoint,         //商品获得积分（总）
-                        amount : (memberPrice * element.num).toFixed(4) , //商品总价(会员折后)
-                        memberDiscount : discount,       //会员折扣率
-                        price : price,
-                        memberPrice: memberPrice,
-                       // memberDiscountMoney: 0.00 , //会员折扣 （总）
-                        memberSchemes : memberSchemes,
-                        activityMoney :0.00,        //活动优惠金额（总）
-                        activityPoint : 0.00,       //活动获取积分（总）
-                        conponMoney :0.00,          //优惠券优惠金额（总）
-                        modifyMoney :0.00,          //整单优惠修改分摊金额（总）
-                        staffs: element.staffs,
-                        source: element.source,
-                    })
-
-                    amountDiscountMoney += (memberPrice * element.num)
-                    goodsNum  += element.num                  
-                    amountMoney +=  element.num * price    
-                }
-                else 
-                {
-                    //// 场馆 、...........................
-                }
+                                memberSchemes = "商品最低折扣(启用商品折扣)"
+                                discount = element.source.MinDiscount
+                            }                          
+                        }
+                        else{
+                            //商品最低折扣 会员默认折扣 比较
+                            if(element.source.MinDiscount > member.DiscountPercent){                              
+                                memberSchemes = "会员默认折扣(启用商品折扣)"
+                                discount =  member.DiscountPercent
+                            }
+                            else{                             
+                                memberSchemes = "商品最低折扣(启用商品折扣)"
+                                discount =  element.source.MinDiscount
+                            }
+                            } 
+                    }    
+                    memberPrice =  (price * discount).toFixed(4)
+                }               
             }
+
+            //积分计算
+            if(member.Id != undefined)
+            {
+                if(element.source.IsPoint == 1){                            
+                    goodsPoint =  (element.source.PointType * element.num)
+                    amountPoint = amountPoint + goodsPoint
+                }                    
+                else if(member.PointPercent > 0 ){            
+                    goodsPoint =  (memberPrice *  element.num * member.PointPercent ).toFixed(4)
+                    //(((price - memberPrice) * element.num )* member.PointPercent ).toFixed(4)
+                    amountPoint += goodsPoint ;// 按折后金额给积分
+                }  
+            }
+
+            goodsItem.goodsPoint = goodsPoint
+            goodsItem.memberPrice = memberPrice
+            goodsItem.memberSchemes = memberSchemes
+            goodsItem.memberDiscount = discount
+            goodsItem.amount = (memberPrice * element.num).toFixed(2)
+
+            that.result.goods.push(goodsItem)
+
+            //总计
+            goodsNum = math.chain(goodsNum).add(element.num).done() 
+            amountDiscountMoney = math.chain(amountDiscountMoney).add(goodsItem.amount).done()  
+            amountMoney = math.chain(amountMoney).add(element.num* price).done()  
         })
 
+        console.log('amountDiscountMoney',amountDiscountMoney)
+
         that.result.amountDiscountMoney = that.moneyPrecision(amountDiscountMoney) //amountDiscountMoney.toFixed(4)
-        that.result.goodsNum = goodsNum
-        that.result.amountPoint = that.pointPrecision (amountPoint)   //amountPoint.toFixed(4)
+        that.result.goodsNum =  goodsNum
+        that.result.amountPoint = that.pointPrecision(amountPoint)   //amountPoint.toFixed(4)
         that.result.amountMoney = that.moneyPrecision(amountMoney)      // amountMoney.toFixed(4)
 
         console.log('会员计算结果 ==>', that.result)
@@ -797,7 +843,6 @@ class payCompose
         let that =this 
 
         let currentPrice= that.result.amountDiscountMoney //当前总价
-
         
         that.result.amountActivityMoney= 0.0000 //活动减金额
         that.result.amountActivityPoint= 0.0000 //活动获得积分
@@ -805,8 +850,7 @@ class payCompose
         if(that.chooseActivity.Id!=undefined)
         {
             if( that.chooseActivity.LimitUsedAmount <= currentPrice)
-            {           
-                console.log()
+            {        
                 if(that.chooseActivity.IsReduceAmount ==1 )   
                 {                    
                     //that.w_calc(that.chooseActivity.ReduceAmount  , currentPrice )
@@ -964,35 +1008,42 @@ class payCompose
     //setp->05  计算活动优惠和整单优惠分摊 （已合并其他方法内部的计算，方法名暂时不修改）
     setpModify(resolve,reject){ 
         let that = this
-        if (that.result.amountModifyMoney > 0)
+        //优惠总价 活动+整单+ 抹零
+        let disMoney = math.chain(that.result.amountActivityMoney).add(that.result.amountModifyMoney).add(that.result.zeroAmount).done()
+        //剩余的金额 ，可能面单处理则不处理
+        let maxMoney =  math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done()
+        if (disMoney> 0)
         {
-            let maxPrice = 0.00
-            // let goodsId =''
             let diffModifyMoney = 0.00 //折扣当前循环总价金额
-            let maxMoney = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).done()
-            let disMoney = math.chain(that.result.amountActivityMoney).add(that.result.amountModifyMoney).done() // 活动+ 整单优惠金额
 
+          
             if( maxMoney >0 ){
+                console.log("1111111111111111111111111")
                 $.each( that.result.goods ,function(index,item){                    
-                    let rate =  item.amount / that.result.amountDiscountMoney 
-                    let p = ( disMoney * rate ).toFixed(2) 
+                    let rate =  (item.amount / that.result.amountDiscountMoney).toFixed(2)  //比例
+                    let p = ( disMoney * rate ).toFixed(2)  //当前折扣价比率分摊价格        
+                    let m = math.chain(disMoney).subtract(diffModifyMoney).done() //当前可用的分摊金额      
 
-                    let m = disMoney - diffModifyMoney //当前可用的分摊金额
+                    console.log("rate" , rate , p , m)        
                     if( m >  p)
                     {
-                        if( item.amount < p ){
-                            item.modifyMoney = item.amount
-                            diffModifyMoney += item.amount
+                        if( item.memberPrice < p ){ //商品价格小于折扣价格 使用单凭总价
+                            item.modifyMoney = item.memberPrice
+                            diffModifyMoney = math.chain(diffModifyMoney).add(item.memberPrice).done() 
+                           // diffModifyMoney += item.memberPrice
                         }
                         else{
                             item.modifyMoney = p
-                            diffModifyMoney += p
+                            diffModifyMoney = math.chain(diffModifyMoney).add(p).done() 
+                            //diffModifyMoney += p
                         }
                     }
                     else
                     {
+                        m = m.toFixed(2)
                         item.modifyMoney =  m
-                        diffModifyMoney +=  m
+                        diffModifyMoney = math.chain(diffModifyMoney).add(m).done() 
+                        //diffModifyMoney +=  m
                     }
                 })      
             }
@@ -1094,6 +1145,148 @@ class payCompose
             callback()
         }
         return false
+    }
+
+
+    //判断支付价格是否可以提交
+    validPayMoney()
+    {
+        let that =this
+        let amount = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
+       
+        let tempPrice = 0.00
+        $.each(that.payItem,function(index,ele){                         
+                let t =  math.chain(tempPrice).add(ele.amount).done()
+                tempPrice = t          
+        })
+        
+        let r = math.chain(amount).subtract(tempPrice).done()
+        return r
+    }
+
+    //  商品消费、计次消费、套餐消费、快速扣次
+    ///   "Order":{"ActivityAmount":优惠活动优惠金额,"CouponAmount":优惠券优惠金额,"ZeroAmount":抹零金额,"SingleAmount":整单优惠金额,"Source":消费来源：0-PC、1-前台收银、2-收银机、3-APP 4 公众号 5 小程序,"BillCode":"订单号","OrderType":订单类型 2、商品消费 5、快速扣次,"MemID":"会员ID","TotalMoney":订单总金额,"DiscountMoney":折后总金额,"TotalPoint":获得积分,"Remark":"消费备注"},
+    ///   "Payments":[{"PaymentCode":"支付方式编码","PayAmount":支付金额,"PayContent":"积分支付扣除数量或者在线支付流水号"}],
+    ///   "Staffs":[{"StaffId":"员工ID","CommissionMoney":自定义提成金额,"Remark":"提成备注"}],
+    ///   "Activities":[{"ActId":"优惠活动ID","ActName":"活动名称","ActivityAmount":优惠金额}],
+    ///   "Conpons":[{"ConponSendId":"优惠券发送记录ID","ConponCode":"优惠券券号","CouponAmount":优惠金额}],
+    ///   "Details":[{"DiscountAmount":优惠活动、整单优惠、抹零优惠之和,"CouponAmount":优惠券优惠,"Staffs":提成员工,"BatchCode":计次批次好,"GoodsID":商品ID,"GoodsType":商品类型,"GoodsCode":商品编号,"GoodsName":商品名称,"DiscountPrice":折扣价,"Number":数量,"TotalMoney":总金额}],
+    ///   "MemberPwd":"123456",
+    ///   "ReservationOrderID":"预约单据ID,非预约单据传空字符"
+
+
+    // allPayMoney  :0.00 ,            //支付方式总金额
+    // modificationInfo :{}  ,          //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
+    // amountDiscountMoney : 0.00, 	//会员折扣总金额 (会出现比原价高时的情况)
+    // goodsNum : 0, 		            //商品数量
+    // amountPoint	: 0.00, 			//获得积分
+    // amountMoney	: 0.00, 			//商品总价
+    // amountActivityMoney: 0.00 ,	    //活动减金额
+    // isZeroAmount: 0,
+    // zeroAmount :0.00,               //抹零金额
+    // amountActivityPoint: 0.0000,	//活动获得积分
+    // amountCouponMoney:0.00	,		//优惠卷金额
+    // amountModifyMoney:0.00 ,		//手动修改金额	
+    postPay(pwd)
+    {
+        let that =this
+        //01.检测支付方式金额
+       if(that.validPayMoney()<0)
+       {
+           return false
+       }
+
+        let mid = that.chooseMember.Id == undefined ? '' :that.chooseMember.Id
+        let billCode =''
+        let orderType = 2 //2、商品消费 5、快速扣次,
+
+        let postData ={}   
+        postData.Order ={
+            ActivityAmount: that.result.amountActivityMoney ,       //优惠活动优惠金额,
+            CouponAmount:   that.result.amountCouponMoney,          //优惠券优惠金额,
+            ZeroAmount:     that.result.zeroAmount ,                //抹零金额,
+            SingleAmount:   that.result.amountModifyMoney ,         //整单优惠金额,
+            Source: 1 ,                                             //消费来源：0-PC、1-前台收银、2-收银机、3-APP 4 公众号 5 小程序
+            BillCode: billCode,
+            OrderType: orderType , 
+            MemID: mid,
+            TotalMoney:     that.result.amountMoney ,               //订单总金额,
+            DiscountMoney:  that.result.amountDiscountMoney ,       //折后总金额,
+            TotalPoint:     that.result.amountPoint ,              //获得积分,
+            Remark:         that.remark
+        }
+
+        postData.Payments =[]   // {"PaymentCode":"支付方式编码","PayAmount":支付金额,"PayContent":"积分支付扣除数量或者在线支付流水号"}      
+        $.each(that.payItem,function(index,item){
+            postData.Payments.push({         
+                PaymentCode: item.code,
+                PayAmount: item.amount,
+                PayContent :''
+            })
+        })
+
+        postData.Staffs =[]         //{"StaffId":"员工ID","CommissionMoney":自定义提成金额,"Remark":"提成备注"}
+        postData.Activities =[]     //{"ActId":"优惠活动ID","ActName":"活动名称","ActivityAmount":优惠金额}       
+        if(that.chooseBirthdayActivity.Id != undefined){
+            postData.Activities.push({
+                ActId :that.chooseBirthdayActivity.Id,
+                ActivityAmount :that.chooseBirthdayActivity.ReduceAmount,
+                ActName:that.chooseBirthdayActivity.ActName
+            })
+        }
+        if(that.chooseActivity.Id != undefined){   
+            postData.Activities.push({
+                ActId :that.chooseActivity.Id,
+                ActivityAmount :that.chooseActivity.ReduceAmount,
+                ActName:that.chooseActivity.ActName
+            })
+        }
+        postData.Conpons =[]
+
+        postData.Details =[] 
+        //{"DiscountAmount":优惠活动、整单优惠、抹零优惠之和,"CouponAmount":优惠券优惠,"Staffs":提成员工,"BatchCode":计次批次好,
+        //"GoodsID":商品ID,"GoodsType":商品类型,"GoodsCode":商品编号,"GoodsName":商品名称,"DiscountPrice":折扣价,
+        //"Number":数量,"TotalMoney":总金额}
+        $.each(that.result.goods,function(index,item){
+            postData.Details.push({                
+                DiscountAmount : item.modifyMoney,
+                CouponAmount :item.conponMoney,
+                Staffs :item.staffs,
+                BatchCode : (item.source.BatchCode==undefined )?'' :item.source.BatchCode,
+                GoodsID : item.goodsId,
+                GoodsType : item.goodsMode,
+                GoodsCode : item.source.GoodsCode,
+                GoodsName :item.source.GoodsName,
+                DiscountPrice : item.memberPrice,
+                Number : item.num,
+                TotalMoney : item.amount
+            })
+        })
+
+
+        // price:goods.Price,
+        // goodsId :goods.Id,                
+        // goodsMode: goods.GoodsType,//mode,	        //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐
+        // num : 1,               
+        // goodsPoint : 0.000,         //商品优惠积分（总）
+        // amount :0.00 ,              //商品总价
+        // discount : 1 ,        		//会员折扣率
+        // discountMoney: 0.00 , 		//会员折扣 （总）
+        // discountSchemes : '散客',			
+        // activityMoney :0.00,        //活动优惠金额（总）
+        // activityPoint : 0.00,       //活动获取积分（总）
+        // conponMoney :0.00,          //优惠券优惠金额（总）
+        // conponDiscount :0.00,       //优惠券折扣
+        // modifyMoney :0.00,          //整单优惠修改分摊金额（总）
+        // staffs: [],
+        // source:goods,
+       
+        postData.MemberPwd = pwd
+        postData.ReservationOrderID =''
+
+        console.log('postData',postData)
+        $("#order_info").val(JSON.stringify(postData))
+       
     }
     
     ////////////////////////////计算功能函数////////////////////////////

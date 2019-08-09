@@ -388,7 +388,7 @@
 	font-size: 16px;
 }
 
-.order-list dl dt span.order-nub input{
+.order-list dl dt span.order-nub input {
 	width: 100%;
 	text-align: center;
 }
@@ -689,7 +689,7 @@
 	border: 1px solid rgba(246, 139, 13, 0.60);
 }
 
-.check-box-list .birthday:last-child{
+.check-box-list .birthday:last-child {
 	margin-bottom: 30px;
 }
 
@@ -1195,11 +1195,11 @@
 .lomo-topTool ul li a {
 	display: block;
 	width: 161px;
-	height: 31px;
+	height: 25px;
 	background: #f3f3f3 url(../Theme/images/tool01.png) no-repeat center 20px;
 	text-align: center;
 	font-size: 14px;
-	padding-top: 70px;
+	padding-top: 60px;
 	border-radius: 5px
 }
 
@@ -1251,6 +1251,8 @@
 	background: #f3f3f3 url(../Theme/images/tool99.png) no-repeat center 20px;
 }
 
+
+
 .lomo-members-search {
 	/* position: absolute;
 	left: 200px;
@@ -1300,8 +1302,22 @@
 	right: 20px;
 }
 
-.members-search-list tr {
+.members-search-list tr td {
 	cursor: pointer;
+	position: relative;
+}
+
+.members-search-list tr.active td:first-child::before {
+	content: '';
+	display: block;
+	width: 5px;
+	height: 10px;
+	border-right: 1px #41C060 solid;
+	border-bottom: 1px #41C060 solid;
+	transform: rotate(45deg);
+	position: absolute;
+	left: 14px;
+	top: 14px;
 }
 
 .members-search-list .dataTable {
@@ -2442,7 +2458,7 @@
 }
 
 .cashier-way ul li.border-red a {
-    border:1px red solid;
+	border: 1px red solid;
 }
 
 .cashier-bt {
@@ -2513,18 +2529,22 @@
 	margin: 2px 0 0 5px;
 	cursor: pointer;
 }
-.cashier-num-a li em.active{
+
+.cashier-num-a li em.active {
 	background: url(../Theme/images/moling.png) no-repeat;
 }
-.cashier-num-a .inline{
+
+.cashier-num-a .inline {
 	display: inline-block;
 	margin: 0 auto;
 }
-#single_cancel{
+
+#single_cancel {
 	height: 36px;
 	line-height: 36px;
 	padding: 0 10px;
 }
+
 .cashier-num-b {
 	overflow: hidden;
 	margin: 10px 6px 0 6px;
@@ -2575,12 +2595,14 @@
 	font-size: 14px;
 }
 
-.cashier-num-b li.active span{
+.cashier-num-b li.active span {
 	border: #41C060 1px solid;
 }
-.cashier-num-b input{
+
+.cashier-num-b input {
 	text-align: right;
 }
+
 .cashier-keyboard {
 	overflow: hidden;
 }
@@ -3020,39 +3042,109 @@
 	margin-top: 30px;
 }
 
+/* @keyframes base_show {
+	0% {
+		opacity: 0
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+.tool-service:hover .Customer-center {
+	transform: translate(0, -28px);
+} */
+
 .Customer-center {
-	background: #f3f3f3;
-	border-radius: 5px;
+	width: 280px;
+	height: 270px;
+	position: absolute;
+	background-image: url(../Theme/images/ContactCustomerService.png);
+	background-size: 100%;
+	top: 76px;
+	left: -205px;
+	cursor: default;
+	transition: 0.2s linear;
 }
 
-.Customer-center ul {
-	width: 136px;
+.Customer-center .contact {
+	width: 70%;
 	margin: 0 auto;
-}
-
-.Customer-center li {
+	height: 60px;
+	line-height: 60px;
+	cursor: default;
+	text-align: left;
+	float: none;
 	margin-top: 20px;
-	text-align: center;
+}
+
+.Customer-center .contact span {
+	font-size: 18px;
+	font-family: MicrosoftYaHei;
+	color: rgba(255, 255, 255, 1);
+}
+
+.Customer-center .service {
+	width: 85%;
+	margin: 0 auto;
+	height: 159px;
+	line-height: 60px;
+	cursor: default;
+	float: none;
+	margin-top: 17px
+}
+
+.Customer-center .service>div {
+	cursor: default;
+	float: none;
+	width: 100%;
+}
+
+.service-1 {
+	height: 45px !important;
+	padding-top: 10px;
+	line-height: 20px;
+	text-align: left !important;
+}
+
+.service-1 span {
+	font-size: 12px;
+	font-family: MicrosoftYaHei;
+	color: #666666;
+}
+
+.service-2 {
+	height: 30px !important;
+	line-height: 30px !important;
+}
+
+.service-2 img {
+	margin-bottom: 4px;
+}
+
+.service-2 span {
 	font-size: 16px;
-	color: #41c060;
+	font-family: MicrosoftYaHei;
+	font-weight: 500;
+	color: #333333;
 }
 
-.Customer-center li.phone {
-	background: url(../Theme/images/phoneIcon.png) no-repeat 3px;
-	font-size: 14px;
-	padding-left: 15px;
+.service-3 {
+	height: 40px !important;
+	line-height: 40px !important;
 }
 
-.Customer-center li.qq {
-	background: url(../Theme/images/qqIcon.png) no-repeat left;
-	font-size: 14px;
-	padding-left: 15px;
-}
-
-.Customer-center li.wx img {
-	width: 110px;
-	height: 110px;
-	border: solid 10px #fff;
+.service-3 button {
+	width: 200px;
+	height: 28px;
+	background: #41C060;
+	border-radius: 0px 0px 4px 4px;
+	font-size: 12px;
+	font-family: PingFangSC-Regular;
+	font-weight: 400;
+	color: #fff;
+	margin-top: 6px;
 }
 
 .feedback {
@@ -3439,7 +3531,7 @@
 .lomo-xq-czxq div,
 .lomo-xq-ksxf div {
 	min-height: 30px !important;
-	height:  auto !important;
+	height: auto !important;
 	line-height: 30px;
 }
 
@@ -4340,10 +4432,12 @@
 	cursor: pointer;
 	position: relative;
 }
-.lomo-xztcyg .layui-colla-content li.active{
+
+.lomo-xztcyg .layui-colla-content li.active {
 	color: #41C060;
 }
-.lomo-xztcyg .layui-colla-content li.active::after{
+
+.lomo-xztcyg .layui-colla-content li.active::after {
 	content: '';
 	width: 5px;
 	height: 10px;
@@ -4447,8 +4541,8 @@
 	width: 378px;
 	border: 1px solid #d2d2d2;
 	background-color: #fff;
-    border-radius: 2px;
-	box-shadow: 0 2px 4px rgba(0,0,0,.12);
+	border-radius: 2px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
 	min-height: 80px;
 	max-height: 150px;
 	overflow-y: auto;
@@ -4461,29 +4555,29 @@
 	cursor: pointer;
 	padding-left: 10px;
 	transition: .5s all;
-	margin:5px 0;
+	margin: 5px 0;
 }
-.lomo-express-option span:hover{
+
+.lomo-express-option span:hover {
 	background: #ddd;
 }
-.lomo-logistics-Inf{
+
+.lomo-logistics-Inf {
 	height: 30px;
 	line-height: 30px;
 }
-.lomo-logistics-Inf span{
-  font-size: 16px;
+
+.lomo-logistics-Inf span {
+	font-size: 16px;
 }
-.lomo-commodities-hx{
+
+.lomo-commodities-hx {
 	cursor: pointer;
 	color: blue;
 }
-.lomo-logistics{
+
+.lomo-logistics {
 	padding: 10px;
-	border: 1px  solid #41C060;
+	border: 1px solid #41C060;
 	overflow: auto;
 }
-
-
-
-
-

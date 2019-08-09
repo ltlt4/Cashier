@@ -269,6 +269,11 @@ input:-ms-input-placeholder {
 	background: url(../Theme/images/icon04.png) no-repeat 0;
 	width: 27px
 }
+.lomo-top-tool dd a.tool-service {
+	background: url(../Theme/images/kefu.png) no-repeat 0;
+	width: 27px;
+	position: relative;
+}
 
 .lomo-top-tool dd a.tool-man {
 	background: url(../Theme/images/icon05.png) no-repeat 0;

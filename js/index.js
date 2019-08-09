@@ -70,6 +70,11 @@ layui.use(['layer', 'jquery', 'form', 'table'], function () {
         iframe.attr('src', router);
         initial.shut();
     });
+    $(".tool-service").hover(function () {
+        $(".Customer-center").animate({ top: '48px' },200).show()
+    }, function () {
+        $(".Customer-center").animate({ top: '76px' },200).hide()
+    });
     $(".lomo-topTool li .lomo-eject").on("click", function () {
         var index = $(this).index('.lomo-topTool li .lomo-eject');
         $(this).blur();
