@@ -17,11 +17,6 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
         $(".Card-Cancel-keyboard").hide();
         initial.keyPanel = true;
     });
-    //时间切换
-    $(".online-order-time li").on("click", function () {
-        var i = $(this).index()
-        $(this).addClass("hover").siblings().removeClass("hover");
-    })
 
     var order = {
         list: [],
@@ -32,7 +27,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             this.form();
             this.search();
             this.details();
-            this.election(this.maxTime, this.minTime);
+            this.election(this.minTime, this.maxTime);
             this.writeOff();
             this.keyboard();
             this.getList('');
@@ -60,7 +55,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 theme: '#41c060',
                 max: endTime,
                 value: startTime,
-                btns: ['now', 'confirm'],
+                btns: ['confirm'],
                 done: function (value, date, endDate) {
                     _this.maxTime.config.min = date;
                     _this.maxTime.config.min.month = date.month - 1;
@@ -73,7 +68,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                 value: endTime,
                 elem: '#orderTimeEnd',
                 theme: '#41c060',
-                btns: ['now', 'confirm'],
+                btns: ['confirm'],
                 done: function (value, date, endDate) {
                     _this.minTime.max = date;
                     _this.minTime.config.max.month = date.month - 1;
@@ -115,7 +110,10 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                     Filter: JSON.stringify(Filter)
                 }
             }
-
+            if (time[0] > time[1]) {
+               layer.msg('日期选择错误');
+               return false;
+            }
             $.http.post(LuckVipsoft.api.GetMallOrderListPage, param, user.token, function (res) {
                 if (res.status == 1) {
                     if (res.data.list.length > 0) {
@@ -367,15 +365,14 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                     var Time = that.getMinTime(nowtime, -30);
                 };
                 maxTime.config.min = {
-                    date: Time.split(" ")[0].split("-")[2],
+                    date: parseInt(Time.split(" ")[0].split("-")[2]),
                     hours: 23,
                     minutes: 59,
                     month: Time.split(" ")[0].split("-")[1] - 1,
                     seconds: 59,
-                    year: Time.split(" ")[0].split("-")[0],
+                    year: parseInt(Time.split(" ")[0].split("-")[0]),
                 }
                 $("#orderTimeStart").val(Time)
-
             })
         },
         //订单核销

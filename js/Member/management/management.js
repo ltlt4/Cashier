@@ -87,37 +87,6 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
             var dates = (year < 1900 ? (1900 + year) : year) + '-' + month + '-' + day + ' 00:00:00';
             return dates;
         };
-        //获取需要展示的支付方式
-        payType(type, entry) {
-            if (!entry.length > 0) { return false; };
-            if (type == 0 || type == 2) {
-                var list = []
-                for (var key in entry) {
-                    if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020') {
-                        list.push(entry[key]);
-                    };
-                };
-                return list;
-            } else if (type == 1) {
-                var list = []
-                for (var key in entry) {
-                    if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020' && entry[key].code != '002') {
-                        list.push(entry[key]);
-                    };
-                };
-                return list;
-            } else {
-                return [];
-            }
-        };
-        //拼接支付方式
-        PaymentType(data) {
-            var html = '';
-            for (var i = 0; i < data.length; i++) {
-                html += `<option value="${data[i].code}">${data[i].name}</option>`
-            };
-            return html;
-        };
         //layui初始化
         form(name) {
             var that = this
@@ -195,6 +164,10 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
         getList(name, url, type, data) {
             var that = this
             var time = that._time()
+            if (time[0] > time[1]) {
+                layer.msg('日期选择错误');
+                return false;
+            }
             if (type == 0) {
                 var param = {
                     OptMinTime: time[0] != '' ? time[0] : cashier.revDateFormat(cashier.curentTime(new Date(new Date() - 1000 * 60 * 60 * 24 * 1))),
@@ -361,9 +334,9 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                         if (type == 0) {
                             var html = that.consumptionDetails(res.data);
                             if (res.data.Order.RevokeState == 0) {
-                                var btn=['取消','整单撤单']
-                            }else{
-                                var btn=['确认']
+                                var btn = ['取消', '整单撤单']
+                            } else {
+                                var btn = ['确认']
                             }
                         } else if (type == 1) {
                             var details = res.data;
@@ -375,9 +348,9 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 return html;
                             };
                             if (res.data.RevokeState == 0) {
-                                var btn=['取消','整单撤单']
-                            }else{
-                                var btn=['确认']
+                                var btn = ['取消', '整单撤单']
+                            } else {
+                                var btn = ['确认']
                             }
                             var html = `<div class="lomo-gd order-cd cd-info" style="margin: 0;width: 100%;height: 100%;">
                         <div class="order-cd-info">
@@ -443,9 +416,9 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 return _html
                             }
                             if (res.data.Order.RevokeState == 0) {
-                                var btn=['取消','整单撤单']
-                            }else{
-                                var btn=['确认']
+                                var btn = ['取消', '整单撤单']
+                            } else {
+                                var btn = ['确认']
                             }
                             var html = `<div class="lomo-gd order-cd cd-info"  style="margin: 0;width: 100%;height: 100%;"><div class="order-cd-info">
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="order-cdTable"style="background: #F2F2F2;">
@@ -496,9 +469,9 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                                 return _html
                             }
                             if (res.data.Order.RevokeState == 0) {
-                                var btn=['取消','整单撤单']
-                            }else{
-                                var btn=['确认']
+                                var btn = ['取消', '整单撤单']
+                            } else {
+                                var btn = ['确认']
                             }
                             var html = `<div class="lomo-gd order-cd cd-info"  style="margin: 0;width: 100%;height: 100%;">
                             <div class="order-cd-info">
@@ -651,7 +624,7 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                 $("body").on("click", ".returnEd", function () {
                     var i = $(this).index("#consumptionList .returnEd");
                     var record = {
-                        GoodsID: details[i].GoodsCode,
+                        GoodsID: details[i].GoodsID,
                         GoodsType: details[i].GoodsType,
                         OrderID: data.Order.Id,
                         unumber: details[i].RefundableQty,
@@ -693,6 +666,8 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                     return false;
                 },
                 success: function (layero, index) {
+                    $("#shouldRetire").text(0);
+                    $("input[name='returnNumber']").val(1);
                     layero.addClass('layui-form');
                     layero.find('.layui-layer-btn1').attr({
                         'lay-filter': 'good',
@@ -708,7 +683,18 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                             layer.msg('退货数量不能超过最大退货数')
                             $("#shouldRetire").text(0);
                         } else {
-                            $("#shouldRetire").text('￥' + $(this).val() * data.DiscountPrice);
+                            that.returnGoodsDetails(
+                                {
+                                    OrderID: data.OrderID,
+                                    GoodsType: data.GoodsType,
+                                    GoodsID: data.GoodsID,
+                                    Number: $(this).val()
+                                }
+                            ).then(function (res) {
+                                $("#quantity").html(res.html);
+                                $("#shouldRetire").text(res.totalMoney)
+                            });
+
                         }
                     })
                     form.on('submit(good)', function (data2) {
@@ -734,6 +720,39 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                     });
                 }
             });
+        }
+        //消费订单退货详情查询
+        returnGoodsDetails(data) {
+            var param = {
+                OrderID: data.OrderID,
+                GoodsType: data.GoodsType,
+                GoodsID: data.GoodsID,
+                Number: data.value
+            }
+            return new Promise(function (resolve, reject) {
+                $.http.post2(LuckVipsoft.api.GetReturnGoodsPayments, param, user.token, function (res) {
+                    if (res.status == 1) {
+                        var refundPayments = res.data.RefundPayments;
+                        var payments = res.data.Payments
+                        var html = '';
+                        var totalMoney = 0;
+                        $.each(payments, function (index, item) {
+                            $.each(refundPayments, function (index2, item2) {
+                                if (item.code == item2.PaymentCode) {
+                                    html += `<li style="float: left;width: 50%;">
+                                <em for="">${item2.PaymentName}：</em><span>￥${item2.PayAmount}</span></li>
+                              <li style="float: left"><em for="">抵扣积分：</em><span>${item2.PayContent}</span></li>`
+                                    totalMoney += item2.PayAmount;
+                                }
+                            })
+                        })
+                        console.log(html);
+                        var key = { html: html, totalMoney: totalMoney }
+                        resolve(key);
+
+                    }
+                });
+            })
         }
         //切换日期
         election(name, minTime, maxTime) {
@@ -771,7 +790,6 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
         };
         //撤单
         cancelOrder(dom, record, url, type) {
-            console.log(record)
             var that = this
             var opt = that.payType(type, user.PaymentConfig);
             $("#refund").hide();
@@ -857,6 +875,50 @@ layui.use(['layer', 'jquery', "form", 'laypage', 'laydate'], function () {
                 return _html
             }
         };
+        //获取需要展示的支付方式
+        payType(type, entry) {
+            if (!entry.length > 0) { return false; };
+            if (type == 0 || type == 2) {
+                var list = []
+                for (var key in entry) {
+                    if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020') {
+                        list.push(entry[key]);
+                    };
+                };
+                return list;
+            } else if (type == 1) {
+                var list = []
+                for (var key in entry) {
+                    if (entry[key].code != '003' && entry[key].code != '010' && entry[key].code != '020' && entry[key].code != '002') {
+                        list.push(entry[key]);
+                    };
+                };
+                return list;
+            } else {
+                return [];
+            }
+        };
+        //拼接支付方式
+        PaymentType(data) {
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += `<option value="${data[i].code}">${data[i].name}</option>`
+            };
+            return html;
+        };
+        render(name) {
+            var taht = this;
+            var data = $('#' + name + 'Form').serializeArray();
+            var page = $('#' + name + 'Page .layui-laypage-em').next().html(); //当前页码值
+            var key = {
+                field: {
+                    BillCode: data[0].value,
+                    DeliveryStatus: data[1].value,
+                    Page: parseInt(page)
+                }
+            }
+            taht.getList(name)
+        }
     }
     var sufficient = new Bill();
     sufficient.start({

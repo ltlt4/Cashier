@@ -8,6 +8,7 @@ layui.use(['layer', 'jquery', "form"], function () {
         butTime: false,//是否禁用
         timer: null, //计时器名称
         phone: 0,
+        enterprise2: 0,
     }
     //忘记密码
     $(".login-form-bt a").on("click", function () {
@@ -15,22 +16,22 @@ layui.use(['layer', 'jquery', "form"], function () {
         var html = ''
         html += '<div class="forget-password2 lomo-gd2 ">'
         html += '<div class="divTitle"><span class="close"><img src="../../Theme/images/icon010.png" alt=""></span>忘记密码</div>'
-        html += '<dl class="gd-form">'
+        html += '<dl class="gd-form" style="padding-top:10px;">'
         html += '<form>'
-        html += '<dt>企业号</dt>'
+        html += '<dt style="margin-bottom:10px;">企业号</dt>'
         html += '<dd>'
-        html += '<input  type="text" class="sph" placeholder="请输入企业号" id="enterprise2" />'
+        html += '<input  type="text" class="sph" placeholder="请输入企业号" id="enterprise2"  style="border:1px solid #ddd"/>'
         html += '</dd>'
-        html += '<dt>手机号</dt>'
+        html += '<dt style="margin-bottom:10px;">手机号</dt>'
         html += '<dd>'
-        html += '<input  type="text" class="sph" placeholder="请输入手机号" id="phone"/>'
+        html += '<input  type="text" class="sph" placeholder="请输入手机号"  style="border:1px solid #ddd" id="1phone"/>'
         html += '</dd>'
-        html += ' <dt>验证码</dt>'
+        html += ' <dt style="margin-bottom:10px;">验证码</dt>'
         html += '<dd style="display: flex;">'
-        html += '<input  type="password" class="sph" placeholder="请输入验证码" style="width: 80%" id="verCode"验证码  />'
+        html += '<input  type="password" class="sph" placeholder="请输入验证码" style="width: 80%;border:1px solid #ddd" id="verCode" 验证码   />'
         html += ' <div class="forget-password-obtain" id="sendCode">获取</div>'
         html += '</dd>'
-        html += '<dd class="gd-form-bt">'
+        html += '<dd class="gd-form-bt" style="margin-top:20px;">'
         html += '<button type="button" class="submit-bt-clear">取消</button>'
         html += ' <button type="submit" id="confirmVer" class="submit-bt">下一步</button>'
         html += ' </dd>'
@@ -45,7 +46,7 @@ layui.use(['layer', 'jquery', "form"], function () {
             shadeClose: false,
             shade: 0.3,
             skin: 'yourclass',
-            area: ['530px', '360px'],
+            area: ['560px', '440px'],
             maxmin: false,//禁用最大化，最小化按钮
             resize: false,//禁用调整大小
             content: html,
@@ -107,7 +108,8 @@ layui.use(['layer', 'jquery', "form"], function () {
                 return false;
             }
             var param = {
-                Mobile: phone
+                Mobile: phone,
+                CompCode: enterprise2,
             }
             $("#sendCode").off('click')
             $.http.register(LuckVipsoft.api.retrievePasswordSendCode, param, function (res) {
@@ -131,6 +133,7 @@ layui.use(['layer', 'jquery', "form"], function () {
         e.preventDefault()
         var verCode = $("#verCode").val()
         var phone = $("#phone").val()
+        var enterprise2 = $("#enterprise2").val() //企业号
         if (!(/^[1][3,4,5,7,8][0-9]{9}$/.test(phone))) {
             layer.msg(LuckVipsoft.lan.ER0015);
             $('#phone').focus();
@@ -141,7 +144,6 @@ layui.use(['layer', 'jquery', "form"], function () {
             $('#verCode').focus();
             return false
         }
-
         var param = {
             Mobile: phone,
             Code: verCode
@@ -149,28 +151,9 @@ layui.use(['layer', 'jquery', "form"], function () {
         $.http.register(LuckVipsoft.api.CheckValidationCode, param, function (res) {
             layer.msg(res.msg)
             if (res.status == 1) {
-                user.phone = phone
+                user.phone = phone;
+                user.enterprise2 = enterprise2;
                 layer.closeAll("page")
-                var html = ""
-                html += '<div class="setting-password  lomo-gd2">'
-                html += '<div class="divTitle"><span class="close"><img src="../../Theme/images/icon010.png" alt=""></span>设置密码</div>'
-                html += '<dl class="gd-form">'
-                html += "<form>"
-                html += '<dt>新密码</dt>'
-                html += '<dd>'
-                html += '<input name="" type="password" class="sph" placeholder="请输入新密码"  id="editPass1"/>'
-                html += ' </dd>'
-                html += '<dt>确认密码</dt>'
-                html += '<dd>'
-                html += '<input name="" type="password" class="sph" placeholder="确认新密码" id="editPass2" />'
-                html += '</dd>'
-                html += '<dd class="gd-form-bt">'
-                html += '<button type="button" class="submit-bt-clear">取消</button>'
-                html += '<button type="submit" class="submit-bt" id="modifyPass">确认修改</button>'
-                html += '</dd>'
-                html += "</form>"
-                html += '</dl>'
-                html += '</div>'
                 layer.open({
                     type: 1,
                     title: false,
@@ -179,8 +162,8 @@ layui.use(['layer', 'jquery', "form"], function () {
                     shade: 0.3,
                     maxmin: false,//禁用最大化，最小化按钮
                     resize: false,//禁用调整大小
-                    area: ['530px', '280px'],
-                    content: html,
+                    area: ['530px', '350px'],
+                    content: $(".setting-password"),
                     success: function (layero, index) {
 
                     }
@@ -215,7 +198,8 @@ layui.use(['layer', 'jquery', "form"], function () {
         }
         var param = {
             Mobile: phone,
-            Password: pwd1
+            Password: pwd1,
+            CompCode: ""
         }
         $.http.register(LuckVipsoft.api.retrievePassword, param, function (res) {
             layer.msg(res.msg)
@@ -301,7 +285,7 @@ layui.use(['layer', 'jquery', "form"], function () {
                 var MemberMethod = {
                     start: function () {
                         var _this = this
-                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(),_this.sysArgument()])
+                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(), _this.sysArgument()])
                             .then(function (res) {
                                 // var staffInf={
                                 //     staffInfCard:res[0],

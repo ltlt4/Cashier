@@ -531,8 +531,8 @@ body .order-button button:last-child {
 
 .forget-password,
 .forget-password2 {
-	width: 530px;
-	height: 360px
+	width: 100%;
+	height: 100%;
 }
 
 .forget-password-obtain {

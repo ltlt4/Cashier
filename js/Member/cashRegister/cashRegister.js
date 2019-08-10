@@ -132,6 +132,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 	// var shopMemberActAry = [];//会员所有店铺优惠
 
 	var pageMethod = {
+		StaffClassList: [],//员工分类
+        StaffList: [],//提成员工
 		pageIndex: 1,
 		pageSize: 10,
 		key: '',//商品条码
@@ -151,6 +153,14 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			LogisticsWay: 1,//物流方式
 			ConsigneeID: ""//收货人ID
 		},
+		choosedStaffAry: [//商品提成员工信息
+            //{
+            //    StaffId: "",//提成员工id
+            //    StaffName:"",//提成员工名称
+            //    CommissionMoney: 0.0,//自定义提成金额
+            //    Remark: null//备注
+            //}
+        ],
 		init: function () {
 			var _this = this;
 			_this.getShopActivity();//获取店铺优惠活动
@@ -159,13 +169,19 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			_this.classTwoSlide();//二级菜单滑动
 			_this.countProductNum();//一屏显示产品
 			_this.searchMemCard();//查询会员
-			_this.chooseMembergetCommission();//提成员工
+			//_this.chooseMembergetCommission();//提成员工
 			_this.orderManage();//订单相关管理
 			_this.editShopcarProduct();//编辑购物车产品
 			_this.checkProductIntoCar();//向购物车添加产品
 			_this.payPopArea();//收银相关操作弹层
 			_this.initClick();//其他点击事件
-			_this.initPayItem();			
+			_this.initPayItem();	
+			//获取提成员工		
+			new Promise(_this.GetStaffClassList.bind(_this)).then(function (res) {
+                   return new Promise(_this.GetStaffList.bind(_this))
+               }).then(function (res) {
+                   _this.chooseMembergetCommission()
+               });
 		},
 		//初始化支付项
 		initPayItem: function () {
@@ -300,6 +316,11 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					}
 				})
 			})
+
+			$("body").on("click",".submit-bt-clear", function () {
+                var box = $(this).parents('.fadeIn');
+                cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
+            });
 		},
 		//计算每屏显示产品个数
 		countProductNum: function () {
@@ -783,126 +804,241 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			})
 		},
 
+		//获取员工分类
+		GetStaffClassList: function (resolve, reject) {
+			let that = this
+			//员工分类
+			$.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
+				if (res.status == 1) {
+					that.StaffClassList = res.data;
+					resolve();
+				}
+			});
+		},
+		//获取提成员工
+		GetStaffList: function (resolve, reject) {
+			let that = this
+			//提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
+			$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
+				if (res.status == 1) {
+					that.StaffList = res.data;
+					resolve();
+				}
+			});
+		},
+
 		//选择提成员工
 		chooseMembergetCommission: function () {
-			var _this = this;
+            var _this = this;      
 			var html = '';
-			var choosedStaffAry = [];
-			//员工树形列表
-			if (user.staffClass && user.staffInf) {
-				$.each(user.staffClass, function (index, item) {
-					html += '<div class="layui-collapse">'
-					html += '<div class="layui-colla-item">'
-					html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
-					html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
-					$.each(user.staffInf, function (n, items) {
-						var data = JSON.stringify(item);
-						if (items.StaffClassId == item.Id) {
-							html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
-						}
-					})
-					html += '</div>'
-					html += '</div>'
-					html += '</div>'
-				})
-			}
-			$('.lomo-xztcyg .lomo-xztcyg-left').html(html);
-			//已选择员工列表
-			var grid_conpon = table.render({
-				elem: '#List',
-				data: choosedStaffAry,
-				cellMinWidth: 95,
-				cols: [
-					[
+			let chooseStaff =[]			
+            //员工树形列表
+            if (_this.StaffClassList.length > 0) {
+                $.each(_this.StaffClassList, function (index, item) {
+                    html += '<div class="layui-collapse">'
+                    html += '<div class="layui-colla-item">'
+                    html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
+                    html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
+                    if (_this.StaffList.length > 0) {
+                        $.each(_this.StaffList, function (n, items) {
+                            if (items.StaffClassId == item.Id) {
+                                html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
+                            }
+                        })
+                    }
+                    html += '</div>'
+                    html += '</div>'
+                    html += '</div>'
+                })
+            }
+            $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
+            //已选择员工列表
+            tab_staff = table.render({
+                elem: '#StaffList',
+               	//data: _this.choosedStaffAry,
+                cellMinWidth: 95,
+                cols: [
+                    [
 						{ field: 'StaffName', title: '姓名', align: 'center' },
-						{ field: 'CommissionMoney', title: '提成金额', edit: 'text', align: 'center' },
-						{ field: 'Remark', title: '备注', edit: 'text', align: 'center' },
-						{
-							title: '操作', align: 'center', templet: function (d) {
-								var html = '';
-								html += '<a class="layui-btn layui-btn-xs tb-btn-deleat" lay-event="delete">删除</a> ';
-								return html;
-							}
-						},
-					]
-				]
+                        { field: 'CommissionMoney', title: '自定义提成金额', edit: 'text', align: 'center',event: "money" },
+                        { field: 'Remark', title: '备注', edit: 'text', align: 'center' },
+                        {
+                            title: '操作', align: 'center', templet: function (d) {
+                                var html = '';
+                                html += '<a class="layui-btn layui-btn-xs tb-btn-deleat" lay-event="delete">删除</a> ';
+                                return html;
+                            }
+                        },
+                    ]
+                ]
+            });
+            table.on('tool(StaffList)', function (obj) {
+                var layEvent = obj.event;
+                switch (layEvent) {
+                    case "delete":
+                        //layer.confirm('真的删除行么', function(index){
+                        $.each(_this.chooseStaff, function (index, item) {
+                            if (item.StaffId == obj.data.StaffId) {
+                                _this.chooseStaff.splice(index, 1)
+                                return
+                            }
+                        })
+                        $("body").find('.staff-list li[data-id="' + obj.data.StaffId + '"]').removeAttr("class");
+                        obj.del();                 
+                        break;
+                    case "money":
+                        $(obj.tr).find(".layui-table-edit").keyup(function () {
+                            var val = $(this).val();
+                            cashier.clearNoNum(this);
+                            //if (val == "") $(this).val("不填默认使用提成方案")
+                        });
+                        break;
+                }
+            })
+            table.on('edit(StaffList)', function (obj) {
+                $.each(_this.chooseStaff, function (index, item) {
+                    if (item.StaffId == obj.data.StaffId) {
+                        _this.chooseStaff.splice(index, 1, obj.data)
+                        return
+                    }
+                })
 			});
-			table.on('tool(List)', function (obj) {
-				var layEvent = obj.event;
-				if (layEvent == "delete") {
-					//layer.confirm('真的删除行么', function(index){
-					$.each(choosedStaffAry, function (index, item) {
-						if (item.StaffId == obj.data.StaffId) {
-							choosedStaffAry.splice(index, 1)
-							return
-						}
-					})
-					$("body").find('.staff-list li[data-id="' + obj.data.StaffId + '"]').removeAttr("class");
-					obj.del();
-					//layer.close(index);
-					//});
-				}
-			})
-			table.on('edit(List)', function (obj) {
-				$.each(choosedStaffAry, function (index, item) {
-					if (item.StaffId == obj.data.StaffId) {
-						choosedStaffAry.splice(index, 1, obj.data)
-						return
-					}
-				})
-			});
-			$(".choose-member").on("click", function () {
-				layer.open({
-					type: 1,
-					id: "searchMemCard",
-					title: '选择提成员工',
-					closeBtn: 1,
-					shadeClose: false,
-					shade: 0.3,
-					maxmin: false,//禁用最大化，最小化按钮
-					resize: false,//禁用调整大小
-					area: ['90%', '80%'],
-					btn: ['确认', '清除'],
-					skin: "lomo-ordinary",
-					content: $(".lomo-xztcyg"),
-					success: function () {
-						grid_conpon.reload();
-						element.render();
+			//整单提成
+			
+			$("body").on("click", ".choose-order-member", function () {				
+                layer.open({
+                    type: 1,
+                    id: "searchMemCard",
+                    title: '选择提成员工',
+                    closeBtn: 1,
+                    shadeClose: false,
+                    shade: 0.3,
+                    maxmin: false,//禁用最大化，最小化按钮
+                    resize: false,//禁用调整大小
+                    area: ['90%', '80%'],
+                    btn: ['确认', '清除'],
+                    skin: "lomo-ordinary",
+                    content: $(".lomo-xztcyg"),
+                    success: function () {
+						chooseStaff  = Object.assign([],_this.choosedStaffAry)
+                        $("body").find('.staff-list li').removeAttr("class");
+                        $.each( chooseStaff, function (index, item) {
+                            $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
+                        })
+                        tab_staff.reload({
+                            data: chooseStaff
+                        });
+                        element.render();
+                    },
+                    yes: function (index) {	
+                        layer.close(index)
+						var html = '';				
+						$(".staffname").remove(); 	
+						_this.choosedStaffAry = Object.assign([],chooseStaff)					  
+                        $.each(chooseStaff, function (index, item) {
+                            html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
+                        })
+                        $(".lomo-tcyg-add .nameTitle").after(html);
 					},
-					yes: function (index) {
+					btn2:function (index) {		
 						layer.close(index)
-						console.log(choosedStaffAry)
+						chooseStaff =[]
+						_this.choosedStaffAry=[]
+						$(".staffname").remove();   
+					}
+                })
+			});
+			
+			//单品提成
+            $("body").on("click", ".choose-member", function () {				
+                layer.open({
+                    type: 1,
+                    id: "searchMemCard",
+                    title: '选择提成员工',
+                    closeBtn: 1,
+                    shadeClose: false,
+                    shade: 0.3,
+                    maxmin: false,//禁用最大化，最小化按钮
+                    resize: false,//禁用调整大小
+                    area: ['90%', '80%'],
+                    btn: ['确认', '清除'],
+                    skin: "lomo-ordinary",
+                    content: $(".lomo-xztcyg"),
+                    success: function () {
+						chooseStaff  = Object.assign([],_this.choosedStaffAry)
+                        $("body").find('.staff-list li').removeAttr("class");
+                        $.each( chooseStaff, function (index, item) {
+                            $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
+                        })
+                        tab_staff.reload({
+                            data: chooseStaff
+                        });
+                        element.render();
+                    },
+                    yes: function (index) {	
+                        layer.close(index)
+						var html = '';				
+						$(".staffname").remove(); 	
+						_this.choosedStaffAry = Object.assign([],chooseStaff)					  
+                        $.each(chooseStaff, function (index, item) {
+                            html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
+                        })
+                        $(".lomo-tcyg .nameTitle").after(html);
 					},
-				})
-			})
-			$("body").on("click", ".staff-list li", function () {
-				var id = $(this).attr("data-id"), name = $(this).attr("data-name");
-				var newData = {
-					"StaffId": id,
-					"StaffName": name,
-					"CommissionMoney": '',
-					"Remark": '',
-				}
-				$(this).toggleClass("active");
-				if ($(this).attr("class").indexOf("active") >= 0) {
-					choosedStaffAry.push(newData);
-				} else {
-					$.each(choosedStaffAry, function (index, item) {
-						if (item.StaffId == id) {
-							choosedStaffAry.splice(index, 1)
-							return
-						}
-					})
-				}
-				grid_conpon.reload({
-					data: choosedStaffAry
-				});
-			})
-		},
+					btn2:function (index) {		
+						layer.close(index)
+						chooseStaff =[]
+						_this.choosedStaffAry=[]
+						$(".staffname").remove();   
+					}
+                })
+            });
+            //商品页面删除提成员工
+            $("body").on("click", ".deletStaff", function () {
+                var id = $(this).parent(".name").attr("data-id");                
+                $.each(_this.choosedStaffAry, function (index, item) {
+                    if (item.StaffId == id) {
+                        $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').removeAttr("class");
+                        _this.choosedStaffAry.splice(index, 1)
+                        return false;
+                    }
+                })
+                $(this).parent(".name").remove();
+            })
+            //点击员工分类
+            $("body").on("click", ".staff-list li", function () {				
+				var id = $(this).attr("data-id"), name = $(this).attr("data-name");	
+                var newData = {
+                    "StaffId": id,
+                    "StaffName": name,
+                    "CommissionMoney": '',
+                    "Remark": '',
+                }
+                $(this).toggleClass("active");
+                if ($(this).attr("class").indexOf("active") >= 0) {
+					chooseStaff.push(newData);
+                } else {
+                    $.each(chooseStaff, function (index, item) {
+                        if (item.StaffId == id) {
+							chooseStaff.splice(index, 1)
+                            return false
+                        }
+                    })
+                }
+                tab_staff.reload({
+                    data:chooseStaff
+                });
+            })
+        },
+
 		//左侧购物车产品相关弹层
 		editShopcarProduct: function () {
+			var _this =this
 			//左侧菜单详细列表
 			$("body").on("click", ".lomo-order .order-list>dl>dd", function () {
+				let uuid = $(this).attr('data-uuid')
+				let dataMode = $(this).attr('data-mode')
+				if(dataMode == '4'){ return false }
 
 				var _left = $(this).offset().left;
 				var _top = $(this).offset().top;
@@ -916,16 +1052,63 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					$(".lomo-tcyg").css({ "left": `${_left + 400}px`, "top": `${_top - 50}px`, "bottom": "auto" })
 				}
 				$(".left-arrow-white").show();
+
+				let result =oPayCompose.goodsStaffs(uuid)		
+				console.log(result)	
+				goodsStaffs	= Object.assign({},result)
+				_this.choosedStaffAry = Object.assign([],goodsStaffs.staffs) 	
+			    goodsStaffs.images = (goodsStaffs.images == '') ? '../../../Theme/images/goodsPic.png' : user.information.ImageServerPath + goodsStaffs.images;
+
+				 var html = template('goodsStaffsTmp', goodsStaffs);
+				 $('#goodsStaffs').html(html)
+
 				cashier.open(".lomo-tcyg", 'fadeIn', 'fadeOut', ".lomo-mask-left")
 			})
-			$("body").on("click", ".lomo-tcyg .submit-bt-clear", function () {
-				$(".left-arrow-white").hide();
-				cashier.close(".lomo-tcyg", 'fadeIn', 'fadeOut', ".lomo-mask-left")
+		    //确认提成员工选择
+		    $("body").on("click", ".staffSubmit", function () {		
+				var uuid = $(this).parent().attr("data-uuid");
+				let customPrice = $(this).parent().parent().find(".change-price").html();
+				console.log('customPrice',customPrice)
+				customPrice = parseFloat(customPrice).toFixed(2)
+				console.log('_this.choosedStaffAry',_this.choosedStaffAry)
+
+				 if(oPayCompose.changeGoodsStaff(uuid,_this.choosedStaffAry)){
+					oPayCompose.changePrice(uuid,customPrice)
+				 }	
+				var box = $(this).parents('.fadeIn');
+				cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
 			})
-			//修改左侧菜单价格
-			$("body").eq(1).on("click", ".tcyg-goodsInfo-price ul b", function () {
-				cashier.open(".lomo-tcyg .small-keyboard", 'fadeIn', 'fadeOut');
+			//赠送商品
+			$("body").on("click", ".giveGoods", function () {
+				var that = $(this);
+				var uuid = $(this).parent().attr("data-uuid");			
+				$.luck.confirm("是否确认赠送该商品？", function () {				
+					oPayCompose.changePrice(uuid,'0.00')
+					var box = that.parents('.fadeIn');
+					cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
+				});
 			});
+			//删除商品
+			$("body").on("click", ".deleteGoods", function () {
+				var that = $(this);			
+				var uuid = $(this).parent().attr("data-uuid");
+				$.luck.confirm("是否确认删除该商品？", function () {
+					oPayCompose.changeItemNum(uuid,0)
+					var box = that.parents('.fadeIn');
+					cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
+				});
+			})
+			//修改购物车商品价格
+			$("body").on("click", ".change-price", function () {
+				var dome = $(this);
+				luckKeyboard.showSmallkeyboard(dome, function (res) {		
+					if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(res)) {
+						$.luck.error('金额只能是2位小数')
+						return false
+					}
+					dome.html(res)
+				})
+			})
 		},
 		//选择产品到购物车,编辑购物车产品
 		checkProductIntoCar: function () {
@@ -1214,11 +1397,34 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					btn: ['确认', '取消'],
 					skin: "lomo-ordinary",
 					content: $(".bill-lading"),
-					yes: function (index) {
-
-						layer.close(index)
+					success: function () {	
+						chooseStaff  = Object.assign([],oPayCompose.result.staffs)
+                        $("body").find('.staff-list li').removeAttr("class");
+                        $.each( chooseStaff, function (index, item) {
+                            $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
+                        })
+                        tab_staff.reload({
+                            data: chooseStaff
+						});
+						
+						//初始
+						var html = '';				
+						$(".staffname").remove(); 	
+						_this.choosedStaffAry = Object.assign([],chooseStaff)					  
+                        $.each(chooseStaff, function (index, item) {
+                            html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
+                        })
+						$(".lomo-tcyg-add .nameTitle").after(html);
+						
+                        element.render();
+                    },
+					yes: function (index) {							
+						oPayCompose.settingOrderStaffs(_this.choosedStaffAry)
+						console.log('_this.choosedStaffAry',_this.choosedStaffAry)						
+						layer.close(index)						
 					},
 					btn2: function () {
+
 					}
 				})
 			})
@@ -1415,9 +1621,25 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					$.http.post(LuckVipsoft.api.GoodsConsume, postData , user.token ,function (res) {
 						if(res.status ==1){
 							layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) { 
-								_this.getGoodsListPageList()
-								oPayCompose.chooseMember ={}
-								oPayCompose.clearShoppingCar()												
+							
+								oPayCompose.clearShoppingCar()		
+								oPayCompose.changeMember({})
+
+								//页面变量清除
+								shopMemberActAry = [];
+								member = null;
+								http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
+								//$(".check-box-list .birthday").remove();
+								$(".timescount").hide();
+								$(".lomo-order").css({ "top": "0", "margin-top": "0" });
+								//pageMethod.checkSystemActivity();//重新选择系统优惠活动								
+								memId = ''
+								pageMethod.getShopActivity()
+								//页面变量清除
+
+								//刷新列表
+								_this.getGoodsListPageList()	
+
 								layer.closeAll()
 							});
 						}
@@ -1545,8 +1767,6 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				})
 			})
 		},
-
-
 	}
 	pageMethod.init();
 

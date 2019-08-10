@@ -62,7 +62,10 @@ LuckVipsoft.api = {
     GetExpressList: '/api/GeneralInterface/GetExpressList',//快递公司列表（分页）    
     GetPreWriteOffOrder: '/api/GeneralInterface/GetPreWriteOffOrder',//查询待核销商品订单返回订单详情
     GetExpressInfo:'/api/GeneralInterface/GetExpressInfo',//快递物流节点跟踪
-    DeliverMallOrder:'/api/GeneralInterface/DeliverMallOrder',//
+    DeliverMallOrder:'/api/GeneralInterface/DeliverMallOrder',//微商城订单发货
+    GetReturnGoodsPayments:'/api/GeneralInterface/GetReturnGoodsPayments',//获取商品消费退货支付退款信息
+    GetReturnVenueConsumePayments:'/api/GeneralInterface/GetReturnVenueConsumePayments',//获取场馆消费退货支付退款信息
+
 
     /*卡券核销 */
     GetConponLogListPage: '/api/GeneralInterface/GetConponLogListPage',//根据优惠券ID或者卡号查询优惠券
