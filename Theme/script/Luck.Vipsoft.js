@@ -131,6 +131,7 @@ LuckVipsoft.api = {
     VenueUnionBill: '/api/GeneralInterface/VenueUnionBill',//场馆合并账单
     SaveVenueRestingGoods: '/api/GeneralInterface/SaveVenueRestingGoods',//场馆挂单
     OpenVenue: '/api/GeneralInterface/OpenVenue',//场馆开台
+    VenueConsume: '/api/GeneralInterface/VenueConsume',//场馆消费
 
     /*支付 */
     ComboBarcodePay: '/api/GeneralInterface/ComboBarcodePay',//聚合条码支付
@@ -139,8 +140,9 @@ LuckVipsoft.api = {
 
     //商品消费、计次消费、套餐消费
     GoodsConsume: '/api/GeneralInterface/GoodsConsume',//退款
-    
-    
+    RestingConsume:'/api/GeneralInterface/RestingConsume',//商品消费挂单
+    GetRestingOrderList : '/api/GeneralInterface/GetRestingOrderList',//挂单列表
+    GetRestingOrderData : '/api/GeneralInterface/GetRestingOrderData',//取单
 }
 LuckVipsoft.lan = {
     ER0000: '系统登录失败',

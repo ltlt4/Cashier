@@ -228,7 +228,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 					maxmin: false,//禁用最大化，最小化按钮
 					resize: false,//禁用调整大小
 					move: false,//禁止拖拽
-					area: ['850px', '670px'],
+					area: ['940px', '740px'],
 					skin: "lomo-ordinary",
 					btnAlign: "r",
 					content: '../../../Areas/Model/Home/addMember.html',
@@ -449,7 +449,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 					if(res.data.list&&res.data.list.length>0){
 						$.each(res.data.list,function(index,item){
 							var data=JSON.stringify(item);
-							html += `<div class="goods-info" data-obj='${data}'>`
+							html += `<div class="goods-info" data-obj='${data}' data-combo='${IsCombo}'>`
 							if(item.Images==null||item.Images==""){
 								html += `<div class="goods-info-img"><img src="../../../Theme/images/goodsPic.png" /></div>`
 							}else{

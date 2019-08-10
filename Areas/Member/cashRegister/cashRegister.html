@@ -130,12 +130,12 @@
 		    <div class="makeListOn card-num-form" style="float:none;padding: 30px;">
 		        <h3>手牌号</h3>
 		        <p class="box">
-		            <input name="" type="text" class="sph" />
+		            <input name="" type="text" class="sph" id="resting_handCode"/>
 		            <span class="card-num-up keyone" onclick="luckKeyboard.showSmallkeyboard(this)"></span>
 		        </p>
 		        <h3>备注</h3>
 		        <p class="box">
-		            <textarea name="" cols="" rows="3" class="bz"></textarea>
+		            <textarea name="" cols="" rows="3" class="bz" id="resting_remark"></textarea>
 		        </p>
 		    </div>
 		</div>
@@ -150,29 +150,30 @@
 		        </dd>
 		    </dl>
 		    <div class="members-search-list">
-		        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
-		            <tr>
-		                <th>单据号</th>
-		                <th>挂单时间</th>
-		                <th>会员姓名</th>
-		                <th>手牌号</th>
-		                <th>备注</th>
-		            </tr>
-		            <tr>
-		                <td>800001</td>
-		                <td>2019-6-3 12:34:32</td>
-		                <td>18596545218</td>
-		                <td>易烊千玺</td>
-		                <td> 白金会员白金会员白</td>
-		            </tr>
-		            <tr>
-		                <td>800001</td>
-		                <td>张三</td>
-		                <td>18596545218</td>
-		                <td>白金会员</td>
-		                <td>520</td>
-		            </tr>
+		        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable collectOrder">
+					<thead>
+						<tr>
+						    <th>单据号</th>
+						    <th>挂单时间</th>
+						    <th>会员姓名</th>
+						    <th>手牌号</th>
+						    <th>备注</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-id='66636'>
+							<td>800001</td>
+							<td>2019-6-3 12:34:32</td>
+							<td>18596545218</td>
+							<td>易烊千玺</td>
+							<td> 白金会员白金会员白</td>
+						</tr>
+					</tbody>
 		        </table>
+				
+				<div id="collectOrderPage" style="text-align: center;">
+					
+				</div>
 		    </div>
 		</div>
 		<!--无产品收银 start-->
@@ -392,9 +393,9 @@
 		                <li>5</li>
 		                <li>6</li>
 		                <li>200.00</li>
-		                <li>5</li>
-		                <li>6</li>
 		                <li>7</li>
+		                <li>8</li>
+		                <li>9</li>
 		                <li>500.00</li>
 		                <li>0</li>
 		                <li>00</li>
@@ -405,8 +406,7 @@
 		        <div class="cashier-end">
 					<input name="" type="text" placeholder="请输入会员密码" class="input"  id="pay_pwd"/>					
 		            <button type="button" id="finishPayBtn" class="add-bt">完成结算</button>
-				</div>
-				<div><input name="" type="text" class="input"  id="order_info"/>	</div>
+				</div>				
 		    </div>
 		</div>
 		<!--整单优惠弹层-->

@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 
 /* CSS Document */
 
@@ -2606,6 +2606,7 @@ body .small-keyboard-r {
 
 .cashier-num-b input {
 	text-align: right;
+    line-height:38px;
 }
 
 .cashier-keyboard {

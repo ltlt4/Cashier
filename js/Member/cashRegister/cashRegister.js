@@ -1,5 +1,5 @@
-layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
-	var layer = layui.layer, element = layui.element, $ = layui.$, form = layui.form, table = layui.table;
+layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function () {
+	var layer = layui.layer, element = layui.element, $ = layui.$, form = layui.form, table = layui.table,laypage = layui.laypage;
 	
 	var user = {
 		token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
@@ -160,7 +160,49 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
             //    CommissionMoney: 0.0,//自定义提成金额
             //    Remark: null//备注
             //}
-        ],
+		],
+		resetPage:function(){
+			_this.getGoodsListPageList()
+			pageMethod.removeChooseMember()		
+			oPayCompose.clearShoppingCar()
+		},
+		//选会员
+		changeMember:function(member,billCode){
+			if(billCode==undefined) { billCode ='' }
+			if(member.Id!=undefined)
+			{
+				http.cashierEnd.seleMembers(member, user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
+				// member = res.data[0];
+				memId = member.Id;
+				oPayCompose.changeMember(member,billCode)
+				pageMethod.getShopActivity()
+				$(".timescount").show();
+				$(".lomo-order").css({ "top": "84px", "margin-top": "11px" });
+				var param = {
+					Page:1,
+					Rows:10000,
+					MemID:member.Id,
+					ConponCode:"",
+					UseType:"2",
+				} 
+				$.http.post(LuckVipsoft.api.GetMemConponList, param, user.token, function (res) {
+					coupoonListAry = res.data;
+				})
+			}
+		},
+		//清除页面会员信息
+		removeChooseMember: function (){
+			shopMemberActAry = [];
+			member = null;
+			http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
+			//$(".check-box-list .birthday").remove();
+			$(".timescount").hide();
+			$(".lomo-order").css({ "top": "0", "margin-top": "0" });			
+			oPayCompose.changeMember({})
+			memId = ''
+			pageMethod.getShopActivity()	
+			//pageMethod.checkSystemActivity();//重新选择系统优惠活动		
+		},
 		init: function () {
 			var _this = this;
 			_this.getShopActivity();//获取店铺优惠活动
@@ -273,17 +315,22 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 			/*清除获取的会员*/
 			$("body").on("click", '.vip-delete img', function (e) {
-				shopMemberActAry = [];
-				member = null;
-				http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
-				//$(".check-box-list .birthday").remove();
-				$(".timescount").hide();
-				$(".lomo-order").css({ "top": "0", "margin-top": "0" });
-				//pageMethod.checkSystemActivity();//重新选择系统优惠活动
-				oPayCompose.changeMember({})
-				memId = ''
-				pageMethod.getShopActivity()
-				//_this.rendShopCarAgain();//重新渲染购物车
+				console.log('PayCompose.billCode',oPayCompose.billCode)
+				if(oPayCompose.billCode != ''){
+					oPayCompose.clearShoppingCar()
+				}
+				pageMethod.removeChooseMember()
+				// shopMemberActAry = [];
+				// member = null;
+				// http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
+				// //$(".check-box-list .birthday").remove();
+				// $(".timescount").hide();
+				// $(".lomo-order").css({ "top": "0", "margin-top": "0" });
+				// //pageMethod.checkSystemActivity();//重新选择系统优惠活动
+				// oPayCompose.changeMember({})
+				// memId = ''
+				// pageMethod.getShopActivity()
+				// //_this.rendShopCarAgain();//重新渲染购物车
 			})
 			$('.shop-type-button').click(function () {
 				$('.shop-type').toggleClass('type-distance')
@@ -768,39 +815,46 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			var param = {
 				ActType: 1,//1-消费返利、2-充值有礼
 				MemID: memId,
-			}
+			}		
 			$.http.post(LuckVipsoft.api.getActivityList, param, user.token, function (res) {
-
-				if (res.data.length > 0) {
-					hasShopAcivity = true;
-					$(".order-select").html("请选择优惠活动").next().removeClass("gray")
-					let html = template("activityTmp", res.data);
-					$('.check-box-list').html(html)
-					$(".activity-list").hide();
-
-					//选择优惠活动
-					$(".order-select").unbind().bind('click', function () {
-						console.log('123')
-						if (hasShopAcivity) {
-							$(".activity-list").toggle();
-						}
-					})
-
-					//选择项
-					$(".check-box-list li").unbind().bind('click', function () {
-						var act = $(this).attr("data-obj");
-						let result = oPayCompose.selectActivity(act)  // .chooseActivity(act)						
-						if (result) {
-						}
-						else {
-							$.luck.error("未达到活动规则")
-						}
-					})
-				} else {
-					hasShopAcivity = false;
-					$(".order-select").html("暂无优惠活动")
-					$(".activity-list").hide();
+				if(res.status ==1)
+				{
+					if (res.data.length > 0) {
+						hasShopAcivity = true;
+						$(".order-select").html("请选择优惠活动").next().removeClass("gray")
+						let html = template("activityTmp", res.data);
+						$('.check-box-list').html(html)
+						$(".activity-list").hide();
+	
+						//选择优惠活动
+						$(".order-select").unbind().bind('click', function () {
+							
+							if (hasShopAcivity) {
+								$(".activity-list").toggle();
+							}
+						})
+	
+						//选择项
+						$(".check-box-list li").unbind().bind('click', function () {
+							var act = $(this).attr("data-obj");
+							let result = oPayCompose.selectActivity(act)  // .chooseActivity(act)						
+							if (result) {
+							}
+							else {
+								$.luck.error("未达到活动规则")
+							}
+						})
+					} else {
+						hasShopAcivity = false;
+						$(".order-select").html("暂无优惠活动")
+						$(".activity-list").hide();
+					}
 				}
+				else{
+					hasShopAcivity = false
+					$.luck.error('优惠券获取异常')
+				}
+				
 			})
 		},
 
@@ -1057,7 +1111,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				console.log(result)	
 				goodsStaffs	= Object.assign({},result)
 				_this.choosedStaffAry = Object.assign([],goodsStaffs.staffs) 	
-			    goodsStaffs.images = (goodsStaffs.images == '') ? '../../../Theme/images/goodsPic.png' : user.information.ImageServerPath + goodsStaffs.images;
+			    goodsStaffs.images = (goodsStaffs.images == '' || goodsStaffs.images == undefined) ? '../../../Theme/images/goodsPic.png' : user.information.ImageServerPath + goodsStaffs.images;
 
 				 var html = template('goodsStaffsTmp', goodsStaffs);
 				 $('#goodsStaffs').html(html)
@@ -1238,7 +1292,9 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				}
 			})
 
+			//取单
 			$("#btnGetOrder").on('click', function (e) {
+				var orderId = null;
 				layer.open({
 					type: 1,
 					id: "getOrder",
@@ -1252,11 +1308,84 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					btn: ['确认', '取消'],
 					skin: "lomo-ordinary",
 					content: $(".lomo-qd"),
+					success: function () {
+						postData = {
+							"Page":"1",
+							"Rows":"10",
+							"FilterKey":"",
+						}
+						$.http.post(LuckVipsoft.api.GetRestingOrderList,postData, user.token, function (res) {
+							var html = '';
+							if(res.status == 1){	
+								if(res.data.list.length>0){
+									$.each(res.data.list,function(index,item){
+										html += '<tr data-id="'+item.Id+'"><td>'+item.BillCode+'</td><td>'+cashier.dateFormat(item.CreateTime)+'</td><td>'+item.CardName+'</td><td>'+item.HandCode+'</td><td>'+item.Remark+'</td></tr>'
+									})
+									$(".collectOrder tbody").html(html);
+									laypage.render({
+									    elem: 'collectOrderPage', //容器名称
+									    limit: 10,  //每页条数
+									    count: res.data.total, //总页数
+									    theme: "#41c060",//颜色
+									    jump: function (obj, first) {
+									        if (!first) {
+									            postData.Page = obj.curr;
+									            $.http.post(LuckVipsoft.api.GetRestingOrderList, postData, user.token, function (resquest) {
+													var html = '';
+													$.each(resquest.data.list,function(index,item){
+														html += '<tr data-id="'+item.Id+'"><td>'+item.BillCode+'</td><td>'+cashier.dateFormat(item.CreateTime)+'</td><td>'+item.CardName+'</td><td>'+item.HandCode+'</td><td>'+item.Remark+'</td></tr>'
+													})
+									                $(".collectOrder tbody").html(html);
+									            });
+									        }
+									    },
+									});
+								}
+							}else{
+								layer.alert(res.msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+									layer.close(index)									
+								});	
+							}
+						})	
+						$("body").on("click",".collectOrder tbody tr",function(){
+							orderId = $(this).attr("data-id");
+							$(this).addClass("lomo-mem-list").siblings().removeClass("lomo-mem-list");
+						})
+                    },
+                    yes: function (index) {	
+						//取单
+						postData ={OrderID:orderId}
+						$.http.post(LuckVipsoft.api.GetRestingOrderData,postData, user.token, function (res) {
+							console.log('取数据',res)					
+							if(res.status == 1){
+								if( oPayCompose.settingRestingReslut(res.data))
+								{			
+									pageMethod.changeMember(res.data.MemberInfo,res.data.BillCode)
+									//页面数据
+									$("#resting_handCode").val(res.data.HandCode)
+									$("#resting_remark").val(res.data.Remark)
+									$("#resting_handCode").attr("readonly",true)
+								}
+								layer.close(index)
+							}
+							else{
+								layer.alert(res.msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+									layer.close(index)									
+								});	
+							}
+						})			
+					},
 				})
 			})
 
+			//挂单
 			$("#btnTempOrder").on('click', function (e) {
-				if (oPayCompose.result.goodsNum > 0) {
+				if (oPayCompose.result.goodsNum > 0) {					
+					if(oPayCompose.billCode==''){
+						$("#resting_handCode").val('')
+						$("#resting_remark").val('')
+						$("#resting_handCode").attr("readonly",false)
+					}					
 					layer.open({
 						type: 1,
 						id: "makeListOn",
@@ -1270,6 +1399,33 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 						btn: ['确认', '取消'],
 						skin: "lomo-ordinary",
 						content: $(".lomo-gd2"),
+						yes: function (index) {
+							
+							let handCode = $("#resting_handCode").val()
+							let remark = $("#resting_remark").val()
+							if (!/^[a-zA-Z0-9]{1,20}$/.test(handCode)) {
+								$.luck.error('手牌号必须是数字或字母')
+								return false
+							}
+							let postData = oPayCompose.postRestingConsumeData(handCode,remark,oPayCompose.billCode)
+
+							$.http.post(LuckVipsoft.api.RestingConsume,postData, user.token, function (res) {
+								if(res.status ==1){
+									layer.alert('挂单完成', { icon: 1, closeBtn: 0 }, function (index) { 									
+										//重置页面
+										pageMethod.resetPage()
+										//打印小票														
+										//TicketPrint(res2.data, 2);
+										layer.closeAll()
+									});
+								}
+								else{
+									layer.alert(res.msg, { icon: 2, closeBtn: 0 }, function (index) { 	
+										layer.close(index)									
+									});	
+								}
+							})
+						}
 					})
 				}
 				else {
@@ -1584,9 +1740,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 											$.http.post2(LuckVipsoft.api.GoodsConsume, postData , user.token ,function (res2) {
 												if(res2.status ==1){
 													layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) { 
-														_this.getGoodsListPageList()
-														oPayCompose.chooseMember ={}
-														oPayCompose.clearShoppingCar()												
+														// _this.getGoodsListPageList()
+														// oPayCompose.chooseMember ={}
+														// oPayCompose.clearShoppingCar()
+														//重置页面
+														pageMethod.resetPage()
+														//打印小票														
+														//TicketPrint(res2.data, 2);
 														layer.closeAll()
 													});
 												}
@@ -1621,25 +1781,15 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					$.http.post(LuckVipsoft.api.GoodsConsume, postData , user.token ,function (res) {
 						if(res.status ==1){
 							layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) { 
-							
-								oPayCompose.clearShoppingCar()		
-								oPayCompose.changeMember({})
+								//数据重置
+								pageMethod.resetPage()
+								// oPayCompose.clearShoppingCar()		
+								// oPayCompose.changeMember({})
 
-								//页面变量清除
-								shopMemberActAry = [];
-								member = null;
-								http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
-								//$(".check-box-list .birthday").remove();
-								$(".timescount").hide();
-								$(".lomo-order").css({ "top": "0", "margin-top": "0" });
-								//pageMethod.checkSystemActivity();//重新选择系统优惠活动								
-								memId = ''
-								pageMethod.getShopActivity()
-								//页面变量清除
-
-								//刷新列表
-								_this.getGoodsListPageList()	
-
+								// //页面会员信息删除
+								// pageMethod.removeChooseMember()
+								// //刷新列表
+								// _this.getGoodsListPageList()	
 								layer.closeAll()
 							});
 						}

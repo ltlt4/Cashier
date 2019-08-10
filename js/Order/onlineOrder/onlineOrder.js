@@ -814,7 +814,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
             }
             layer.open({
                 type: 1,
-                title: '确认撤单',
+                title: '确认退款',
                 closeBtn: 1,
                 shadeClose: false,
                 shade: 0.3,
@@ -832,7 +832,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                         ${_this.PaymentType(opt)}
                         </select></div></li>
                         <li class="layui-form-item"><em>超级密码：</em><span><input name="pwd" type="password" class="cd-form-input pw" lay-verify="required" /></span></li>
-                        <li class="layui-form-item"><em style="float:left">撤单备注：</em><textarea name="remark" class="cd-form-bz"></textarea></li>
+                        <li class="layui-form-item"><em style="float:left">退款备注：</em><textarea name="remark" class="cd-form-bz"></textarea></li>
                       </ul></div></div>`,
                 btn2: function () {
                     return false
