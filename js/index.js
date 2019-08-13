@@ -371,27 +371,34 @@ layui.use(['layer', 'jquery', 'form', 'table'], function () {
     });
 
     //进入后台
-    var LoginMsg = $.session.get("LoginMsg") ? $.session.get("LoginMsg") : null;
-    var param = { CompCode: LoginMsg.CompCode }, InterfaceKey = '';
-    $.http.register(LuckVipsoft.api.GetAuthorizeByCompCode, param, function (res) {
-        if (res.status == 1) {
-            InterfaceKey = res.data.InterfaceKey
-        } else {
-            console.log(res)
+    $(".tool8").on("click", function () {
+        var LoginMsg = $.session.get("LoginMsg") ? $.session.get("LoginMsg") : null;
+        var compCode = LoginMsg != null ? LoginMsg.CompCode : "lucksoft";
+        if (!LuckVipsoft.InterfaceKey) {
+            var param = {
+                CompCode: compCode
+            }
+            $.ajax({
+                dataType: "json",
+                ContentType: 'application/json',
+                type: "POST",
+                data: JSON.stringify(param),
+                url: LuckVipsoft.http + "/api/GeneralInterface/GetAuthorizeByCompCode",
+                async: false,
+                success: function (res) {
+                    LuckVipsoft.InterfaceKey = res.data.InterfaceKey;
+                }
+            });
         }
-    })
-    $(".enterStage").on("click", function () {
-        $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data) {
-            console.log(data)
-            var params = {
-                CompCode: LoginMsg.CompCode,
-                Account: LoginMsg.MasterAccount,
-                Password: LoginMsg.Password,
-                InterfaceKey: InterfaceKey,
-                Url: data[0].Address
-            };
-            GoToBackstage(JSON.stringify(params))
-        })
+        var params = {
+            CompCode: LoginMsg.CompCode,
+            Account: LoginMsg.MasterAccount,
+            Password: LoginMsg.Password,
+            InterfaceKey: LuckVipsoft.InterfaceKey,
+            Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84"
+        };
+        console.log(JSON.stringify(params));
+        GoToBackstage(JSON.stringify(params))
     })
 });
 //退出登录

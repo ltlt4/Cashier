@@ -498,7 +498,7 @@ http.cashierEnd = {
             html += '<dt><img src="' + imgurl + data.Avatar + '" /></dt>';
         }
         html += '<dd><b>' + data.CardName + '</b><i>(' + data.Mobile + ')</i><span>' + data.LevelName + '</span></dd>';
-        html += '<dd><small>积分: ' + data.Point + '</small><small>余额：￥ ' + data.RemainingCount + '</small></dd>';
+        html += '<dd><small>积分: ' + data.Point + '</small><small>余额：￥ ' + data.Money + '</small></dd>';
         html += '<div class="vip-delete"><img src="../../../Theme/images/del.png" alt=""></div>';
         html += '<dd class="lomo-recharge" style="height: auto;"><button id="rechargeCard">储蓄卡充值</button></dd>'
         $(ele).html(html)
@@ -719,4 +719,40 @@ Date.prototype.Format = function (fmt) { //author: meizz
 function uuid()
 {
     return new Date().Format("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
+}
+
+
+//加法   
+Number.prototype.add = function(arg){   
+    var r1,r2,m;   
+    try{r1=this.toString().split(".")[1].length}catch(e){r1=0}   
+    try{r2=arg.toString().split(".")[1].length}catch(e){r2=0}   
+    m=Math.pow(10,Math.max(r1,r2))   
+    return (this.mul(m) + arg.mul(m)) / m;   
+}  
+
+//减法   
+Number.prototype.subtract = function (arg){   
+    return this.add(-arg);   
+}   
+
+//乘法   
+Number.prototype.multiply = function (arg)   
+{   
+    var m=0,s1=this.toString(),s2=arg.toString();   
+    try{m+=s1.split(".")[1].length}catch(e){}   
+    try{m+=s2.split(".")[1].length}catch(e){}   
+    return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)   
+}   
+
+//除法   
+Number.prototype.divide = function (arg){   
+    var t1=0,t2=0,r1,r2;   
+    try{t1=this.toString().split(".")[1].length}catch(e){}   
+    try{t2=arg.toString().split(".")[1].length}catch(e){}   
+    with(Math){   
+        r1=Number(this.toString().replace(".",""))   
+        r2=Number(arg.toString().replace(".",""))   
+        return (r1/r2)*pow(10,t2-t1);   
+    }   
 }

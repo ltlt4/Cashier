@@ -307,9 +307,8 @@ class payCompose {
             //排除自己还能输入的金额  
             // let amount = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done().toFixed(2)
             // let allowPrice = that.allowPayItemMaxPrice(code)
-
             m = parseFloat(m)
-    
+         
             //现金特殊处理
             if (code != '001') {
                 let item_001 = Enumerable.From(that.payItem).Where(x => x.code == '001').FirstOrDefault();
@@ -320,12 +319,8 @@ class payCompose {
                     //smallchange = 0 //找零金额
                 }
 
-
-                let allowPrice = that.allowPayItemMaxPrice(code)
-
-          
+                let allowPrice = that.allowPayItemMaxPrice(code)          
                 if (allowPrice > m) {
-
                     ///积分和余额最大值处理///
                     if (code == '002') {
                         m = (m > that.chooseMember.Money) ? that.chooseMember.Money : m
@@ -339,8 +334,9 @@ class payCompose {
                  
                     item.amount = m
                     //剩余的金额回填 001
-                    if (item_001 != undefined) {
-                        item_001.amount = math.chain(allowPrice).subtract(m).done()
+                    if (item_001 != undefined) {               
+                        item_001.amount = math.chain(allowPrice).subtract(m).done().toFixed(2)   
+                        console.log('item_001.amount',item_001.amount)
                     }
                 }
                 else {
@@ -350,13 +346,15 @@ class payCompose {
             }
             else {
                 //当前选择是现金
-                let allowPrice = that.allowPayItemMaxPrice(code)                
+                let allowPrice = that.allowPayItemMaxPrice(code)           
                 if (allowPrice > m) {
                     item.amount = m
                     item.smallChangePrice = 0
+                    console.log('item_001.amount',m)
                 }
                 else {
                     let t = math.chain(m).subtract(allowPrice).done().toFixed(2)
+                    console.log('item_001.amount',m,allowPrice,t)
                     if (t > 100) {
                         item.amount = allowPrice
                         item.smallChangePrice = 0
@@ -368,7 +366,7 @@ class payCompose {
                     }
                 }
             }
-
+            console.log('that.payItem',m)
             console.log('that.payItem',that.payItem)
             that.finish()
             return true
@@ -684,6 +682,7 @@ class payCompose {
     //添加购物车
     selectItem(goods) {
         let item = Enumerable.From(this.shoppingCar).Where(x => x.goodsId == goods.Id && x.goodsMode == goods.GoodsType && x.isCustomPrice == 0).FirstOrDefault();
+       
         if (item === undefined) {
             let price = goods.Price //其他类型可能不是Price
             let uuid = this.dateFormat("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
@@ -693,7 +692,10 @@ class payCompose {
                 customPrice: 0.00,
                 price: goods.Price,
                 goodsId: goods.Id,
-                goodsMode: goods.GoodsType,//mode,	        //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐
+                //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐 
+                //充次没有带 GoodsType 默认给服务产品，后期充次加套餐需要 goods下有GoodsType
+                //goodsMode: goods.GoodsType,//mode,	    
+                goodsMode: (goods.GoodsType== undefined) ? 2:goods.GoodsType ,//mode,	     
                 num: 1,
                 goodsPoint: 0.000,         //商品优惠积分（总）
                 amount: 0.00,              //商品总价
@@ -1055,8 +1057,8 @@ class payCompose {
         }
 
         let addPrice = 0.00
-        $.each(that.payItem, function (index, ele) {
-            let m = math.chain(addPrice).add(ele.amount).done()
+        $.each(that.payItem, function (index, ele) {         
+            let m = math.chain(addPrice).add(ele.amount).done() //.toFixed(2)        
             addPrice = m
         })
         that.result.allPayMoney = addPrice
@@ -1605,7 +1607,8 @@ class payCompose {
 
     ////////////////////////////////////////////////场馆收银////////////////////////////////////////////////
     ////////////////////////////////////////////////充值冲次////////////////////////////////////////////////
-     //充值冲次提交数据
+    //会员充值 11 会员充次 12
+    //充值冲次提交数据
     postRechargeCountData(shopid){
         let that = this
         if(that.chooseMember.Id == undefined){
@@ -1690,11 +1693,56 @@ class payCompose {
     }
 
     //充值冲次
-    goPayRechargeCount(){
+    goPayRechargeCount(callback){
         let that = this
-        that.result.mode = 12  //快速消费
+        that.process().then(
+            function(){                
+                that.result.mode = 12 //商品消费
+                //整单优惠
+                that.result.modificationInfo = {}
+                that.result.amountModifyMoney = 0.00
+                //当前支付总金额  
+                that.result.allPayMoney = 0.00
+                //现金找零金额
+                //this.result.smallChangePrice =0.00
+                //抹零金额   
+                that.result.isZeroAmount = 0
+                that.result.zeroAmount = 0.00
+                //支付方式
+                that.payItem = []
+                that.curPayItem = ''
+                //优惠券
+                that.result.amountCouponMoney = 0.00
+                that.result.conpon = []
+                that.pageChooseConpon = []
+
+                if (that.chooseMember.Id == undefined) {
+                    that.selectPay(that.config.SankeDefaultPayment)
+                    that.curPayItem = that.config.SankeDefaultPayment
+                }
+                else {
+                    that.selectPay(that.config.MemberDefaultPayment)
+                    that.curPayItem = that.config.MemberDefaultPayment
+                }
+
+                if (typeof callback === "function") {
+                    callback()
+                }
+                return false
+            }
+        )
     }
 
+    //会员充值
+    goPayTopUp(callback)
+    {
+        that.result.mode = 11 //商品消费
+    }
+    //会员充值提交数据
+    postTopUpData()
+    {
+
+    }
     ////////////////////////////////////////////////充值冲次////////////////////////////////////////////////
 
     ////////////////////////////////////////////////支付及提交格式//////////////////////////////////////////

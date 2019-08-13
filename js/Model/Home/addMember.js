@@ -390,7 +390,6 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
         },
         repass2: function (value, item) {
             var psw = $('#PassWord').find('input').val()
-            console.log(psw)
             if (value != '') {
                 if (!new RegExp(psw).test(value)) {
                     return '两次输入的密码不一致';

@@ -1,6 +1,6 @@
 var LuckVipsoft = {}
-//LuckVipsoft.http = "http://192.168.0.13:8088"
-LuckVipsoft.http = "http://192.168.0.111"
+LuckVipsoft.http = "http://192.168.0.13:8088"
+//LuckVipsoft.http = "http://192.168.0.111"
 LuckVipsoft.api = {
     /* 登录、注册*/
     retrievePasswordSendCode: '/api/GeneralInterface/RetrievePasswordSendCode', //发送验证码
@@ -26,7 +26,7 @@ LuckVipsoft.api = {
     GetShiftTurnOverData: '/api/GeneralInterface/GetShiftTurnOverData',//获取交班数
 
     /*优惠 */
-	GetMemConponList:'/api/GeneralInterface/GetMemConponList',//获取用户所有优惠券
+    GetMemConponList: '/api/GeneralInterface/GetMemConponList',//获取用户所有优惠券
     GetConponListPage: '/api/GeneralInterface/GetConponListPage',//获取优惠券列表分页数据
     SaveConponData: '/api/GeneralInterface/SaveConponData',//保存优惠券数据
     getActivityList: '/api/GeneralInterface/BindActivityListSelect', //获取优惠活动数据
@@ -61,10 +61,10 @@ LuckVipsoft.api = {
     WriteOffMallOrder: '/api/GeneralInterface/WriteOffMallOrder',//商品核销
     GetExpressList: '/api/GeneralInterface/GetExpressList',//快递公司列表（分页）    
     GetPreWriteOffOrder: '/api/GeneralInterface/GetPreWriteOffOrder',//查询待核销商品订单返回订单详情
-    GetExpressInfo:'/api/GeneralInterface/GetExpressInfo',//快递物流节点跟踪
-    DeliverMallOrder:'/api/GeneralInterface/DeliverMallOrder',//微商城订单发货
-    GetReturnGoodsPayments:'/api/GeneralInterface/GetReturnGoodsPayments',//获取商品消费退货支付退款信息
-    GetReturnVenueConsumePayments:'/api/GeneralInterface/GetReturnVenueConsumePayments',//获取场馆消费退货支付退款信息
+    GetExpressInfo: '/api/GeneralInterface/GetExpressInfo',//快递物流节点跟踪
+    DeliverMallOrder: '/api/GeneralInterface/DeliverMallOrder',//微商城订单发货
+    GetReturnGoodsPayments: '/api/GeneralInterface/GetReturnGoodsPayments',//获取商品消费退货支付退款信息
+    GetReturnVenueConsumePayments: '/api/GeneralInterface/GetReturnVenueConsumePayments',//获取场馆消费退货支付退款信息
 
 
     /*卡券核销 */
@@ -141,9 +141,9 @@ LuckVipsoft.api = {
 
     //商品消费、计次消费、套餐消费
     GoodsConsume: '/api/GeneralInterface/GoodsConsume',
-    RestingConsume:'/api/GeneralInterface/RestingConsume',//商品消费挂单
-    GetRestingOrderList : '/api/GeneralInterface/GetRestingOrderList',//挂单列表
-    GetRestingOrderData : '/api/GeneralInterface/GetRestingOrderData',//取单
+    RestingConsume: '/api/GeneralInterface/RestingConsume',//商品消费挂单
+    GetRestingOrderList: '/api/GeneralInterface/GetRestingOrderList',//挂单列表
+    GetRestingOrderData: '/api/GeneralInterface/GetRestingOrderData',//取单
     QuickConsume: '/api/GeneralInterface/QuickConsume', //快速消费
 }
 LuckVipsoft.lan = {
@@ -175,3 +175,4 @@ LuckVipsoft.lan = {
     ER0025: "请打开摄像头",
 }
 LuckVipsoft.network = new Array()
+LuckVipsoft.InterfaceKey = ''

@@ -1360,7 +1360,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			layer.msg(LuckVipsoft.lan.ER0018);
 			return false;
 		}
-		if (!verify.uploadimg.test($(this).val())) {
+		if (!verify.uploadimg[0].test($(this).val())) {
 			layer.msg(LuckVipsoft.lan.ER0019);
 			return false;
 		}

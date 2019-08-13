@@ -9,8 +9,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 	}
 
 	var sysArgument = $.session.get('Cashier_User').SysArguments
-	console.log('sysArgument', sysArgument)
-	console.log(sysArgument)
+
 	var oPayCompose = new payCompose(sysArgument)
 
 
@@ -82,6 +81,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 		let amountModifyMoney = parseFloat(oPayCompose.result.amountModifyMoney)
 		let allPayMoney = parseFloat(oPayCompose.result.allPayMoney)
 		let zeroAmount = parseFloat(oPayCompose.result.zeroAmount)
+
+		
 
 		let paid = math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(zeroAmount).subtract(allPayMoney).done().toFixed(2)
 		//01.payInfoTmp 渲染
@@ -938,7 +939,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			$.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
 				if (res.status == 1) {
 					that.StaffClassList = res.data;
-					resolve();
+					return resolve();
 				}
 			});
 		},
@@ -949,7 +950,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
 				if (res.status == 1) {
 					that.StaffList = res.data;
-					resolve();
+				   return	resolve();
 				}
 			});
 		},
@@ -1078,6 +1079,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 
 			//单品提成
             $("body").on("click", ".choose-member", function () {
+				console.log('123')
                 layer.open({
                     type: 1,
                     id: "searchMemCard",
@@ -1911,8 +1913,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			})
 
 			//金额输入框
-			$("body").on("input", ".moneyInput", function (event) {
-				
+			$("body").on("input", ".moneyInput", function (event) {			
 				let val = $(this).val()
 				let oldVal = $(this).attr('data-old')
 
@@ -1924,8 +1925,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				if (isNaN(val)) {
 					val = 0
 					$(this).val(0)
-				}
-				console.log('val', val)
+				}				
 				if (val.length!= undefined) {
 					if (val.charAt(val.length - 1) == '.') { return false }
 				}
@@ -1943,6 +1943,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 					$.luck.error('金额只能时2位小数')
 					return false
 				}
+
+				
 
 				if (val != oldVal) {
 					var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, val)
@@ -2169,7 +2171,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			layer.msg(LuckVipsoft.lan.ER0018);
 			return false;
 		}
-		if (!verify.uploadimg.test($(this).val())) {
+		if (!verify.uploadimg[0].test($(this).val())) {
 			layer.msg(LuckVipsoft.lan.ER0019);
 			return false;
 		}

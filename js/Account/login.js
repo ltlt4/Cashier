@@ -1,7 +1,8 @@
 var netWork = new Array();
+var loginType=1;//1收银端2后台
 layui.use(['layer', 'jquery', "form"], function () {
     var layer = layui.layer, $ = layui.$, form = layui.form;
-
+    initData();
     var user = {
         flag: $.local.get('flag') ? $.local.get('flag') : null, //自动登陆
         Record: $.local.get('Record') ? $.local.get('Record') : null,
@@ -263,6 +264,17 @@ layui.use(['layer', 'jquery', "form"], function () {
             Password: pwd,
             LoginSource: 2
         }
+        if(loginType==2){
+            param={
+                CompCode: enterprise,
+                MasterAccount: username,
+                Password: pwd,
+                InterfaceKey:LuckVipsoft.InterfaceKey,
+                Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
+            };
+            GoToBackstage(JSON.stringify(params));
+            return;
+        }
         $.http.register(LuckVipsoft.api.login, param, function (res) {
             if (res.status == 1) {
                 layer.msg(res.msg);
@@ -453,6 +465,17 @@ layui.use(['layer', 'jquery', "form"], function () {
 
         });
     });
+
+    $("#logintype a").on("click", function () {
+        $(this).addClass("hover").siblings().removeClass("hover");
+        var n = $(this).index();
+        if(n==0) {
+            loginType=1;
+        }
+        else{
+            loginType=2;
+        }
+    });
 })
 //获取路线
 function getNetWorks() {
@@ -535,3 +558,24 @@ function getResponseSpeed(time) {
     }
 }
 
+function initData(){
+    if(!LuckVipsoft.InterfaceKey)
+    {
+        var LoginMsg = $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null;
+        var compCode = LoginMsg != null ? LoginMsg.CompCode : "lucksoft";
+        var param = {
+            CompCode: compCode
+        }
+        $.ajax({
+            dataType: "json",
+            ContentType: 'application/json',
+            type: "POST",
+            data: JSON.stringify(param),
+            url:  LuckVipsoft.http + "/api/GeneralInterface/GetAuthorizeByCompCode",
+            async: false,
+            success: function (res) {
+                LuckVipsoft.InterfaceKey = res.data.InterfaceKey;
+            }
+        });
+    }
+}

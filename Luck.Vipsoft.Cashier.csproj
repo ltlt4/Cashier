@@ -106,8 +106,9 @@
     <Content Include="Theme\images\botSjx.png" />
     <Content Include="Theme\images\bs.png" />
     <Content Include="Theme\images\changguan.png" />
-    <Content Include="Theme\images\ContactCustomerService.png" />
     <Content Include="Theme\images\del.png" />
+    <Content Include="Theme\images\dianhua.png" />
+    <Content Include="Theme\images\dianhuaicon.png" />
     <Content Include="Theme\images\ems.png" />
     <Content Include="Theme\images\genhuan.png" />
     <Content Include="Theme\images\goodsPic.png" />
@@ -138,9 +139,9 @@
     <Content Include="Theme\images\infoPic.png" />
     <Content Include="Theme\images\jiazai.png" />
     <Content Include="Theme\images\jinru.svg" />
-    <Content Include="Theme\images\kefu.png" />
     <Content Include="Theme\images\kqs.png" />
     <Content Include="Theme\images\leftSjx.png" />
+    <Content Include="Theme\images\lianxikefu.png" />
     <Content Include="Theme\images\line01.png" />
     <Content Include="Theme\images\lipin.png" />
     <Content Include="Theme\images\lock.svg" />
@@ -320,6 +321,7 @@
     <Content Include="Theme\plugins\layui\lay\modules\tree.js" />
     <Content Include="Theme\plugins\layui\lay\modules\upload.js" />
     <Content Include="Theme\plugins\layui\lay\modules\util.js" />
+    <Content Include="Theme\plugins\md5\md5.js" />
     <Content Include="Theme\script\common.js" />
     <Content Include="Theme\script\jquery3.4.1.min.js" />
     <Content Include="Theme\script\keyboard.js" />

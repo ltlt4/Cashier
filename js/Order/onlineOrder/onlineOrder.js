@@ -528,7 +528,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                     //已选择员工列表
                     var grid_conpon = table.render({
                         elem: '#orderList',
-                        data: staffInf,
+                        data: [],
                         cellMinWidth: 95,
                         cols: [
                             [

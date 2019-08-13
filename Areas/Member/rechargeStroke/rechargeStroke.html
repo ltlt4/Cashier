@@ -99,9 +99,7 @@
                 <div class="order-tool">
                     <dl class="order-page">
                         <dt>
-                            <p class="order-select consumeActivity">
-                                暂无优惠活动
-                            </p>
+                            <p class="order-select consumeActivity">暂无优惠活动</p>
                             <span class="triangle_border_right gray"></span>
                         </dt>
                         <dd>
@@ -110,7 +108,6 @@
                         </dd>
                         <div class="activity-list">
                             <ul class="check-box-list consumeActList">
-
                             </ul>
                         </div>
                     </dl>
@@ -123,7 +120,7 @@
                         </ul>
                     </div>
                     <div class="order-button">
-                        <button type="button" class="add-bt" style="width: 90%">充次</button>
+                        <button type="button" id='goPay' class="add-bt" style="width: 90%">充次</button>
                     </div>
                 </div>
             </div>
@@ -145,235 +142,7 @@
         </div>
         <!--主体 end-->
         <!-- 功能弹出框 start-->
-        <div>
-            <!--挂单 start-->
-            <div class="lomo-gd hide lomo-gd2 lomo-esc">
-                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>挂单</div>
-                <dl class="gd-form">
-                    <dt>手牌号</dt>
-                    <dd>
-                        <input name="" type="text" class="sph" />
-                        <span class="card-num-up"></span>
-                    </dd>
-                    <dt>备注</dt>
-                    <dd>
-                        <textarea name="" cols="" rows="" class="bz"></textarea>
-                    </dd>
-                    <dd class="gd-form-bt">
-                        <button type="button" class="submit-bt-clear">取消[ESC]</button>
-                        <button type="button" class="submit-bt">确认[F5]</button>
-                    </dd>
-                </dl>
-            </div>
-            <!--挂单 end-->
-            <!--取单 start-->
-            <div class="lomo-members-search hide lomo-qd lomo-esc">
-                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>取单</div>
-                <dl class="members-search-form">
-                    <dt>
-                        <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
-                    </dt>
-                    <dd>
-                        <button type="button" class="add-bt">搜索</button>
-                    </dd>
-                </dl>
-                <div class="members-search-list">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
-                        <tr>
-                            <th>单据号</th>
-                            <th>挂单时间</th>
-                            <th>会员姓名</th>
-                            <th>手牌号</th>
-                            <th>备注</th>
-                        </tr>
-                        <tr>
-                            <td>800001</td>
-                            <td>2019-6-3 12:34:32</td>
-                            <td>18596545218</td>
-                            <td>易烊千玺</td>
-                            <td> 白金会员白金会员白</td>
-                        </tr>
-                        <tr>
-                            <td>800001</td>
-                            <td>张三</td>
-                            <td>18596545218</td>
-                            <td>白金会员</td>
-                            <td>520</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="members-search-bt"><button type="button" class="submit-bt">取消[ESC]</button></div>
-            </div>
-            <!--取单 end-->
-            <!--收银结账 start-->
-            <div class="lomo-cashier hide">
-                <!--弹出层遮罩层 start-->
-                <div class="lomo-mask-cashier hide"></div>
-                <!--弹出层遮罩层 end-->
-                <div class="lomo-cashier-left">
-                    <h1>会员</h1>
-                    <dl class="vipInfo vipInfo-xz">
-                        <dt><img src="../../../Theme/images/touxiang.png" /></dt>
-                        <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
-                        <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
-                    </dl>
-                    <h1>付款方式</h1>
-                    <div class="cashier-way">
-                        <ul>
-                            <li class="border-red"><a href="#">储值卡</a></li>
-                            <li><a href="#" class="way2">微信</a></li>
-                            <li><a href="#" class="way3">支付宝</a></li>
-                            <li><a href="#" class="way4">优惠券</a></li>
-                            <li><a href="#" class="way5">积分抵扣</a></li>
-                            <li><a href="#" class="way6">银联卡</a></li>
-                        </ul>
-                    </div>
-                    <h1>更多操作</h1>
-                    <div class="cashier-way">
-                        <ul>
-                            <li>
-                                <a href="#" class="way7">整单优惠</a>
-                                <!--整单优惠 start-->
-                                <div class="chipBox  chipBox-yh hide" style="top:386px">
-                                    <ul class="chipBox-zdyh">
-                                        <li>应收金额：¥2050.00</li>
-                                        <li>优惠金额：
-                                            <input name="" type="text" class="sph" />
-                                            <select name="" class="yhhd">
-                                                <option>7折/元</option>
-                                            </select>
-                                        </li>
-                                        <li>优惠后金额：¥2050.00</li>
-                                    </ul>
-                                    <div class="chipBox-ForomBt">
-                                        <button type="button" class="submit-bt-clear">取消</button>
-                                        <button type="button" class="submit-bt">确认</button>
-                                    </div>
-                                    <em class="botSjx"></em>
-                                </div>
-                                <!--整单优惠 end-->
-                            </li>
-                            <li>
-                                <a href="#" class="way8">整单提成</a>
-                                <div class="chipBox hide lomo-tcyg-add"
-                                    style="margin-top:0px;padding: 3%;top:310px;overflow: visible;width: auto">
-                                    <div style="width: 100%;min-height:90px">
-                                        <span class="name nameTitle">提成员工：</span><span class="name">欧阳降权<i>x</i></span>
-                                        <span class="name">崔作非<i>x</i></span><span class="name">捞易<i>x</i></span><span
-                                            class="name">刘雨滴<i>x</i></span><span class="name">石头<i>x</i></span><span
-                                            class="name">文叔<i>x</i></span><span class="name">珍淑<i>x</i></span><span
-                                            class="add">+</span>
-                                    </div>
-                                    <div class="tcyg-form-bt">
-                                        <button type="button" class="submit-bt-clear">取消</button>
-                                        <button type="button" class="submit-bt">结账</button>
-                                    </div>
-                                    <em class="botSjx"></em>
-                                </div>
-                            </li>
-                            <li>
-                                <a href="#" class="way9">备注</a>
-                                <!--备注 start-->
-                                <div class="chipBox hide chipBox-bz">
-                                    <div class="chipBox-title">备注</div>
-                                    <div class="chipBox-Forominput">
-                                        <textarea name="" cols="" rows=""></textarea>
-                                    </div>
-                                    <div class="chipBox-ForomBt">
-                                        <button type="button" class="submit-bt-clear">取消</button>
-                                        <button type="button" class="submit-bt">确认</button>
-                                    </div>
-                                    <em class="botSjx"></em>
-                                </div>
-                                <!--备注 end-->
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="cashier-bt">
-                        <button type="button" class="add-bt green">返回收银</button>
-                    </div>
-                </div>
-                <div class="lomo-cashier-right">
-                    <div class="cashier-num">
-                        <ul class="cashier-num-a">
-                            <li><span>应收</span><b class="fl">¥5000.00</b><em>抹零</em></li>
-                            <li><span>待收</span><b>¥5000.00</b></li>
-                            <li><span>优惠</span><b>¥5000.00</b></li>
-                        </ul>
-                        <ul class="cashier-num-b">
-                            <li><span>优惠券<b>¥500</b></span><em>重选优惠券</em></li>
-                            <li><span>储值卡<b>¥500</b></span><small>找零¥50.00</small></li>
-                            <li><span>现金<b>¥500</b></span></li>
-                        </ul>
-                    </div>
-                    <div class="cashier-keyboard">
-                        <ul>
-                            <li>1</li>
-                            <li>2</li>
-                            <li>3</li>
-                            <li>500.00</li>
-                            <li>4</li>
-                            <li>5</li>
-                            <li>6</li>
-                            <li>500.00</li>
-                            <li>5</li>
-                            <li>6</li>
-                            <li>7</li>
-                            <li>500.00</li>
-                            <li>0</li>
-                            <li>00</li>
-                            <li>.</li>
-                            <li>←</li>
-                        </ul>
-                    </div>
-                    <div class="cashier-end">
-                        <input name="" type="text" placeholder="请输入会员密码" class="input" />
-                        <button type="button" class="add-bt">完成结算</button>
-                    </div>
-                </div>
-            </div>
-            <!--选择优惠券 start-->
-            <div class="lomo-members-search lomo-yhq hide">
-                <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>选择优惠券</div>
-                <dl class="members-search-form">
-                    <dt>
-                        <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
-                    </dt>
-                    <dd>
-                        <button type="button" class="add-bt">搜索</button>
-                    </dd>
-                </dl>
-                <div class="members-search-list">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
-                        <tr>
-                            <th>名称</th>
-                            <th>券号</th>
-                            <th>券类型</th>
-                            <th>优惠金额</th>
-                            <th>最低消费</th>
-                        </tr>
-                        <tr>
-                            <td>国庆大酬宾</td>
-                            <td>42065236524</td>
-                            <td>全场券</td>
-                            <td>7折</td>
-                            <td> 500</td>
-                        </tr>
-                        <tr>
-                            <td>国庆大酬宾</td>
-                            <td>42065236524</td>
-                            <td>全场券</td>
-                            <td>7折</td>
-                            <td> 500</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="members-search-bt">
-					<button type="button" class="submit-bt-clear">取消</button>
-					<button type="button" class="submit-bt">确认</button></div>
-            </div>
-            <!--选择优惠券 end-->
-            <!--收银结账 end-->
+        <div>   
             <!--无产品收银 start-->
             <div class="lomo-gd lomo-wcpsy hide">
                 <div class="divTitle"><span><img src="../../../Theme/images/icon010.png" alt=""></span>无产品收银</div>
@@ -413,72 +182,6 @@
             </div>
             <!--无产品收银 end-->
         </div>
-		<!--提成员工 start-->
-		<p class="left-arrow-white"></p>
-		<dl class="lomo-tcyg hide">
-		    <dd>
-		        <div class="lomo-tcyg-goodsInfo"> <img src="" />
-		            <div class="tcyg-goodsInfo">
-		                <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
-		                <span>单价：¥50.00</span><span>会员价：<i>¥50.00</i></span>
-		                <div class="tcyg-goodsInfo-bt">
-		                    <button type="button" class="add-bt">赠送</button>
-		                    <button type="button" class="add-bt">删除</button>
-		                </div>
-		            </div>
-		        </div>
-		        <div class="tcyg-goodsInfo-price">
-		            <ul>
-		                <li>现价<b>500.00</b></li>
-		                <li>数量<b>2</b></li>
-		                <li>总价<b>500.00</b></li>
-		            </ul>
-		        </div>
-		        <div class="lomo-tcyg-add clearfix m-t-20">
-					<span class="name nameTitle">提成员工：</span>
-					<span class="name">珍淑<i>x</i></span>
-					<span class="add choose-member">+</span>
-				</div>
-		        <div class="tcyg-form-bt">
-		            <button type="button" class="submit-bt-clear">取消</button>
-		            <button type="button" class="submit-bt">结账</button>
-		        </div>
-		        <!--小键盘 start-->
-		        <div class="small-keyboard lomo-tcyg-keyboard hide">
-		            <ul class="small-keyboard-num">
-		                <li>1</li>
-		                <li>2</li>
-		                <li>3</li>
-		                <li>4</li>
-		                <li>5</li>
-		                <li>6</li>
-		                <li>7</li>
-		                <li>8</li>
-		                <li>9</li>
-		                <li>0</li>
-		                <li>00</li>
-		                <li>.</li>
-		                <li>←</li>
-		                <li class="keyboard-remove">清除</li>
-		                <li class="keyboard-confirm">确认</li>
-		            </ul>
-		            <em class="topSjx"></em>
-		        </div>
-		        <!--小键盘 end-->
-		    </dd>
-		</dl>
-		<!--选择提成员工 start-->
-		<div class="lomo-xztcyg hide" style="padding: 10px;">
-			<div class="layui-row layui-col-space10">
-				<div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
-					
-				</div>
-				<div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
-					<table id="List" lay-filter="List"></table>
-				</div>
-			</div>
-		</div>
-		
         <!--充值 start-->
         <div class="lomo-gd lomo-wcpsy2 hide">
 			<div class="layui-form">
@@ -521,6 +224,60 @@
 			</div>
         </div>
         <!--充值 end-->
+        <!--提成员工 start-->
+		<p class="left-arrow-white"></p>
+		<dl class="lomo-tcyg hide" id="goodsStaffs">
+		    <dd>
+		        <div class="lomo-tcyg-goodsInfo"> <img src="" />
+		            <div class="tcyg-goodsInfo">
+		                <h1>洗发+烫发吹+剪发+美容+养颜套餐</h1>
+		                <span>单价：¥50.00</span><span>会员价：<i>¥50.00</i></span>
+		                <div class="tcyg-goodsInfo-bt">
+		                    <button type="button" class="add-bt">赠送</button>
+		                    <button type="button" class="add-bt">删除</button>
+		                </div>
+		            </div>
+		        </div>
+		        <div class="tcyg-goodsInfo-price">
+		            <ul>
+		                <li>现价<b>500.00</b></li>
+		                <li>数量<b>2</b></li>
+		                <li>总价<b>500.00</b></li>
+		            </ul>
+		        </div>
+		        <div class="lomo-tcyg-add clearfix m-t-20">
+					<span class="name nameTitle">提成员工：</span>
+					<span class="name">珍淑<i>x</i></span>
+					<span class="add choose-member">+</span>
+				</div>
+		        <div class="tcyg-form-bt">
+		            <button type="button" class="submit-bt-clear">取消</button>
+		            <button type="button" class="submit-bt">确定</button>
+		        </div>
+		        <!--小键盘 start-->
+		        <div class="small-keyboard lomo-tcyg-keyboard hide">
+		            <ul class="small-keyboard-num">
+		                <li>1</li>
+		                <li>2</li>
+		                <li>3</li>
+		                <li>4</li>
+		                <li>5</li>
+		                <li>6</li>
+		                <li>7</li>
+		                <li>8</li>
+		                <li>9</li>
+		                <li>0</li>
+		                <li>00</li>
+		                <li>.</li>
+		                <li>←</li>
+		                <li class="keyboard-remove">清除</li>
+		                <li class="keyboard-confirm">确认</li>
+		            </ul>
+		            <em class="topSjx"></em>
+		        </div>
+		        <!--小键盘 end-->
+		    </dd>
+		</dl>	
         <!--会员搜索弹层-->
         <div id="lomo-members-search" class="lomo-members-search lomo-search hide">
             <dl class="members-search-form">
@@ -553,10 +310,179 @@
         <!--遮罩层左 start-->
         <div class="lomo-mask-left hide"></div>
         <!--遮罩层5 start-->
-        <div class="lomo-mask-body5 hide"></div>
-		
+        <div class="lomo-mask-body5 hide"></div>		
     </div>
 
+    <div id='cashier'>
+		<!--选择提成员工 start-->
+		<div class="lomo-xztcyg hide" style="padding: 10px;">
+			<div class="layui-row layui-col-space10">
+				<div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
+					
+				</div>
+				<div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
+					<table id="StaffList" lay-filter="StaffList"></table>
+				</div>
+			</div>
+		</div>
+		<!--收银结账 start-->
+		<div class="lomo-cashier hide">
+		    <!--弹出层遮罩层 start-->
+		    <div class="lomo-mask-cashier hide"></div>
+		    <!--弹出层遮罩层 end-->
+		    <div class="lomo-cashier-left">
+		        <h1>会员</h1>
+		        <dl class="vipInfo vipInfo-xz" id="pb_vipInfo">
+		            <dt><img src="../../../Theme/images/morentouxiang.svg" /></dt>
+		            <dd><b>张女士</b><i>(15889954854)</i><span>黄金卡</span></dd>
+		            <dd><small>积分: 186</small><small>余额：¥1275.00</small></dd>
+		        </dl>
+		        <h1>付款方式</h1>
+		        <div class="cashier-way">
+		            <ul id="pay">
+		                <li class="border-red"><a style="background: url(../../../Theme/images/tool011.png) no-repeat center 10px;" href="#">储值卡</a></li>
+		                <li><a style="background: url(../../../Theme/images/tool012.png) no-repeat center 10px;" href="#" class="way2">微信</a></li>
+		                <li><a style="background: url(../../../Theme/images/tool013.png) no-repeat center 10px;" href="#" class="way3">支付宝</a></li>
+		                <li><a style="background: url(../../../Theme/images/tool014.png) no-repeat center 10px;" href="#" class="way4">优惠券</a></li>
+		                <li><a style="background: url(../../../Theme/images/tool015.png) no-repeat center 10px;" href="#" class="way5">积分抵扣</a></li>
+		                <li><a style="background: url(../../../Theme/images/tool016.png) no-repeat center 10px;" href="#" class="way6">银联卡</a></li>
+		            </ul>
+		        </div>
+		        <h1>更多操作</h1>
+		        <div class="cashier-way" style="height: 140px">
+		            <ul>
+		                <li>
+		                    <a href="#" class="way7">整单优惠</a>
+		                </li>
+		                <li>
+		                    <a href="#" class="way8">整单提成</a>
+		                </li>
+		                <li>
+		                    <a href="#" class="way9">备注</a>
+		                </li>
+		            </ul>
+		        </div>
+		        <div class="cashier-bt">
+		            <button type="button" class="add-bt green">返回收银</button>
+		        </div>
+		    </div>
+		    <div class="lomo-cashier-right">
+		        <div class="cashier-num" id="cashier-num">
+		            <ul class="cashier-num-a">
+		                <li><span>应收</span><b class="fl">¥5000.00</b><em>抹零</em></li>
+		                <li><span>待收</span><b>¥5000.00</b></li>
+		                <li><span>优惠</span><b>¥5000.00</b></li>
+		            </ul>
+		            <ul class="cashier-num-b">
+		                <li><span>优惠券<b>¥500</b></span><em>重选优惠券</em></li>
+		                <li><span>现金<b>¥0</b></span><small class="hide">找零¥50.00</small></li>
+		                <div id="mode">
+		
+		                </div>
+		            </ul>
+		        </div>
+		        <div class="cashier-keyboard">
+		            <ul>
+		                <li>1</li>
+		                <li>2</li>
+		                <li>3</li>
+		                <li>100.00</li>
+		                <li>4</li>
+		                <li>5</li>
+		                <li>6</li>
+		                <li>200.00</li>
+		                <li>7</li>
+		                <li>8</li>
+		                <li>9</li>
+		                <li>500.00</li>
+		                <li>0</li>
+		                <li>00</li>
+		                <li>.</li>
+		                <li>←</li>
+		            </ul>
+		        </div>
+		        <div class="cashier-end">
+					<input name="" type="text" placeholder="请输入会员密码" class="input"  id="pay_pwd"/>					
+		            <button type="button" id="finishPayBtn" class="add-bt">完成结算</button>
+				</div>				
+		    </div>
+		</div>
+		<!--整单优惠弹层-->
+		<div class="single-discount chipBox-yh hide pd20" >
+			<div class="layui-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label">应收金额</label>
+					<div class="layui-form-mid layui-word-aux" id="single_amount"> 00.00</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">优惠金额</label>
+					<div class="layui-input-inline">
+						<input name="" type="text" class="layui-input" id="single_discount_val" autocomplete ='off' />
+					</div>
+					<div class="layui-form-mid layui-word-aux" style="width:80px; padding:0!important;">
+						<select name="" class="yhhd" id="single_discount_mode" lay-filter="single_discount_money" >
+							<option value="1">折</option>
+							<option value="2">元</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">优惠后金额</label>
+					<div class="layui-input-inline">
+						<input name="" type="text" class="layui-input"  id='single_discount_money' autocomplete ='off' readonly />
+					</div>
+					<div class="layui-form-mid layui-word-aux" style="padding:0!important;">
+						<button class="submit-bt" id="single_cancel">取消优惠</button>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<!--整单提成弹层-->
+		<div class="hide lomo-tcyg-add bill-lading pd20">
+		    <div style="width: 100%;min-height:90px">
+		        <span class="name nameTitle">提成员工：</span>			
+				<span class="add choose-order-member">+</span>
+		    </div>
+		</div>
+		<!--选择优惠券 start-->
+		<div class="lomo-members-search lomo-yhq hide">
+		    <dl class="members-search-form">
+		        <dt>
+		            <input name="" type="text" placeholder="请输入手机牌/单据号/会员卡号进行搜索" class="input" />
+		        </dt>
+		        <dd>
+		            <button type="button" class="add-bt">搜索</button>
+		        </dd>
+		    </dl>
+		    <div class="members-search-list">
+				<table id="coupoonList" lay-filter="coupoonList"></table>
+		        <!-- <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">
+					<thead>
+						<tr>
+							<th>名称</th>
+							<th>券号</th>
+							<th>券类型</th>
+							<th>优惠金额</th>
+							<th>最低消费</th>
+						</tr>
+					</thead>
+		        </table> -->
+		    </div> 
+		</div>
+		<!--支付弹层/微信/支付宝-->
+		<div class="pop-area paybox hide pd20" id="paybox">
+			<h3 id='onlinePayTitle'><img src="../../../Theme/images/tool013.png" /> 支付宝支付</h3>
+			<h3>支付金额：<span id ='onlinePayMoney'>1000</span>元</h3>
+			<div class="layui-form-item">
+				<label class="layui-form-label">收款码</label>
+				<div class="layui-input-block card-num-form" style="float: none;">
+					<input type="text" class="layui-input" value="" placeholder="请扫面顾客付款二维码" id="paymentCode" autocomplete='off' />
+					<span class="keyboard-icon" onclick="luckKeyboard.showSmallkeyboard(this)"></span>
+				</div>
+			</div>
+		</div>
+    </div>
+    
     <script src="../../../Theme/script/jquery3.4.1.min.js"></script>
     <script src="../../../Theme/plugins/layui/layui.js"></script>
     <script src="../../../Theme/script/Luck.Vipsoft.js"></script>
@@ -564,6 +490,179 @@
     <script src="../../../Theme/script/common.js"></script>
     <script src="../../../Theme/script/keyboard.js"></script>
     <script src="../../../js/Member/rechargeStroke/rechargeStroke.js"></script>
-</body>
+    <script src="../../../Scripts/linq.min.js"></script>
+    <script src="../../../Scripts/math.min.js"></script>
+    <script src="../../../Scripts/template-web.js"></script>
+    <script src="../../../Theme/script/payCompose.js"></script>
 
+    <!--局部模板渲染-->
+<script id="goodsTmp" type="text/html">     
+    {{each $data as item i}} 
+	<dl  data-stocknum='{{item.source.StockNum}}'  data-uuid='{{item.uuid}}'  data-id='{{item.goodsId}}' data-num='{{item.num}}' data-mode='{{item.goodsMode}}'>
+		<dt> 
+			<span class="order-reduce" >-</span> 
+			<span class="order-nub"><input class="order-change-num" oninput="if(value.length>3)value=value.slice(0,3)" type="text" value='{{item.num}}' /></span> 
+			<span class="order-add" >+</span>
+		</dt>
+		<dd data-uuid='{{item.uuid}}' data-mode='{{item.goodsMode}}'> 
+			{{@ item.goodsMode | fnGoodsMode }}		
+			<div class="order-name">
+				<h1>
+					{{item.source.GoodsName}} 
+					{{if item.isCustomPrice ==1}}(改){{/if}}
+				</h1>
+				<span>单价: <i> ¥ {{item.memberPrice | fnToFixed}} </i> 
+					{{if item.price != item.memberPrice }}   
+					<b>¥ {{item.price | fnToFixed}} </b>
+					{{/if}}
+				</span>
+			</div>
+		</dd>
+	</dl>       
+    {{/each}}
+</script>
+<script id="goodsAmountTmp" type="text/html">   
+	<ul>
+		<li>数量：{{num}}</li>
+		<li>积分：{{point}}</li>
+		<li>实收：<b>¥{{cutPrice}}</b><small>¥{{ price}}</small></li>
+		<li>优惠：<i>¥{{ activityPrice }}</i> </li>
+	</ul>
+</script>
+<script id="memberTmp" type="text/html">   
+	{{if mid == 0}} 
+		<dt><img src="../../../Theme/images/morentouxiang.svg" /></dt>
+		<dd><b>散客</b>	</dd>
+		<dd><small>积分:0.00</small><small>余额：¥ 0.00</small></dd>
+	{{else}}
+		<dt><img src='{{avatar}}' /></dt>
+		<dd>	
+			<b>{{cardname}}</b>
+			<i>({{mobile}})</i>		
+			<span>{{levelname}}</span>
+		</dd>
+		<dd>
+			<small>积分: {{point}}</small><small>余额：¥ {{money}}</small>
+		</dd>
+	{{/if}}
+</script>
+<script id="activityTmp" type="text/html">  	
+		{{each $data as item i}} 		
+			<li class="act_item act_{{item.Id}} {{@ item.ValidType|fnActMode}}"  data-id ='{{item.Id}}' data-obj='{{item}}'><h3>{{item.ActName}}</h3>
+				<p>
+					消费满 {{item.LimitUsedAmount}} 
+					{{if item.IsReduceAmount==1}} 
+						减免{{item.ReduceAmount}}元
+					{{/if}}
+					{{if item.IsGiveMoney==1}} 					
+						赠送余额{{res.GiveMoney}}元
+					{{/if}}
+					{{if item.IsGivePoint==1}} 					
+						赠送积分{{item.GivePoint}}
+					{{/if}}
+					{{if item.IsGiveConpon==1}} 
+						{{each $data. as item2 k}}
+							赠送 {{item2.Name}} {{item2.Qty}}张
+						{{/each}}								
+					{{/if}}					
+				</p>
+			</li>
+		{{/each}}	
+</script>
+<!---商品选择员工提成-->
+<script id="goodsStaffsTmp" type="text/html"> 
+	<dd>
+		<div class="lomo-tcyg-goodsInfo"> <img src="{{images}}">
+			<div class="tcyg-goodsInfo">
+				<h1>{{goodsName}}</h1>
+				<span>单价：¥{{price}}</span><span>会员价：<i>¥{{memberPrice}}</i></span>
+				<div class="tcyg-goodsInfo-bt"  data-uuid="{{uuid}}" data-mode="{{goodsMode}}">					
+					<button type="button" class="add-bt giveGoods">赠送</button>
+					<button type="button" class="add-bt deleteGoods">删除</button>				
+				</div>
+			</div>
+		</div>
+		<div class="tcyg-goodsInfo-price">
+			<ul class="card-num-form">
+				<li>现价
+					<b class="change-price" data-mode='{{goodsMode}}' >{{memberPrice}}</b>
+					<input type="hidden" value="" />
+				</li>
+				<li>数量<b>{{num}}</b></li>
+				<li>总价<b>{{amount}}</b></li>
+			</ul>
+		</div>
+		<div class="lomo-tcyg-add clearfix m-t-20">
+			<span class="name nameTitle">提成员工：</span>
+			{{each staffs as item i}} 			
+				<span class="name staffname" data-id="{{item.StaffId}}">{{item.StaffName}}<i class="deletStaff">x</i></span>
+			{{/each}}	
+			<span class="add choose-member">+</span>
+		</div>
+		<div class="tcyg-form-bt"  data-uuid="{{uuid}}">
+			<button type="button" class="submit-bt-clear">取消</button>
+			<button type="button" class="submit-bt staffSubmit">确认</button>
+		</div>
+	</dd>
+</script> 
+<!--结算信息-->
+<script id="payInfoTmp" type="text/html">
+	<ul class="cashier-num-a">
+		<li><span class="inline">应收
+			{{if isOpenZero == '1'}}
+				{{if isZero == '1' }}
+				<em class='settingZero active' ></em>			
+				{{else}}
+				<em class='settingZero' ></em>
+				{{/if}}
+			{{/if}}
+		</span><b>¥{{amount}}</b></li>
+		<li><span>待收</span><b>¥{{paid}}</b></li>
+		<li><span>优惠</span><b>¥{{discount}}</b></li>
+	</ul>
+	<ul class="cashier-num-b">
+		{{each payItem as item i}} 	
+			{{if item.code == curPayItem }}
+				<li data-code='{{item.code}}' class="active">
+					<span>{{item.name }}
+					<b> 
+						{{if item.code =='999'}}
+						<input readonly="readonly" data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/>
+						{{else}}
+						<input  data-old ='{{item.amount}}' value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}" data-code='{{item.code}}' autocomplete="off"/>
+						{{/if}}
+					</b>
+					</span>
+					{{if item.code == '001' && item.amount > 0}}
+						<small>找零 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
+					{{if item.code == '999' }}
+						<em class="paySelectCoupon">重选优惠券</em>
+					{{/if}}				
+					{{if item.code == '003' }}
+						<small>可用 ¥{{item.smallChangePrice}}</small>
+					{{/if}}				
+				</li>
+			{{else}}
+				<li data-code={{item.code}}>
+					<span>{{item.name }}
+						<b> 
+						<input  data-old ='{{item.amount}}'  value='{{item.amount}}' class='moneyInput' id="pay_input_{{item.code}}"  data-code='{{item.code}}' autocomplete="off"/>
+						</b>
+					</span>
+						{{if item.code == '001' && item.amount > 0}}
+						<small>找零 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
+					{{if item.code == '999' }}
+						<em class="paySelectCoupon">重选优惠券</em>
+					{{/if}}			
+					{{if item.code == '003' }}
+						<small>可用 ¥{{item.smallChangePrice}}</small>
+					{{/if}}
+				</li>
+			{{/if}}
+		{{/each}}	
+	</ul>
+</script>
+</body>
 </html>
