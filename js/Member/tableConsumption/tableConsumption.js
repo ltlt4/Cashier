@@ -100,6 +100,7 @@
         ],
         init: function () {
             var _this = this;
+            _this.addMem();//添加会员
             _this.initClick();//点击事件
             _this.countProductNum(1);//计算每屏显示产品个数 type==1 场馆 ==2商品
             _this.GetVenueRegionList();//获取场馆区域列表
@@ -228,6 +229,12 @@
                     _this.changedVenueType=2;
                     _this.BindVenueRegion(2);
                     cashier.open('.table-merge', 'fadeIn', 'fadeOut', '.lomo-mask-body');
+                } else if (type = "Printing") {//打印清单
+                    if (_this.venue.status != 2) {
+                        $.luck.error("该场地状态不可进行此操作");
+                        return false;
+                    }
+                    _this.PrintingVenueInfo();
                 }
             });
             //选择更换场地选中事件
@@ -467,6 +474,41 @@
             } else if (type == 2) {
                 this.GetGoodsListPage();
             }
+        },
+        /*新增会员 */
+        addMem:function(){
+            $(".lomo-shopBar .add-bt").on("click", function () {
+                $(this).blur();
+                layer.open({
+                    type: 2,
+                    id: "addhMemCard",
+                    title: '新增会员',
+                    closeBtn: 1,
+                    shadeClose: true,
+                    shade: 0.3,
+                    maxmin: false,//禁用最大化，最小化按钮
+                    resize: false,//禁用调整大小
+                    move: false,//禁止拖拽
+                    area: ['940px', '740px'],
+                    skin: "lomo-ordinary",
+                    btnAlign: "r",
+                    content: '../../../Areas/Model/Home/addMember.html',
+                    success: function (layero, index) {
+                        this.enterEsc = function (event) {
+                            if (event.keyCode === 27) {
+                                layer.close(index);
+                                return false;
+                            }
+                        };
+                        $('body').on('keydown', this.enterEsc);    //监听键盘事件，关闭层
+                    }
+                })
+            })
+
+            $("body").on("click",".submit-bt-clear", function () {
+                var box = $(this).parents('.fadeIn');
+                cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
+            });
         },
         //获取场馆区域列表
         GetVenueRegionList: function() {
@@ -777,7 +819,7 @@
                             //html += '</table>';
                             //html += '<div class="info-box-bt"><button type="button" class="submit-bt-clear hide">取消</button>';
                             //html += '<button type="button" class="submit-bt close-goodsinfo">确认</button></div></dd></dl></div>';
-						}
+                        }
                         html += '</div>';
                     })
                     $(".product-list").html(html);
@@ -1212,6 +1254,23 @@
                 })
             })
         },
+        //打印清单
+        PrintingVenueInfo: function () {
+            var _this = this;
+            if (_this.venue == null) {
+                $.luck.error("请先选择场地");
+                return false;
+            }
+            $.http.post(LuckVipsoft.api.GetVenueCreateTicketMsg, { VenueID: _this.venue.Id }, user.token, function (res) {
+                if (res.status == 1) {
+                    console.log(res.data);
+                    //打印小票
+                    TicketPrint(JSON.stringify(res.data), 5);
+                } else {
+                    $.luck.error(res.msg);
+                }
+            })
+        },
         //取单 type==1 会员取单 type==2场地取单
         GetVenueOrderInfo: function (type) {
             var _this = this;
@@ -1315,136 +1374,6 @@
             })
 
         },
-
-        Pay: function () {
-            var _this = this;
-            var memId = "";
-            if (member != null) {
-                memId = member.Id;
-            }
-            var Order= {
-                ActivityAmount: parseFloat(_this.payMoneyInfo.amountActivityMoney).toFixed(2),//优惠活动优惠金额,
-                CouponAmount: 0.00,//优惠券优惠金额,
-                ZeroAmount: 0.00,//抹零金额,
-                SingleAmount: 0.00,//整单优惠金额,
-                Source: 1,//消费来源：0-PC、1-前台收银、2-收银机、3-APP4公众号5小程序,
-                BillCode: "",//"订单号",
-                OrderType: 9,//订单类型9、桌台消费
-                MemID: memId,//"会员ID",
-                TotalMoney: parseFloat(_this.payMoneyInfo.TotalMoney).toFixed(2),//订单总金额,
-                DiscountMoney:parseFloat(_this.payMoneyInfo.DiscountMoney).toFixed(2) ,//折后总金额,
-            TotalPoint: parseFloat(_this.payMoneyInfo.TotalPoint).toFixed(2),//获得积分,
-                Remark: ""//"消费备注"
-            }
-            var Payments = [
-              {
-                  PaymentCode:"001",// "支付方式编码",
-                  PayAmount: parseFloat(_this.payMoneyInfo.DiscountMoney).toFixed(2),//支付金额,
-                  PayContent: "",//"积分支付扣除数量或者在线支付流水号"
-              }
-            ];
-            var Staffs = [
-              //{
-              //    "StaffId": "员工ID",
-              //    "CommissionMoney": 自定义提成金额,
-              //    "Remark": "提成备注"
-              //}
-            ];
-            var Activities = [
-              //{
-              //    ActId: _this.chooseActivity.Id,//"优惠活动ID",
-              //    ActName: _this.chooseActivity.ActName,// "活动名称",
-              //    ActivityAmount: _this.chooseActivity.ReduceAmount,// 优惠金额
-              //}
-            ];
-            var Conpons = [
-              //{
-              //    ConponSendId: "优惠券发送记录ID",
-              //    ConponCode: "优惠券券号",
-              //    CouponAmount: 优惠金额
-              //}
-            ];
-
-            var Details = [];
-            var MainID = "";//"主场馆开台ID：开台场馆或合单后的主场馆",
-            var MemberPwd="";
-            $.each(_this.shoppingCar, function (index, item) {
-                var VenueMoney = Enumerable.From(_this.VenueMoney).Where(function (e) {
-                    return e.VenueID == item.VenueID;
-                }).FirstOrDefault();
-                var EndTime = item.EndTime;
-                if (item.IsMainVenue == 1) {
-                    MainID = item.Id;
-                    var time = new Date();
-                    EndTime = cashier.revDateFormat(cashier.curentTime(time));
-                }
-                var money=parseFloat(VenueMoney.TotalMoney).toFixed(2);
-                if (member != null) {
-                    money=parseFloat(VenueMoney.DiscountMoney).toFixed(2);
-                }
-                Details.push({
-                    DiscountAmount: 0.00,// 优惠活动、整单优惠、抹零优惠之和,
-                    CouponAmount: 0.00,//优惠券优惠,
-                    Staffs: [],// 提成员工,
-                    BatchCode: "",// 计次批次好,
-                    GoodsID: item.VenueID,//商品ID,
-                    GoodsType: 3,//商品类型,
-                    GoodsCode: item.VenueID,// 商品编号,
-                    GoodsName: item.VenueName,// 商品名称,
-                    DiscountPrice: money,//折扣价,
-                    Number: 1,// 数量,
-                    TotalMoney: money,// 总金额,
-                    IndustryObjectID: item.Id,//场馆开台ID,
-                    StartTime: item.StartTime,//开始时间,
-                    EndTime: EndTime,// 结束时间
-                    IsModify: 0//是否手动修改价格
-                });
-
-                $.each(item.VenueGoodsList, function (idx, itm) {
-                    var Specials =parseFloat(itm.Price).toFixed(2) ;
-                    if (member != null) {
-                        Specials =parseFloat(itm.Specials).toFixed(2);
-                    }
-                    Details.push({
-                        DiscountAmount: 0.00,// 优惠活动、整单优惠、抹零优惠之和,
-                        CouponAmount: 0.00,//优惠券优惠,
-                        Staffs: itm.Staffs == null ? [] : itm.Staffs,// 提成员工,
-                        BatchCode: "",// 计次批次好,
-                        GoodsID: itm.Id,//商品ID,
-                        GoodsType: itm.GoodsType,//商品类型,
-                        GoodsCode: itm.GoodsCode,// 商品编号,
-                        GoodsName: itm.GoodsName,// 商品名称,
-                        DiscountPrice: Specials,//折扣价,
-                        Number: itm.Number,// 数量,
-                        TotalMoney:parseFloat(itm.TotalMoney).toFixed(2) ,// 总金额,
-                        IndustryObjectID: item.Id,//场馆开台ID,
-                        StartTime: 0,//开始时间,
-                        EndTime: 0,// 结束时间
-                        IsModify: itm.IsModify//是否手动修改价格
-                    })
-                })
-
-            })
-            var param = {
-                Order: Order,
-                Payments: Payments,
-                Activities: Activities,
-                Conpons: Conpons,
-                Details: Details,
-                MainID: MainID,
-                MemberPwd: MemberPwd
-            }
-            console.log(param)
-            debugger
-            $.http.post(LuckVipsoft.api.VenueConsume, param, user.token, function (res) {
-                debugger
-                if (res.status == 1) {
-                    
-                }
-            })
-
-        },
-
 
         //左侧购物车产品相关弹层
         editShopcarProduct: function () {
@@ -1621,7 +1550,7 @@
         chooseMembergetCommission: function () {
             var _this = this;
             //var choosedStaffAry=[];
-            let chooseStaff =[]			
+            var chooseStaff = []
             var html = '';
             //员工树形列表
             if (_this.StaffClassList.length > 0) {
@@ -2461,6 +2390,138 @@
             order.goods = Details;
             return order;
         },
+
+        //测试提交订单
+        Pay: function () {
+            var _this = this;
+            var memId = "";
+            if (member != null) {
+                memId = member.Id;
+            }
+            var Order = {
+                ActivityAmount: parseFloat(_this.payMoneyInfo.amountActivityMoney).toFixed(2),//优惠活动优惠金额,
+                CouponAmount: 0.00,//优惠券优惠金额,
+                ZeroAmount: 0.00,//抹零金额,
+                SingleAmount: 0.00,//整单优惠金额,
+                Source: 1,//消费来源：0-PC、1-前台收银、2-收银机、3-APP4公众号5小程序,
+                BillCode: "",//"订单号",
+                OrderType: 9,//订单类型9、桌台消费
+                MemID: memId,//"会员ID",
+                TotalMoney: parseFloat(_this.payMoneyInfo.TotalMoney).toFixed(2),//订单总金额,
+                DiscountMoney: parseFloat(_this.payMoneyInfo.DiscountMoney).toFixed(2),//折后总金额,
+                TotalPoint: parseFloat(_this.payMoneyInfo.TotalPoint).toFixed(2),//获得积分,
+                Remark: ""//"消费备注"
+            }
+            var Payments = [
+              {
+                  PaymentCode: "001",// "支付方式编码",
+                  PayAmount: parseFloat(_this.payMoneyInfo.DiscountMoney).toFixed(2),//支付金额,
+                  PayContent: "",//"积分支付扣除数量或者在线支付流水号"
+              }
+            ];
+            var Staffs = [
+              //{
+              //    "StaffId": "员工ID",
+              //    "CommissionMoney": 自定义提成金额,
+              //    "Remark": "提成备注"
+              //}
+            ];
+            var Activities = [
+              //{
+              //    ActId: _this.chooseActivity.Id,//"优惠活动ID",
+              //    ActName: _this.chooseActivity.ActName,// "活动名称",
+              //    ActivityAmount: _this.chooseActivity.ReduceAmount,// 优惠金额
+              //}
+            ];
+            var Conpons = [
+              //{
+              //    ConponSendId: "优惠券发送记录ID",
+              //    ConponCode: "优惠券券号",
+              //    CouponAmount: 优惠金额
+              //}
+            ];
+
+            var Details = [];
+            var MainID = "";//"主场馆开台ID：开台场馆或合单后的主场馆",
+            var MemberPwd = "";
+            $.each(_this.shoppingCar, function (index, item) {
+                var VenueMoney = Enumerable.From(_this.VenueMoney).Where(function (e) {
+                    return e.VenueID == item.VenueID;
+                }).FirstOrDefault();
+                var EndTime = item.EndTime;
+                if (item.IsMainVenue == 1) {
+                    MainID = item.Id;
+                    var time = new Date();
+                    EndTime = cashier.revDateFormat(cashier.curentTime(time));
+                }
+                var money = parseFloat(VenueMoney.TotalMoney).toFixed(2);
+                if (member != null) {
+                    money = parseFloat(VenueMoney.DiscountMoney).toFixed(2);
+                }
+                Details.push({
+                    DiscountAmount: 0.00,// 优惠活动、整单优惠、抹零优惠之和,
+                    CouponAmount: 0.00,//优惠券优惠,
+                    Staffs: [],// 提成员工,
+                    BatchCode: "",// 计次批次好,
+                    GoodsID: item.VenueID,//商品ID,
+                    GoodsType: 3,//商品类型,
+                    GoodsCode: item.VenueID,// 商品编号,
+                    GoodsName: item.VenueName,// 商品名称,
+                    DiscountPrice: money,//折扣价,
+                    Number: 1,// 数量,
+                    TotalMoney: money,// 总金额,
+                    IndustryObjectID: item.Id,//场馆开台ID,
+                    StartTime: item.StartTime,//开始时间,
+                    EndTime: EndTime,// 结束时间
+                    IsModify: 0//是否手动修改价格
+                });
+
+                $.each(item.VenueGoodsList, function (idx, itm) {
+                    var Specials = parseFloat(itm.Price).toFixed(2);
+                    if (member != null) {
+                        Specials = parseFloat(itm.Specials).toFixed(2);
+                    }
+                    Details.push({
+                        DiscountAmount: 0.00,// 优惠活动、整单优惠、抹零优惠之和,
+                        CouponAmount: 0.00,//优惠券优惠,
+                        Staffs: itm.Staffs == null ? [] : itm.Staffs,// 提成员工,
+                        BatchCode: "",// 计次批次好,
+                        GoodsID: itm.Id,//商品ID,
+                        GoodsType: itm.GoodsType,//商品类型,
+                        GoodsCode: itm.GoodsCode,// 商品编号,
+                        GoodsName: itm.GoodsName,// 商品名称,
+                        DiscountPrice: Specials,//折扣价,
+                        Number: itm.Number,// 数量,
+                        TotalMoney: parseFloat(itm.TotalMoney).toFixed(2),// 总金额,
+                        IndustryObjectID: item.Id,//场馆开台ID,
+                        StartTime: 0,//开始时间,
+                        EndTime: 0,// 结束时间
+                        IsModify: itm.IsModify//是否手动修改价格
+                    })
+                })
+
+            })
+            var param = {
+                Order: Order,
+                Payments: Payments,
+                Activities: Activities,
+                Conpons: Conpons,
+                Details: Details,
+                MainID: MainID,
+                MemberPwd: MemberPwd
+            }
+            console.log(param)
+            debugger
+            $.http.post(LuckVipsoft.api.VenueConsume, param, user.token, function (res) {
+                debugger
+                if (res.status == 1) {
+
+                }
+            })
+
+        },
+
+
     }
 
     //支付
@@ -2869,6 +2930,8 @@
 									        var postData = oPayCompose.postPayData(pwd, '')
 									        $.http.post2(LuckVipsoft.api.VenueConsume, postData, user.token, function (res2) {
 									            if (res2.status == 1) {
+									                //打印小票
+									                TicketPrint(JSON.stringify(res.data), 5);
 									                layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) {
 									                    venue.countProductNum(1);
 									                    venue.clearData();
@@ -2905,6 +2968,8 @@
                     debugger
                     $.http.post(LuckVipsoft.api.VenueConsume, postData, user.token, function (res) {
                         if (res.status == 1) {
+                            //打印小票
+                            TicketPrint(JSON.stringify(res.data), 5);
                             layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) {
                                 venue.countProductNum(1);
                                 venue.clearData();

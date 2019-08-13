@@ -94,7 +94,7 @@
                             <div class="order-page-up"><span></span></div>
                         </dd>
         				<div class="activity-list">
-        					<ul class="check-box-list"> </ul>
+        					<ul class="check-box-list"></ul>
         				</div>
                     </dl>
                     <div class="order-Pay">
@@ -184,45 +184,36 @@
 					<div class="layui-input-block">
 						<dl class="order-page">
 						    <dt>
-						        <p class="order-select rechargeActivity">
-									暂无优惠活动
-								</p>
+						        <p class="order-select rechargeActivity">暂无优惠活动</p>
 								<span class="triangle_border_right gray"></span>
 						    </dt>
-							<div class="activity-list hide">
-								<ul class="check-box-list rechargeActList">
-									
+							<div class="activity-list rechargeActList hide">
+								<ul class="check-box-list rechargeCheckItem">									
 								</ul>
 							</div>
 						</dl>
 					</div>
 				</div>
-				<div class="layui-form-item">
+				<div class="layui-form-item card-num-form" style="float:none;">
 					<label class="layui-form-label">消费金额</label>
 					<div class="layui-input-block">
-						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+						<input type="text" id='chargeMoney' placeholder="请输入" autocomplete="off" class="layui-input">
+                        <a href="javascript:void(0);" class="card-num-up" style="position:absolute;top:5px;right:10px;" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
 					</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">获得积分</label>
 					<div class="layui-input-block">
-						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+						<input type="text"  id='chargePoint' readonly='readonly' autocomplete="off" class="layui-input" value="0.00">
 					</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">折后金额</label>
 					<div class="layui-input-block">
-						<input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input">
+						<input type="text"  id='chargeDiscountMoney' readonly='readonly'  autocomplete="off" class="layui-input"  value="0.00">
 					</div>
 				</div>
-			</div>
-			<dl class="gd-form clearfix m-r-20 m-l-20" style="padding:0 20px;border-top: 1px #eee solid;">
-		        <dt style="margin-bottom: 0;">提成员工</dt>
-		        <dd class="wcpsy-add">
-		            <span class="name">欧阳降权<i>x</i></span>
-					<span class="add choose-member">+</span>
-		        </dd>
-		    </dl>
+			</div>		
 		</div>
 		<!--提成员工 start-->
 		<p class="left-arrow-white"></p>
@@ -473,7 +464,7 @@
 		</div>
 		<!--支付弹层/微信/支付宝-->
 		<div class="pop-area paybox hide pd20" id="paybox">
-			<h3><img src="../../../Theme/images/tool013.png" /> 支付宝支付</h3>
+			<h3 id='onlinePayTitle'><img src="../../../Theme/images/tool013.png" /> 支付宝支付</h3>
 			<h3>支付金额：<span id ='onlinePayMoney'>1000</span>元</h3>
 			<div class="layui-form-item">
 				<label class="layui-form-label">收款码</label>
@@ -551,7 +542,7 @@
 </script>
 <script id="activityTmp" type="text/html">  	
 		{{each $data as item i}} 		
-			<li class="act_item {{@ item.ValidType|fnActMode}}" id="act_{{item.Id}}"  data-id ='{{item.Id}}' data-obj='{{item}}'><h3>{{item.ActName}}</h3>
+			<li class="act_item act_{{item.Id}} {{@ item.ValidType|fnActMode}}"  data-id ='{{item.Id}}' data-obj='{{item}}'><h3>{{item.ActName}}</h3>
 				<p>
 					消费满 {{item.LimitUsedAmount}} 
 					{{if item.IsReduceAmount==1}} 
@@ -580,7 +571,7 @@
 			<div class="tcyg-goodsInfo">
 				<h1>{{goodsName}}</h1>
 				<span>单价：¥{{price}}</span><span>会员价：<i>¥{{memberPrice}}</i></span>
-				<div class="tcyg-goodsInfo-bt"  data-uuid="{{uuid}}">			
+				<div class="tcyg-goodsInfo-bt"  data-uuid="{{uuid}}" data-mode="{{goodsMode}}">					
 					<button type="button" class="add-bt giveGoods">赠送</button>
 					<button type="button" class="add-bt deleteGoods">删除</button>				
 				</div>
@@ -589,7 +580,7 @@
 		<div class="tcyg-goodsInfo-price">
 			<ul class="card-num-form">
 				<li>现价
-					<b class="change-price" >{{memberPrice}}</b>
+					<b class="change-price" data-mode='{{goodsMode}}' >{{memberPrice}}</b>
 					<input type="hidden" value="" />
 				</li>
 				<li>数量<b>{{num}}</b></li>
@@ -667,11 +658,6 @@
 			{{/if}}
 		{{/each}}	
 	</ul>
-</script>
-
-
-<script id="cashierTmp" type="text/html">
-
 </script>
 
 </html>

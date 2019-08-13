@@ -143,7 +143,71 @@ layui.use(['layer', 'jquery', 'form', 'table'], function () {
                         return '';
                     }
                 };
-                var html = "<div class=\"lomo-network-change\"><dl class=\"network-change-form\"><div class=\"change-form-address\"><img src=\"../../Theme/images/guard002.svg\" alt=\"\">\n                <span>".concat($.session.get('Cashier_User').ShopName, "</span>\n                </div><div class=\"change-form-person\"><img src=\"../../Theme/images/guard001.svg\" alt=\"\">\n                <span>").concat($.session.get('Cashier_User').MasterName, "</span>\n               </div><div class=\"change-form-time\"><img src=\"../../Theme/images/guard003.svg\" alt=\"\">\n<span>").concat(cashier.dateFormat(res.data.data.StatisticalTime), "-").concat(cashier.curentTime(new Date()), "</span>\n</div><div class=\"change-form-number\"><img src=\"../../Theme/images/guard005.svg\" alt=\"\">\n               <span>\u65B0\u589E\u4F1A\u5458\u4EBA\u6570\uFF1A</span><span class=\"change-form-span\">").concat(res.data.data.OpenCardNum, "</span>\n                 </div><div class=\"change-form-price\"><img src=\"../../Theme/images/guard004.svg\" alt=\"\">\n<span>\u552E\u5361\u91D1\u989D\uFF1A</span><span class=\"change-form-span\">").concat(res.data.data.SaleCardAmount, "</span></div></dl>\n                <div class=\"network-change-list\"><ul>\n                <li>\n                <div>\n                <div class=\"change-list-left\" style=\"background: #FFC542;\"></div>\n               <div class=\"change-list-right\">\n                 <div class=\"change-list-right-up\">\n                <span>\u5145\u503C\u603B\u989D\uFF1A</span><span class=\"change-form-span\">\uFFE5").concat(res.data.data.TopUpTotalAmount, "</span>\n               </div>\n                <div class=\"change-list-right-down\">\n                 ").concat(revenue(res.data.data.RechargeCountDetail), "\n                </div></div></div></li>\n               <li>\n                <div>\n                <div class=\"change-list-left\" style=\"background: #A461D8;\"></div>\n                <div class=\"change-list-right\">\n                 <div class=\"change-list-right-up\">\n                <span>\u5145\u6B21\u603B\u989D\uFF1A</span><span class=\"change-form-span\">\uFFE5").concat(res.data.data.RechargeCountTotalAmount, "</span>\n                </div>\n                <div class=\"change-list-right-down\">\n               ").concat(revenue(res.data.data.RechargeCountPreferentialDetail), "\n               </div></div></div></li>\n                <li>\n               <div>\n                <div class=\"change-list-left\" style=\"background: #3BA2F2;\"></div>\n                <div class=\"change-list-right\">\n                <div class=\"change-list-right-up\">\n                <span>\u9000\u6B3E\u8D27\u603B\u989D\uFF1A</span><span class=\"change-form-span\">\uFFE5").concat(res.data.data.ReturnGoodsTotalAmount, "</span>\n                </div>\n                <div class=\"change-list-right-down\">\n                ").concat(revenue(res.data.data.ReturnGoodsDetail), "\n                </div></div></div></li>\n                <li>\n                <div>\n                <div class=\"change-list-left\" style=\"background: #41C060;\"></div>\n                <div class=\"change-list-right\">\n                 <div class=\"change-list-right-up\">\n                <span>\u6D88\u8D39\u603B\u989D\uFF1A</span><span class=\"change-form-span\">\uFFE5").concat(res.data.data.ConsumeTotalAmount, "</span>\n               </div>\n                <div class=\"change-list-right-down\">\n                ").concat(revenue(res.data.data.ConsumeDetail), "\n                </div></div></div></li>\n                <li>\n               <div>\n                <div class=\"change-list-left\" style=\"background: #FF7174;\"></div>\n                <div class=\"change-list-right\">\n                <div class=\"change-list-right-up\">\n                <span>\u7EFC\u5408\u603B\u6536\u5165\uFF1A</span><span class=\"change-form-span\">\uFFE5").concat(res.data.data.TotalInCome, "</span>\n                </div>\n               <div class=\"change-list-right-down\">\n                ").concat(revenue(res.data.data.TotalInComeDetail), "\n               </div></div></div></li>\n                </ul></div>\n                <div class=\"network-change-remark layui-form-item\"><label for=\"\">\u5907\u6CE8</label><input type=\"text\" name=\"remarks\" placeholder=\"\u8BF7\u8F93\u5165\u5907\u6CE8\"></div>\n                <div class=\"network-change-Ticket layui-form-item\"><input  type=\"checkbox\" value=\"1\" name=\"printing\" lay-skin=\"primary\" title=\"\u6253\u5370\u4EA4\u73ED\u5C0F\u7968\" /><span></span></div>\n                </div>");
+                var html = `<div class="lomo-network-change"><dl class="network-change-form"><div class="change-form-address"><img src="../../Theme/images/guard002.svg" alt="">
+                <span>${$.session.get('Cashier_User').ShopName}</span>
+                </div><div class="change-form-person"><img src="../../Theme/images/guard001.svg" alt="">
+                <span>${$.session.get('Cashier_User').MasterName}</span>
+               </div><div class="change-form-time"><img src="../../Theme/images/guard003.svg" alt="">
+               <span>${cashier.dateFormat(res.data.StatisticalTime)}-${cashier.curentTime(new Date())}</span>
+               </div><div class="change-form-number"><img src="../../Theme/images/guard005.svg" alt="">
+               <span>新增会员人数：</span><span class="change-form-span">${res.data.OpenCardNum}</span>
+                 </div><div class="change-form-price"><img src="../../Theme/images/guard004.svg" alt="">
+                <span>售卡金额：</span><span class="change-form-span">${res.data.SaleCardAmount}</span></div></dl>
+                <div class="network-change-list"><ul>
+                <li>
+                <div>
+                <div class="change-list-left" style="background: #FFC542;"></div>
+               <div class="change-list-right">
+                 <div class="change-list-right-up">
+                <span>充值总额：</span><span class="change-form-span">￥${res.data.TopUpTotalAmount}</span>
+               </div>
+                <div class="change-list-right-down">
+                 ${revenue(res.data.RechargeCountDetail)}
+                </div></div></div></li>
+               <li>
+                <div>
+                <div class="change-list-left" style="background: #A461D8;"></div>
+                <div class="change-list-right">
+                 <div class="change-list-right-up">
+                <span>充次总额：</span><span class="change-form-span">￥${res.data.RechargeCountTotalAmount}</span>
+                </div>
+                <div class="change-list-right-down">
+               ${revenue(res.data.RechargeCountPreferentialDetail)}
+               </div></div></div></li>
+                <li>
+               <div>
+                <div class="change-list-left" style="background: #3BA2F2;"></div>
+                <div class="change-list-right">
+                <div class="change-list-right-up">
+                <span>退款货总额：</span><span class="change-form-span">￥${res.data.ReturnGoodsTotalAmount}</span>
+                </div>
+                <div class="change-list-right-down">
+                ${revenue(res.data.ReturnGoodsDetail)}
+                </div></div></div></li>
+                <li>
+                <div>
+                <div class="change-list-left" style="background: #41C060;"></div>
+                <div class="change-list-right">
+                 <div class="change-list-right-up">
+                <span>消费总额：</span><span class="change-form-span">￥${res.data.ConsumeTotalAmount}</span>
+               </div>
+                <div class="change-list-right-down">
+                ${revenue(res.data.ConsumeDetail)}
+                </div></div></div></li>
+                <li>
+               <div>
+                <div class="change-list-left" style="background: #FF7174;"></div>
+                <div class="change-list-right">
+                <div class="change-list-right-up">
+                <span>综合总收入：</span><span class="change-form-span">￥${res.data.TotalInCome}</span>
+                </div>
+               <div class="change-list-right-down">
+                ${revenue(res.data.TotalInComeDetail)}
+               </div></div></div></li>
+                </ul></div>
+                <div class="network-change-remark layui-form-item"><label for="">备注</label><input type="text" name="remarks" placeholder="请输入备注"></div>
+                <div class="network-change-Ticket layui-form-item"><input  type="checkbox" value="1" name="printing" lay-skin="primary" title="打印交班小票" /><span></span></div>
+                </div>`
                 layer.open({
                     type: 1,
                     title: '交班',

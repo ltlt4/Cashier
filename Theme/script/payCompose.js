@@ -121,10 +121,10 @@ function onlinePay(amount, code, payCode, token) {
         //     return_msg : 'res.data.return_msg '
         // }          
 
-        var loadingIndex = layer.load(2, {
-            shade: [0.5, 'gray'],
-            content: '支付中，请等待...',
-        });
+        // var loadingIndex = layer.load(2, {
+        //     shade: [0.5, 'gray'],
+        //     content: '支付中，请等待...',
+        // });
 
         let result = { status: 0 }
         if (token != null) {
@@ -176,7 +176,7 @@ function onlinePay(amount, code, payCode, token) {
                         return_msg: res.data.return_msg
                     }
                 }
-                resolve(result)
+               return  resolve(result)
             })
         }
 
@@ -205,10 +205,17 @@ class payCompose {
 
 
     init() {
+        //快速收银信息
+        this.chargeInfo ={
+            amount:0.00,
+            point:0.00,
+            discountAmount:0.00,  
+        }
+
+        //商品消费
         this.chooseBirthdayActivity = {}     //生日优惠
         this.chooseActivity = {}              //活动方案
-        //this.chooseMember   = {}              //会员      
-
+        //this.chooseMember   = {}              //会员 
         //this.shoppingCar = []               //购物车
 
         this.payItem = []
@@ -219,13 +226,14 @@ class payCompose {
         this.pageChooseConpon = []
 
         this.result = {
-            //smallChangePrice: 0.00,         //现金找零金额      
+            mode : 2, // 默认商品消费， 组提交数据               
+            //smallChangePrice: 0.00,     //现金找零金额      
             allPayMoney: 0.00,            //支付方式总金额
-            modificationInfo: {},          //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
-            amountDiscountMoney: 0.00, 	//会员折扣总金额 (会出现比原价高时的情况)
+            modificationInfo: {},         //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
+            amountDiscountMoney: 0.00, 	  //会员折扣总金额 (会出现比原价高时的情况)
             goodsNum: 0, 		            //商品数量
-            amountPoint: 0.00, 			//获得积分
-            amountMoney: 0.00, 			//商品总价
+            amountPoint: 0.00, 			    //获得积分
+            amountMoney: 0.00, 			    //商品总价
             amountActivityMoney: 0.00,	    //活动减金额
             isZeroAmount: 0,
             zeroAmount: 0.00,               //抹零金额
@@ -282,6 +290,7 @@ class payCompose {
 
     //修改当选中项金额
     changePayMoney(code, m) {
+      
         let that = this
         if (that.curPayItem != code) //当前选中code 和提交code 不一致
         {
@@ -300,7 +309,7 @@ class payCompose {
             // let allowPrice = that.allowPayItemMaxPrice(code)
 
             m = parseFloat(m)
-
+    
             //现金特殊处理
             if (code != '001') {
                 let item_001 = Enumerable.From(that.payItem).Where(x => x.code == '001').FirstOrDefault();
@@ -313,6 +322,8 @@ class payCompose {
 
 
                 let allowPrice = that.allowPayItemMaxPrice(code)
+
+          
                 if (allowPrice > m) {
 
                     ///积分和余额最大值处理///
@@ -325,7 +336,7 @@ class payCompose {
                         m = (m > smallChangePrice) ? smallChangePrice : m
                     }
                     ///积分和余额最大值处理///
-
+                 
                     item.amount = m
                     //剩余的金额回填 001
                     if (item_001 != undefined) {
@@ -339,7 +350,7 @@ class payCompose {
             }
             else {
                 //当前选择是现金
-                let allowPrice = that.allowPayItemMaxPrice(code)
+                let allowPrice = that.allowPayItemMaxPrice(code)                
                 if (allowPrice > m) {
                     item.amount = m
                     item.smallChangePrice = 0
@@ -357,6 +368,8 @@ class payCompose {
                     }
                 }
             }
+
+            console.log('that.payItem',that.payItem)
             that.finish()
             return true
         }
@@ -547,14 +560,15 @@ class payCompose {
             uuid:item.uuid,//唯一标识           
             goodsId: item.goodsId ,// 产品ID  
             goodsName: item.source.GoodsName,//产品名称
-            price: item.price,//零售价格
-            memberPrice: item.memberPrice,//产品特价
+            price:  parseFloat(item.price),//零售价格
+            memberPrice:  parseFloat(item.memberPrice).toFixed(2) ,//产品特价
             images: item.source.Images,//产品图片
             num: item.num,//购买数量
-            amount: item.amount,//折后金额
+            amount: parseFloat( item.amount).toFixed(2) ,//折后金额
             isMem: that.chooseMember.Id ==undefined ? 0 :1 ,
-            isCustomPrice :item.isCustomPrice ,// 是否修改价格
-            staffs: item.staffs==null?[]: item.staffs
+            isCustomPrice :  parseFloat(item.isCustomPrice).toFixed(2) ,// 是否修改价格
+            staffs: item.staffs==null?[]: item.staffs,
+            goodsMode : item.goodsMode
         };
 
         return goodsStaffsData
@@ -569,6 +583,7 @@ class payCompose {
     setConponData(result) {
         //写优惠券结构
     }
+
 
     //优惠券是否可以使用（店铺和会员接口已经过滤）->判断可用时间、生日优惠策略、全局配置
     //1-生日优先、2-系统活动优先、3-系统活动上叠加
@@ -614,28 +629,29 @@ class payCompose {
         }
     }
 
+
     //所有优惠执行完成 ->result , 
     //完整流程 process() -> goPay() -> finish  ->  完成结算(调取支付) ，优惠券处理调用接口计算
     finish() {
         let that = this
-        let res = new Promise(that.setpModify.bind(that))
+        return new Promise(that.setpModify.bind(that))
             .then(function (res) {
                 return new Promise(that.setpPay.bind(that));
-            }).then(function (res) {
-                that.finishCallback()
-                console.log("finish")
-            })
-
-        console.log('this.chooseBirthdayActivity', that.chooseBirthdayActivity)
-        console.log('this.chooseActivity', that.chooseActivity)
-
-        return that.result
+            }).then(
+                function (res) {
+                    return new Promise(
+                        (resolve, reject)=>{
+                            console.log("finish")
+                            that.finishCallback()
+                            return resolve()
+                     })  
+                }
+            )
     }
 
     //计算购物车及会员折扣+活动优惠
     process() {
-        let that = this
-        console.log("------------------process in----------------------")
+        let that = this    
         //01.result 重构
         this.result = {
             modificationInfo: {},          //手动改价详细记录 { 百分比 / 金额 /修改前金额 / 修改后金额 } 
@@ -654,15 +670,15 @@ class payCompose {
         }
 
         //02.重计算
-        let res = new Promise(that.setpMember.bind(that)).then(function (res) {
+        return new Promise(that.setpMember.bind(that)).then(function (res) {
             return new Promise(that.setpActivity.bind(that))
         }).then(function (res) {
-            //回调
-            that.processCallback()
-            //重新渲染部份页面-> 后期优化实现隔离  
-            console.log("process => ", that.result)
-            console.log("------------------process out----------------------")
-        })
+            return new Promise(
+                (resolve, reject)=>{
+                    that.processCallback()
+                    return resolve()
+             })  
+        })     
     }
 
     //添加购物车
@@ -693,14 +709,7 @@ class payCompose {
                 source: goods,
             })
         }
-        else {
-            //库存检测
-            // if(item.goodsMode==1){
-            //     if(  item.num == item.source.StockNum){                  
-            //         return false;
-            //     }
-            // }
-            // item.num++
+        else {  
             //商品库存
             if (item.goodsMode == 4) {
                 if (parseInt(num) > item.source.StockNum) {
@@ -775,12 +784,15 @@ class payCompose {
         }
     }
 
-
     //手动改价
     changePrice(uuid, customPrice) {
         let that = this
         customPrice = parseFloat( customPrice ).toFixed(2)
         let item = Enumerable.From(this.shoppingCar).Where(x => x.uuid == uuid).FirstOrDefault();
+        if(item.goodsMode ==4){
+            return false
+        }
+
         if (item.price == customPrice) {
             return false
         }
@@ -793,26 +805,22 @@ class payCompose {
         return true
     }
     //修改提成员工
-    changeGoodsStaff(uuid, chooseStaff) {
-        console.log('chooseStaff',chooseStaff)
+    changeGoodsStaff(uuid, chooseStaff) {    
         let that = this          
         let item = Enumerable.From(this.shoppingCar).Where(x => x.uuid == uuid).FirstOrDefault();
         if(item!=undefined)
-        {
-            console.log('item',item,uuid)
+        {          
             item.staffs =chooseStaff
-              that.process()
+            that.process()
             return true
         }
         return false
     }
 
     //整单提成
-    changeOrderStaff(chooseStaff)
-    {
+    changeOrderStaff(chooseStaff){
         return false
     }
-
 
     //重新选择会员 清空参数带 {}
     changeMember(member,billCode) {
@@ -820,20 +828,19 @@ class payCompose {
         //重选会员后、折扣券清空、生日清空、手动改价清空
         let that =this
         //会员未变
-        if(member.Id == that.chooseMember.Id){return false}
+        if(member.Id != undefined){
+            if(member.Id == that.chooseMember.Id){return false}
+        }
        
         if(that.init()){
             that.billCode = billCode
-            that.chooseMember = member 
-
+            that.chooseMember = member         
             if(that.shoppingCar.length >0){
                 that.process()
             }
         }
         return true
     }
-
-    
 
     //setp->01 会员价格计算
     setpMember(resolve, reject) {
@@ -974,7 +981,7 @@ class payCompose {
         that.result.amountMoney = that.moneyPrecision(amountMoney)      // amountMoney.toFixed(4)
 
         console.log('会员计算结果 ==>', that.result)
-        resolve("setpMember");
+       return resolve("setpMember");
     }
 
     //setp->02 活动优惠计算 
@@ -1021,19 +1028,7 @@ class payCompose {
             }
         }
         console.log('活动计算结果 ==>', that.result)
-        resolve("setpActivity");
-    }
-
-
-    // 抹零开关
-    settingZeroAmount() {
-        let that = this
-        that.result.isZeroAmount = (that.result.isZeroAmount == 1) ? 0 : 1
-
-        //清除所有支付项的金额
-        that.clearPayItemAmunt()
-        that.finish()
-        return true
+        return resolve("setpActivity");
     }
 
     //setp->03 优惠卷计算
@@ -1042,7 +1037,7 @@ class payCompose {
         let that = this
         //请求接口计算
         console.log('优惠卷算结果 ==>', that.result)
-        resolve("setpConpon");
+        return resolve("setpConpon");
     }
 
     //setp->04 支付方式计算 (抹零处理)
@@ -1068,8 +1063,8 @@ class payCompose {
 
         console.log('that.payItem=>', that.payItem)
         console.log('支付方式 ==>', that.result)
-        resolve("setpPay");
-        //计算支付方式     
+        return resolve("setpPay");
+        //计算支付方式
     }
 
     //setp->05  计算活动优惠和整单优惠分摊 （已合并其他方法内部的计算，方法名暂时不修改）
@@ -1122,7 +1117,7 @@ class payCompose {
         }
 
         console.log('整单优惠 ==>', that.result)
-        resolve("setpConpon");
+        return resolve("setpConpon");
     }
 
     //设置整单优惠
@@ -1172,8 +1167,6 @@ class payCompose {
         that.pageChooseConpon = []
     }
 
-
-   
     //待付金额
     paidMoney() {
         let that = this
@@ -1181,35 +1174,6 @@ class payCompose {
         return amount
     }
     
-    //设置result优惠券
-    settingCoupon(resultData) {
-        let that =this 
-        $.each(resultData.Details, function (index, item) {
-            let goodsItem = Enumerable.From(that.result.goods).Where(x => x.uuid == resultData.Details.GID).FirstOrDefault();
-            if(goodsItem == undefined){
-                that.pageChooseConpon =[]
-                console.log('返回数据不一致',item)
-                return false
-            }
-            else{
-                goodsItem.conponMoney = item.CouponAmount
-            }
-        })
-
-        that.result.conpon =[]
-        $.each(resultData.Conpons, function (index, item) {            
-             that.result.conpon.push({
-                ConponSendId: item.ConponSendId,    //优惠券发送记录ID",
-                ConponCode: item.ConponCode,        //"优惠券券号",
-                CouponAmount: item.CouponAmount     //优惠金额
-            })
-        })
-
-       that.result.amountCouponMoney =  resultData.CouponAmount //优惠券优惠金额
-
-       return true
-    }
-
     //判断支付价格是否可以提交
     validPayMoney() {
         let that = this
@@ -1230,16 +1194,172 @@ class payCompose {
         return sub
     }
 
-    
+    //清除选中活动
+    clearActivity()
+    {
+        let that =this     
+        that.chooseBirthdayActivity = {}    //生日优惠
+        that.chooseActivity = {}       //活动方案
+        that.process()
+    }
 
-    //前往结算
-    goPay(callback) {
-        let that = this
+    clearChargeInfo(){
+        let that =this     
+           //初始化
+        that.chargeInfo  ={ 
+            amount:0.00,
+            point:0.00,
+            discountAmount:0.00,     
+        }
+    }
+
+    ////////////////////////////////////////////////快速收银////////////////////////////////////////////////
+    //快速收银活动选择 selectActivity相同 ,不刷新 process()  
+    selectChargeActivity(activity){
+        let that = this 
+        let currentPrice  = that.chargeInfo.discountAmount
+
+        activity = JSON.parse(activity)
+        if (activity.ValidType == 4 && that.chooseBirthdayActivity.Id == activity.Id) {
+            that.chooseBirthdayActivity = {}      
+            return true
+        }
+        else if (that.chooseActivity.Id == activity.Id) {
+            that.chooseActivity = {}            
+            return true
+        }
+
+        let birthdayActivityRule = this.config.BirthdayActivityRule
+        if (activity.LimitUsedAmount > currentPrice) {
+            console.log("未达到优惠额度")
+            return false
+        }
+
+        if (activity.ValidType == 4) {
+            if (member.IsBirthday == 0) {
+                return false
+            }
+            else {
+                if (birthdayActivityRule != 3) { that.chooseActivity = {} }   //全局
+                that.chooseBirthdayActivity = activity              
+                return true
+            }
+        }
+        else {
+            if (birthdayActivityRule != 3) { that.chooseBirthdayActivity = {} } //全局
+            that.chooseActivity = activity        
+            return true
+        }
+       
+    }
+
+    //快速收银价格变化
+    settingChargeMoney(money){
+        let that = this       
+        let price = parseFloat(money).toFixed(2)
+        if(price<=0) { return false }
+     
+          //初始化
+         let chargeInfo ={ 
+            amount:0.00,
+            point:0.00,
+            discountAmount:0.00,     
+        }
+
+        //计算会员价格
+        if(that.chooseMember.Id == undefined){
+            chargeInfo.amount = parseFloat(money).toFixed(2)
+            chargeInfo.point  = 0.00
+            chargeInfo.discountAmount  =  parseFloat(money).toFixed(2)
+        }
+        else{
+            let discountAmount = (that.chooseMember.DiscountPercent * price).toFixed(2)
+            let point = (that.chooseMember.PointPercent * price ).toFixed(4)
+
+            chargeInfo ={
+                amount:price,
+                point:point,
+                discountAmount:discountAmount
+            }
+        }
+        that.chargeInfo = chargeInfo
+
+        // //判断价格 清除选中活动     
+        if(that.chooseBirthdayActivity.Id !=undefined &&  that.chooseBirthdayActivity.ReduceAmount < that.chargeInfo.discountAmount){
+            that.chooseBirthdayActivity={}
+        }      
+        if(that.chooseActivity.Id !=undefined &&  that.chooseActivity.ReduceAmount<that.chargeInfo.discountAmount){
+            that.chooseActivity={}
+        }
+
+        return true  
+    }    
+    //挑起快速消费
+    goChargePay(callback){   
+        let that =this 
+        
+        if( that.chargeInfo.amount <= 0){
+            return false
+        }
+        that.result.mode = 1  //快速消费
+
+         //优惠券计算        
+        that.result.amountActivityMoney = 0.00 //活动减金额
+        that.result.amountActivityPoint = 0.0000 //活动获得积分
+  
+        let currentPrice = parseFloat( that.chargeInfo.discountAmount).toFixed(2)
+  
+          if (that.chooseActivity.Id != undefined) {
+              if (that.chooseActivity.LimitUsedAmount <= currentPrice) {
+                  if (that.chooseActivity.IsReduceAmount == 1) {
+                      //that.w_calc(that.chooseActivity.ReduceAmount  , currentPrice )
+                      that.result.amountActivityMoney = math.chain(that.result.amountActivityMoney).add(that.chooseActivity.ReduceAmount).done() // that.chooseActivity.ReduceAmount
+                  }
+                  if (that.chooseActivity.IsGivePoint == 1) {
+                      that.result.amountActivityPoint = math.chain(that.result.amountActivityPoint).add(hat.chooseActivity.GivePoint).done() //that.chooseActivity.GivePoint
+                  }
+              }
+              else {
+                  that.chooseActivity = {}
+                  console.log("活动不满足金额->清空")
+              }
+          }
+  
+          if (that.chooseBirthdayActivity.Id != undefined) {
+              if (that.chooseBirthdayActivity.LimitUsedAmount <= currentPrice) {
+                  if (that.chooseBirthdayActivity.IsReduceAmount == 1) {
+                      //that.w_calc(that.chooseBirthdayActivity.ReduceAmount  , currentPrice )
+                      //that.result.amountActivityMoney += that.chooseBirthdayActivity.ReduceAmount
+                      that.result.amountActivityMoney = math.chain(that.result.amountActivityMoney).add(that.chooseActivity.ReduceAmount).done() 
+                  }
+  
+                  if (that.chooseBirthdayActivity.IsGivePoint == 1) {
+                     // that.result.amountActivityPoint += that.chooseBirthdayActivity.GivePoint
+                      that.result.amountActivityPoint = math.chain(that.result.amountActivityPoint).add(hat.chooseActivity.GivePoint).done()
+                  }
+              }
+              else {
+                  that.chooseBirthdayActivity = {}
+                  console.log("活动不满足金额(生日)");
+              }
+          }
+
+
+        //result构造
+
+        that.result.amountDiscountMoney = parseFloat( that.chargeInfo.discountAmount).toFixed(2) //会员折扣总金额 
+        that.result.goodsNum = 0
+        that.result.amountPoint = parseFloat( that.chargeInfo.point).toFixed(4) //获得积分
+        that.result.amountMoney= parseFloat( that.chargeInfo.amount).toFixed(2) //商品总价    
+
+        // amountActivityMoney: 0.00,	    //活动减金额
+        // amountActivityPoint: 0.0000,	//活动获得积分
+   
         //整单优惠
         that.result.modificationInfo = {}
         that.result.amountModifyMoney = 0.00
         //当前支付总金额  
-        that.result.allPayMoney = 0.00
+        that.result.allPayMoney = 0.00  
         //现金找零金额
         //this.result.smallChangePrice =0.00
         //抹零金额   
@@ -1249,6 +1369,7 @@ class payCompose {
         that.payItem = []
         that.curPayItem = ''
         //优惠券
+        that.result.amountCouponMoney = 0.00
         that.result.conpon = []
         that.pageChooseConpon = []
 
@@ -1264,17 +1385,89 @@ class payCompose {
         if (typeof callback === "function") {
             callback()
         }
+
+        console.log("result",that.result)
         return false
+     
     }
 
+    //快速消费请求数据
+    postChargeData(pwd)
+    {
+        let that = this 
+        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
+        let postData ={}
+        postData.Order = {
+            ActivityAmount: that.result.amountActivityMoney,   
+            CouponAmount: that.result.amountCouponMoney,    
+            ZeroAmount: that.result.zeroAmount, 
+            SingleAmount: that.result.amountModifyMoney,   
+            Source: 1,
+            BillCode: '',
+            OrderType: 1, //订单类型 1 - 快速消费、 4 - 固定消费,
+            MemID: mid,
+            TotalMoney: that.chargeInfo.amount,
+            DiscountMoney: that.chargeInfo.discountAmount,
+            TotalPoint: math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() ,  
+            Remark: ""
+        }
+   
+        postData.Payments = []   // {"PaymentCode":"支付方式编码","PayAmount":支付金额,"PayContent":"积分支付扣除数量或者在线支付流水号"}      
+        $.each(that.payItem, function (index, item) {
+            if(parseFloat(item.amount)>0){
+                if (item.code == '001') {                
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: m,
+                        PayContent: ''
+                    })
+                }
+                else {
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: item.amount,
+                        PayContent: ''
+                    })
+                }
+            }          
+        })
+        postData.Staffs = that.result.staffs// []         //{"StaffId":"员工ID","CommissionMoney":自定义提成金额,"Remark":"提成备注"}
+        
+        postData.Activities = []     //{"ActId":"优惠活动ID","ActName":"活动名称","ActivityAmount":优惠金额}       
+        if (that.chooseBirthdayActivity.Id != undefined) {
+            postData.Activities.push({
+                ActId: that.chooseBirthdayActivity.Id,
+                ActivityAmount: that.chooseBirthdayActivity.ReduceAmount,
+                ActName: that.chooseBirthdayActivity.ActName
+            })
+        }
+        if (that.chooseActivity.Id != undefined) {
+            postData.Activities.push({
+                ActId: that.chooseActivity.Id,
+                ActivityAmount: that.chooseActivity.ReduceAmount,
+                ActName: that.chooseActivity.ActName
+            })
+        }
+        postData.Conpons = that.result.conpon
+        postData.MemberPwd = pwd
+        postData.ReservationOrderID = ''
+
+        console.log('快读消费数据', JSON.stringify(postData)) 
+        return postData
+    }   
+    ////////////////////////////////////////////////快速收银////////////////////////////////////////////////
+    ////////////////////////////////////////////////场馆收银////////////////////////////////////////////////
     //初始化场馆数据，前往结算
     goPayVenue(result,data,callback)
     {
-        let that =this 
+        let that =this   
         that.result = result
         that.chooseMember = data.member; //会员信息
         that.chooseBirthdayActivity = data.chooseBirthdayActivity; //生日优惠
         that.chooseActivity = data.chooseActivity; //活动方案
+
+        that.result.mode = 9  //桌台消费
 
         //整单优惠
         that.result.modificationInfo = {}
@@ -1290,6 +1483,7 @@ class payCompose {
         that.payItem = []
         that.curPayItem = ''
         //优惠券
+        that.result.amountCouponMoney = 0.00
         that.result.conpon = []
         that.pageChooseConpon = []
 
@@ -1306,52 +1500,6 @@ class payCompose {
             callback()
         }
         return false       
-    }
-    
-    //初始化挂单数据
-    settingRestingReslut(res){             
-        console.log(res)
-        let that =this      
-        if(res.MemberInfo == undefined ){ return false }
-
-        if(res.Details.length >0){                     
-            // that.billCode = res.BillCode      
-            // that.chooseMember = res.MemberInfo
-            that.shoppingCar = []
-      
-            $.each(res.Details,function(index,item){           
-                // let price = goods.Price //其他类型可能不是Price
-                let uuid = that.dateFormat("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
-                let goods ={
-                    uuid: uuid,
-                    isCustomPrice: item.IsModify,
-                    customPrice: item.DiscountPrice,
-                    price: item.UnitPrice,
-                    goodsId: item.GoodsID,
-                    goodsMode: item.GoodsType,//mode,	        //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐
-                    num: item.Number,
-                    goodsPoint: 0.000,         //商品优惠积分（总）
-                    amount: 0.00,              //商品总价
-                    discount: 1,        		//会员折扣率
-                    discountMoney: 0.00, 		//会员折扣 （总）
-                    discountSchemes: '',
-                    activityMoney: 0.00,        //活动优惠金额（总）
-                    activityPoint: 0.00,        //活动获取积分（总）
-                    conponMoney: 0.00,          //优惠券优惠金额（总）
-                    conponDiscount: 0.00,       //优惠券折扣
-                    modifyMoney: 0.00,          //整单优惠修改分摊金额（总）+抹零+活动
-                    staffs: [],
-                    source: {},
-                }
-                goods.source = item
-                goods.source.PointType = item.PointPercent              
-                that.shoppingCar.push(goods)
-            })        
-
-            //that.process()  
-            return true
-        }
-        return false
     }
 
     //场馆数据格式
@@ -1430,7 +1578,7 @@ class payCompose {
         $.each(that.result.goods, function (index, item) {
             postData.Details.push({
                 IsModify :item.isCustomPrice,
-               // GID :item.uuid,
+                // GID :item.uuid,
                 DiscountAmount: item.modifyMoney,
                 CouponAmount: item.conponMoney,
                 Staffs: item.staffs,
@@ -1455,74 +1603,147 @@ class payCompose {
         return postData
     }
 
-    //提交优惠券
-    postCouponData() {
-        // {"Order":{"ActivityAmount":优惠活动优惠金额,"CouponAmount":优惠券优惠金额,"ZeroAmount":抹零金额,"SingleAmount":整单优惠金额,"Source":消费来源：0-PC、1-前台收银、2-收银机、3-APP 4 公众号 5 小程序,"BillCode":"订单号","OrderType":订单类型 2、商品消费 5、快速扣次,"MemID":"会员ID","TotalMoney":订单总金额,"DiscountMoney":折后总金额,"TotalPoint":获得积分,"Remark":"消费备注"}, 
-        // "Conpons":[{"ConponSendId":"优惠券发送记录ID","ConponCode":"优惠券券号","CouponAmount":优惠金额}],
-        // "Details":[{"DiscountAmount":优惠活动、整单优惠、抹零优惠之和,"CouponAmount":优惠券优惠,"Staffs":提成员工,"BatchCode":计次批次好,"GoodsID":商品ID,"GoodsType":商品类型,"GoodsCode":商品编号,"GoodsName":商品名称,"DiscountPrice":折扣价,"Number":数量,"TotalMoney":总金额}] }
-        let that =this 
-        let billCode = ''
-        let orderType = 2 //2、商品消费 5、快速扣次,
-
-        let coupon = that.pageChooseConpon
-        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
-        if (mid == '') {
-            return {}
+    ////////////////////////////////////////////////场馆收银////////////////////////////////////////////////
+    ////////////////////////////////////////////////充值冲次////////////////////////////////////////////////
+     //充值冲次提交数据
+    postRechargeCountData(shopid){
+        let that = this
+        if(that.chooseMember.Id == undefined){
+            return false
         }
-    
+
+        let orderType =12 //订单类型 2、 商品消费 5、 快速扣次,
+        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
+
         let postData = {}
+
         postData.Order = {
-            ActivityAmount: that.result.amountActivityMoney,       //优惠活动优惠金额,
-            CouponAmount: that.result.amountCouponMoney,          //优惠券优惠金额,
-            ZeroAmount: that.result.zeroAmount,                //抹零金额,
-            SingleAmount: that.result.amountModifyMoney,         //整单优惠金额,
-            Source: 1,
-            BillCode: billCode,
-            OrderType: orderType,
-            MemID: mid,
-            TotalMoney: that.result.amountMoney,               //订单总金额,
-            DiscountMoney: that.result.amountDiscountMoney,       //折后总金额,
-            TotalPoint:   math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() ,                  //获得积分,
-            Remark: that.remark
-        },
-
-        //coupon网页上的源数据
-        postData.Conpons = []
-        $.each(coupon, function (index, item) {
-            postData.Conpons.push({
-                ConponSendId: item.Id,                //优惠券发送记录ID",
-                ConponCode: item.ConponCode,        //"优惠券券号",
-                CouponAmount: item.Quota              //优惠金额
-            })
-        })
-
+            MemID:          mid,
+            TotalNum:       0, //数量
+            TotalMoney:     that.result.amountMoney,       
+            DiscountMoney:  that.result.amountDiscountMoney,
+            TotalPoint:     math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() ,  
+            Remark:         that.remark,
+            Source:         1,
+            ShopID:         shopid,
+            ActivityAmount: that.result.amountActivityMoney,  
+            CouponAmount:   that.result.amountCouponMoney,
+            ZeroAmount:     that.result.amountModifyMoney,    
+            SingleAmount:   that.result.amountModifyMoney, 
+        }
         postData.Details = []
-        $.each(that.result.goods, function (index, item) {
-            postData.Details.push({
-                IsModify :item.isCustomPrice,
-                GID :item.uuid,
-                DiscountAmount: item.modifyMoney,
-                CouponAmount: item.conponMoney,
-                Staffs: item.staffs,
-                BatchCode: (item.source.BatchCode == undefined) ? '' : item.source.BatchCode,
+        $.each(that.result.goods,function(index,item){
+            let goods = {
+                IsCombo:  item.goodsMode ==5 ? 1 : 0,
                 GoodsID: item.goodsId,
-                GoodsType: item.goodsMode,
-                GoodsCode: item.source.GoodsCode,
-                GoodsName: item.source.GoodsName,
-                DiscountPrice: item.memberPrice,
-                Number: item.num,
-                TotalMoney: item.amount
-            })
+                TotalMoney: item.amount,
+                DiscountAmount: item.modifyMoney,
+                CouponAmount:item.conponMoney,
+                Staffs:item.staffs,
+                DiscountPrice :item.memberPrice,
+                Number :item.num,
+            }
         })
-        console.log('优惠劵数据', JSON.stringify(postData))
+
+        postData.Payments = {}
+        $.each(that.payItem, function (index, item) {
+            if(parseFloat(item.amount)>0){
+                if (item.code == '001') {                
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: m,
+                        PayContent: ''
+                    })
+                }
+                else {
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: item.amount,
+                        PayContent: ''
+                    })
+                }
+            }          
+        })
+   
+        postData.Conpons = that.result.conpon
+        postData.Staffs = that.result.staffs
+
+        postData.Activities = []   
+        if (that.chooseBirthdayActivity.Id != undefined) {
+            postData.Activities.push({
+                ActId: that.chooseBirthdayActivity.Id,
+                ActivityAmount: that.chooseBirthdayActivity.ReduceAmount,
+                ActName: that.chooseBirthdayActivity.ActName
+            })
+        }
+        if (that.chooseActivity.Id != undefined) {
+            postData.Activities.push({
+                ActId: that.chooseActivity.Id,
+                ActivityAmount: that.chooseActivity.ReduceAmount,
+                ActName: that.chooseActivity.ActName
+            })
+        }
+        
+        console.log('支付数据', JSON.stringify(postData)) 
         return postData
     }
 
+    //充值冲次
+    goPayRechargeCount(){
+        let that = this
+        that.result.mode = 12  //快速消费
+    }
+
+    ////////////////////////////////////////////////充值冲次////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////支付及提交格式//////////////////////////////////////////
+    //商品消费前往结算
+    goPay(callback) {
+        let that = this
+        that.process().then(
+            function(){                
+                that.result.mode = 2 //商品消费
+                //整单优惠
+                that.result.modificationInfo = {}
+                that.result.amountModifyMoney = 0.00
+                //当前支付总金额  
+                that.result.allPayMoney = 0.00
+                //现金找零金额
+                //this.result.smallChangePrice =0.00
+                //抹零金额   
+                that.result.isZeroAmount = 0
+                that.result.zeroAmount = 0.00
+                //支付方式
+                that.payItem = []
+                that.curPayItem = ''
+                //优惠券
+                that.result.amountCouponMoney = 0.00
+                that.result.conpon = []
+                that.pageChooseConpon = []
+
+                if (that.chooseMember.Id == undefined) {
+                    that.selectPay(that.config.SankeDefaultPayment)
+                    that.curPayItem = that.config.SankeDefaultPayment
+                }
+                else {
+                    that.selectPay(that.config.MemberDefaultPayment)
+                    that.curPayItem = that.config.MemberDefaultPayment
+                }
+
+                if (typeof callback === "function") {
+                    callback()
+                }
+                return false
+            }
+        )
+    }
+    
     //商品消费、计次消费、套餐消费、快速扣次  
-    postPayData(pwd,billCode) {
+    postPayData(pwd) {
         let that = this      
         let orderType = 2 //2、商品消费 5、快速扣次,
-
+        let billCode = that.billCode   
         //01.检测支付方式金额
         if (that.validPayMoney() < 0) {
             return false
@@ -1614,6 +1835,155 @@ class payCompose {
         return postData
     }
 
+    //设置result优惠券
+    settingCoupon(resultData) {
+        let that =this 
+        $.each(resultData.Details, function (index, item) {
+            let goodsItem = Enumerable.From(that.result.goods).Where(x => x.uuid == resultData.Details.GID).FirstOrDefault();
+            if(goodsItem == undefined){
+                that.pageChooseConpon =[]
+                console.log('返回数据不一致',item)
+                return false
+            }
+            else{
+                goodsItem.conponMoney = item.CouponAmount
+            }
+        })
+
+        that.result.conpon =[]
+        $.each(resultData.Conpons, function (index, item) {            
+                that.result.conpon.push({
+                ConponSendId: item.ConponSendId,    //优惠券发送记录ID",
+                ConponCode: item.ConponCode,        //"优惠券券号",
+                CouponAmount: item.CouponAmount     //优惠金额
+            })
+        })
+
+        that.result.amountCouponMoney =  resultData.CouponAmount //优惠券优惠金额
+
+        return true
+    }
+
+    //提交优惠券
+    postCouponData() {
+        // {"Order":{"ActivityAmount":优惠活动优惠金额,"CouponAmount":优惠券优惠金额,"ZeroAmount":抹零金额,"SingleAmount":整单优惠金额,"Source":消费来源：0-PC、1-前台收银、2-收银机、3-APP 4 公众号 5 小程序,"BillCode":"订单号","OrderType":订单类型 2、商品消费 5、快速扣次,"MemID":"会员ID","TotalMoney":订单总金额,"DiscountMoney":折后总金额,"TotalPoint":获得积分,"Remark":"消费备注"}, 
+        // "Conpons":[{"ConponSendId":"优惠券发送记录ID","ConponCode":"优惠券券号","CouponAmount":优惠金额}],
+        // "Details":[{"DiscountAmount":优惠活动、整单优惠、抹零优惠之和,"CouponAmount":优惠券优惠,"Staffs":提成员工,"BatchCode":计次批次好,"GoodsID":商品ID,"GoodsType":商品类型,"GoodsCode":商品编号,"GoodsName":商品名称,"DiscountPrice":折扣价,"Number":数量,"TotalMoney":总金额}] }
+        let that =this 
+        let billCode = ''
+        let orderType = 2 //2、商品消费 5、快速扣次,
+
+        let coupon = that.pageChooseConpon
+        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
+        if (mid == '') {
+            return {}
+        }
+    
+        let postData = {}
+        postData.Order = {
+            ActivityAmount: that.result.amountActivityMoney,       //优惠活动优惠金额,
+            CouponAmount: that.result.amountCouponMoney,          //优惠券优惠金额,
+            ZeroAmount: that.result.zeroAmount,                //抹零金额,
+            SingleAmount: that.result.amountModifyMoney,         //整单优惠金额,
+            Source: 1,
+            BillCode: billCode,
+            OrderType: orderType,
+            MemID: mid,
+            TotalMoney: that.result.amountMoney,               //订单总金额,
+            DiscountMoney: that.result.amountDiscountMoney,       //折后总金额,
+            TotalPoint:   math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() ,                  //获得积分,
+            Remark: that.remark
+        },
+
+        //coupon网页上的源数据
+        postData.Conpons = []
+        $.each(coupon, function (index, item) {
+            postData.Conpons.push({
+                ConponSendId: item.Id,                //优惠券发送记录ID",
+                ConponCode: item.ConponCode,        //"优惠券券号",
+                CouponAmount: item.Quota              //优惠金额
+            })
+        })
+
+        postData.Details = []
+        $.each(that.result.goods, function (index, item) {
+            postData.Details.push({
+                IsModify :item.isCustomPrice,
+                GID :item.uuid,
+                DiscountAmount: item.modifyMoney,
+                CouponAmount: item.conponMoney,
+                Staffs: item.staffs,
+                BatchCode: (item.source.BatchCode == undefined) ? '' : item.source.BatchCode,
+                GoodsID: item.goodsId,
+                GoodsType: item.goodsMode,
+                GoodsCode: item.source.GoodsCode,
+                GoodsName: item.source.GoodsName,
+                DiscountPrice: item.memberPrice,
+                Number: item.num,
+                TotalMoney: item.amount
+            })
+        })
+        console.log('优惠劵数据', JSON.stringify(postData))
+        return postData
+    }
+
+    //抹零开关
+    settingZeroAmount() {
+        let that = this
+        that.result.isZeroAmount = (that.result.isZeroAmount == 1) ? 0 : 1
+
+        //清除所有支付项的金额
+        that.clearPayItemAmunt()
+        that.finish()
+        return true
+    }
+
+    ////////////////////////////////////////////////挂单//////////////////////////////////////////
+    //初始化挂单数据
+    settingRestingReslut(res){             
+        console.log(res)
+        let that =this      
+        //if(res.MemberInfo == undefined ){ return false }
+
+        if(res.Details.length >0){                     
+            that.billCode = res.BillCode      
+            // that.chooseMember = res.MemberInfo
+            that.shoppingCar = []
+        
+            $.each(res.Details,function(index,item){           
+                // let price = goods.Price //其他类型可能不是Price
+                let uuid = that.dateFormat("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
+                let goods ={
+                    uuid: uuid,
+                    isCustomPrice: item.IsModify,
+                    customPrice: item.DiscountPrice,
+                    price: item.UnitPrice,
+                    goodsId: item.GoodsID,
+                    goodsMode: item.GoodsType,//mode,	        //类型 1.普通商品 2.服务商品 3.计时商品 4.计次商品 5.套餐
+                    num: item.Number,
+                    goodsPoint: 0.000,         //商品优惠积分（总）
+                    amount: 0.00,              //商品总价
+                    discount: 1,        		//会员折扣率
+                    discountMoney: 0.00, 		//会员折扣 （总）
+                    discountSchemes: '',
+                    activityMoney: 0.00,        //活动优惠金额（总）
+                    activityPoint: 0.00,        //活动获取积分（总）
+                    conponMoney: 0.00,          //优惠券优惠金额（总）
+                    conponDiscount: 0.00,       //优惠券折扣
+                    modifyMoney: 0.00,          //整单优惠修改分摊金额（总）+抹零+活动
+                    staffs: [],
+                    source: {},
+                }
+                goods.source = item
+                goods.source.PointType = item.PointPercent              
+                that.shoppingCar.push(goods)
+            })        
+
+            //that.process()  
+            return true
+        }
+        return false
+    }
     //商品消费挂单数据
     postRestingConsumeData(handCode, remark, billCode ){ 
         let that = this
@@ -1654,92 +2024,7 @@ class payCompose {
         console.log('挂单数据', JSON.stringify(postData)) 
         return postData
     }
-       
-    //充值冲次
-    postRechargeCountData(shopid){
-        let that = this
-        if(that.chooseMember.Id == undefined){
-            return false
-        }
-
-        let orderType =12 //订单类型 2、 商品消费 5、 快速扣次,
-        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
-
-        let postData = {}
-
-        postData.Order = {
-            MemID:          mid,
-            TotalNum:       0, //数量
-            TotalMoney:     that.result.amountMoney,       
-            DiscountMoney:  that.result.amountDiscountMoney,
-            TotalPoint:     math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() ,  
-            Remark:         that.remark,
-            Source:         1,
-            ShopID:         shopid,
-            ActivityAmount: that.result.amountActivityMoney,  
-            CouponAmount:   that.result.amountCouponMoney,
-            ZeroAmount:     that.result.amountModifyMoney,    
-            SingleAmount:   that.result.amountModifyMoney, 
-        }
-        postData.Details = []
-        $.each(that.result.goods,function(index,item){
-            let goods = {
-                IsCombo:  item.goodsMode ==5 ? 1 : 0,
-                GoodsID: item.goodsId,
-                TotalMoney: item.amount,
-                DiscountAmount: item.modifyMoney,
-                CouponAmount:item.conponMoney,
-                Staffs:item.staffs,
-                DiscountPrice :item.memberPrice,
-                Number :item.num,
-            }
-        })
-
-        postData.Payments = {}
-        $.each(that.payItem, function (index, item) {
-            if(parseFloat(item.amount)>0){
-                if (item.code == '001') {                
-                    let  m = (item.smallChangePrice == undefined) ? item.amount : math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
-                    postData.Payments.push({
-                        PaymentCode: item.code,
-                        PayAmount: m,
-                        PayContent: ''
-                    })
-                }
-                else {
-                    postData.Payments.push({
-                        PaymentCode: item.code,
-                        PayAmount: item.amount,
-                        PayContent: ''
-                    })
-                }
-            }          
-        })
-   
-        postData.Conpons = that.result.conpon
-        postData.Staffs = that.result.staffs
-
-        postData.Activities = []   
-        if (that.chooseBirthdayActivity.Id != undefined) {
-            postData.Activities.push({
-                ActId: that.chooseBirthdayActivity.Id,
-                ActivityAmount: that.chooseBirthdayActivity.ReduceAmount,
-                ActName: that.chooseBirthdayActivity.ActName
-            })
-        }
-        if (that.chooseActivity.Id != undefined) {
-            postData.Activities.push({
-                ActId: that.chooseActivity.Id,
-                ActivityAmount: that.chooseActivity.ReduceAmount,
-                ActName: that.chooseActivity.ActName
-            })
-        }
-        
-        console.log('支付数据', JSON.stringify(postData)) 
-        return postData
-    }  
-
-
+     
     ////////////////////////////计算功能函数////////////////////////////
     //日期格式化
     dateFormat(fmt, date) {
@@ -1768,8 +2053,6 @@ class payCompose {
     //全局积分保留处理方式
     pointPrecision(num) {
         let that =this
-        console.log(that.config.PointPrecision ,num)
-  
         switch (that.config.PointPrecision) {
             case 0: //保留2位
                 return num.toFixed(2)
@@ -1785,6 +2068,7 @@ class payCompose {
                 return num.toFixed(3)
         }
     }
+
     //全局金额
     moneyPrecision(num) {
         let that = this

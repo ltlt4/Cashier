@@ -1,5 +1,5 @@
 E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\bin\Luck.Vipsoft.Cashier.dll
 E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\bin\Luck.Vipsoft.Cashier.pdb
-E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\obj\Debug\Luck.Vipsoft.Cashier.csprojResolveAssemblyReference.cache
 E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\obj\Debug\Luck.Vipsoft.Cashier.dll
 E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\obj\Debug\Luck.Vipsoft.Cashier.pdb
+E:\explame\自主研发\纳客会员管理营销平台\Luck.Vipsoft.Cashier\obj\Debug\Luck.Vipsoft.Cashier.csprojResolveAssemblyReference.cache

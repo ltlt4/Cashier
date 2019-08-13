@@ -66,6 +66,7 @@
     <Content Include="Areas\Member\rechargeStroke\rechargeStroke.html" />
     <Content Include="Areas\Member\tableConsumption\tableConsumption.html" />
     <Content Include="Areas\Member\training\training.html" />
+    <Content Include="Areas\Model\Home\addMember.html" />
     <Content Include="Areas\Model\Home\searchMember.html" />
     <Content Include="Areas\Order\onlineOrder\onlineOrder.html" />
     <Content Include="Areas\Order\reservation\reservation.html" />
@@ -90,6 +91,7 @@
     <Content Include="js\Member\rechargeStroke\rechargeStroke.js" />
     <Content Include="js\Member\tableConsumption\tableConsumption.js" />
     <Content Include="js\Member\training\training.js" />
+    <Content Include="js\Model\Home\addMember.js" />
     <Content Include="js\Model\Home\searchMember.js" />
     <Content Include="js\Order\onlineOrder\onlineOrder.js" />
     <Content Include="js\Order\reservation\reservation.js" />

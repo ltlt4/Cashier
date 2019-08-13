@@ -53,7 +53,7 @@ body .card-num-form dd input.input {
 	float: left;
 }
 
-body .card-num-form dd a.card-num-up {
+body .card-num-form a.card-num-up {
 	background: url(../Theme/images/icon08.png) no-repeat left center;
 	height: 30px;
 	display: block;
@@ -4279,7 +4279,6 @@ body .small-keyboard-r {
 
 .change-list-right-down {
 	display: flex;
-	height: 30px;
 	line-height: 30px;
 	flex-wrap: wrap;
 }
@@ -4601,5 +4600,8 @@ body .small-keyboard-r {
     top:inherit;
 }
 
+.lomo-wcpsy2 .change-big{
+    visibility:hidden;
+}
 
 
