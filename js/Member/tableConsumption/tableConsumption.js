@@ -16,6 +16,7 @@
     var proboxWidth = $(".lomo-mian-right").width();
     var X = '', Y = Math.floor(proboxHeight / 226);
 
+    var staffMode = 2 //购物车提成员工类型
     function initPage() {
         venue.init();
     }
@@ -97,7 +98,7 @@
             //    CommissionMoney: 0.0,//自定义提成金额
             //    Remark: null//备注
             //}
-        ],
+        ],        		
         init: function () {
             var _this = this;
             _this.addMem();//添加会员
@@ -107,15 +108,46 @@
             _this.VenueRegionSlide();//场馆区域滑动
             _this.searchMemCard();//查询会员
             _this.editShopcarProduct();//编辑购物车产品
-            new Promise(_this.GetStaffClassList.bind(_this))//获取提成员工
-               .then(function (res) {
-                   return new Promise(_this.GetStaffList.bind(_this))
-               })
-               .then(function (res) {
-                   _this.chooseMembergetCommission()
-               });
+            //提成员工初始化
+            _this.initStaffList();	
+
             pay.init();//支付
         },
+        //初始化员工提成
+		initStaffList:function(){
+			let that = this
+		
+			//员工分类
+			let p1 = new Promise(function(resolve, reject){						
+				$.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
+					if (res.status == 1) {										
+						resolve(res.data)
+					}
+				});
+			})
+			p1.then(function(res){
+				that.StaffClassList = res;
+				//提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 1, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.QuickConsume = res.data;					
+					}
+				});
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.GoodsConsume  = res.data;					
+					}
+				});
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 3, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.RechargeCount = res.data;					
+					}
+				});			
+			})
+
+			venue.chooseMembergetCommission()
+			return true
+		},
         //点击事件
         initClick:function(){
             _this=this;
@@ -1526,41 +1558,39 @@
                 })
             })
         },
-        //获取员工分类
-        GetStaffClassList: function (resolve, reject) {
-            //员工分类
-            $.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
-                if (res.status == 1) {
-                    _this.StaffClassList = res.data;
-                    resolve();
-                }
-            });
-        },
-        //获取提成员工
-        GetStaffList: function (resolve, reject) {
-            //提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
-            $.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
-                if (res.status == 1) {
-                    _this.StaffList = res.data;
-                    resolve();
-                }
-            });
-        },
-        //提成员工
-        chooseMembergetCommission: function () {
-            var _this = this;
-            //var choosedStaffAry=[];
-            var chooseStaff = []
-            var html = '';
-            //员工树形列表
-            if (_this.StaffClassList.length > 0) {
+      
+
+
+        //选中员工树形列表根据收银类型初始化员工
+		StaffTree:function(mode){
+			var _this = this;
+			var html = '';
+			let staffList = []
+
+			switch(mode)
+			{
+				case 1:
+					staffList = _this.StaffList.QuickConsume
+				break;
+				case 2:
+					staffList = _this.StaffList.GoodsConsume
+				break;
+				case 3:
+					staffList = _this.StaffList.RechargeCount
+				break;
+				default:
+					staffList = _this.StaffList.GoodsConsume
+				break;
+			}
+
+			if (_this.StaffClassList.length > 0) {
                 $.each(_this.StaffClassList, function (index, item) {
                     html += '<div class="layui-collapse">'
                     html += '<div class="layui-colla-item">'
                     html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
                     html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
-                    if (_this.StaffList.length > 0) {
-                        $.each(_this.StaffList, function (n, items) {
+                    if (staffList.length > 0) {
+                        $.each(staffList, function (n, items) {
                             if (items.StaffClassId == item.Id) {
                                 html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
                             }
@@ -1572,6 +1602,15 @@
                 })
             }
             $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
+		},
+        //提成员工
+        chooseMembergetCommission: function () {
+
+            var _this = this;
+            //var choosedStaffAry=[];
+            var chooseStaff = []
+            var html = '';
+         
             //已选择员工列表
             tab_staff = table.render({
                 elem: '#StaffList',
@@ -1623,7 +1662,20 @@
                     }
                 })
             });
-            $("body").on("click", ".choose-order-member", function () {				
+            $("body").on("click", ".choose-order-member", function () {	
+                let mode = oPayCompose.result.mode
+				if(mode ==1){
+					//快速消费1
+					_this.StaffTree(1)
+				}				
+				else if(mode ==11 || mode == 12){
+					//充值11冲次12
+					_this.StaffTree(3)
+				}
+				else{
+					//商品消费
+					_this.StaffTree(2)
+				}			
                 layer.open({
                     type: 1,
                     id: "searchMemCard",
@@ -1669,6 +1721,7 @@
 			});
 
             $("body").on("click", ".choose-member", function () {
+                _this.StaffTree(staffMode)
                 layer.open({
                     type: 1,
                     id: "searchMemCard",

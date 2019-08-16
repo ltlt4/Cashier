@@ -2606,7 +2606,8 @@ body .small-keyboard-r {
 
 .cashier-num-b input {
 	text-align: right;
-    line-height:38px;
+	line-height:38px;
+	width:160px;
 }
 
 .cashier-keyboard {

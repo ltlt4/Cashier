@@ -8,6 +8,7 @@ LuckVipsoft.api = {
     login: '/api/GeneralInterface/Login',//登录
     CheckValidationCode: "/api/GeneralInterface/CheckValidationCode",//验证短信码
     GetAuthorizeByCompCode: '/api/GeneralInterface/GetAuthorizeByCompCode',//根据企业号获取授权
+    GetCashierSetting: '/api/GeneralInterface/GetCashierSetting',//获取副屏设置
 
     /*初始化*/
     getShopList: '/api/GeneralInterface/GetShopList',//获取店铺信息(用于绑定)
@@ -94,7 +95,7 @@ LuckVipsoft.api = {
     MemPointAdjust: '/api/GeneralInterface/MemPointAdjust',//会员积分调整
     MemLockSet: '/api/GeneralInterface/MemLockSet',//会员绑定/解锁
     GetMemDataByID: '/api/GeneralInterface/GetMemDataByID',// 获取会员详情
-    RechargeCount: '/api/GeneralInterface/RechargeCount',//  会员充次
+    
     GetGoodsClassList: '/api/GeneralInterface/GetGoodsClassList', //获取产品分类信息
     SaveMasterData: '/api/GeneralInterface/SaveMasterData',//保存操作员信息
     GetServiceGoodsPage: '/api/GeneralInterface/GetServiceGoodsPage', //获取服务产品分页数据
@@ -140,11 +141,12 @@ LuckVipsoft.api = {
     RefundPay: '/api/GeneralInterface/Refund',//退款
 
     //商品消费、计次消费、套餐消费
-    GoodsConsume: '/api/GeneralInterface/GoodsConsume',
+    GoodsConsume: '/api/GeneralInterface/GoodsConsume',     
     RestingConsume: '/api/GeneralInterface/RestingConsume',//商品消费挂单
     GetRestingOrderList: '/api/GeneralInterface/GetRestingOrderList',//挂单列表
     GetRestingOrderData: '/api/GeneralInterface/GetRestingOrderData',//取单
     QuickConsume: '/api/GeneralInterface/QuickConsume', //快速消费
+    RechargeCount: '/api/GeneralInterface/RechargeCount',//  会员充次 
 }
 LuckVipsoft.lan = {
     ER0000: '系统登录失败',

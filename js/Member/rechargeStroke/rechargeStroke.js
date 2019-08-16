@@ -1,5 +1,5 @@
-
-var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
+var pageMethod ={}
+layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 	var layer = layui.layer, element = layui.element, $ = layui.$, form = layui.form, table = layui.table;
     var user = {
         token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
@@ -8,99 +8,52 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
         staffInf: $.session.get("staffInf") ? $.session.get("staffInf") : null,
     	sysArgument: $.session.get("sysArgument") ? $.session.get("sysArgument") : null,
 	}
+
 	
 	var sysArgument = $.session.get('Cashier_User').SysArguments
-	var oPayCompose = new payCompose(sysArgument)
+	var oShoppingCompose = new shoppingCompose(sysArgument)
 
 	//计算完成后回调，页面执行渲染
-	oPayCompose.processCallback = function () {
+	oShoppingCompose.processCallback = function () {
 		//活动勾选状态
 		$('.act_item').removeClass('checked')
 		let actHtml = ''
-		if (oPayCompose.chooseBirthdayActivity.Id != undefined) {
-			actHtml += '<i class="shopAct">' + oPayCompose.chooseBirthdayActivity.ActName + '</i>'
-			$('.act_' + oPayCompose.chooseBirthdayActivity.Id).addClass('checked')
+		if (oShoppingCompose.chooseBirthdayActivity.Id != undefined) {
+			actHtml += '<i class="shopAct">' + oShoppingCompose.chooseBirthdayActivity.ActName + '</i>'
+			$('.act_' + oShoppingCompose.chooseBirthdayActivity.Id).addClass('checked')
 		}
 
-		if (oPayCompose.chooseActivity.Id != undefined) {
-			// console.log('result',result)
-			actHtml += '<i class="shopAct">' + oPayCompose.chooseActivity.ActName + '</i>'
-			$('.act_' + oPayCompose.chooseActivity.Id).addClass('checked')
+		if (oShoppingCompose.chooseActivity.Id != undefined) {		
+			actHtml += '<i class="shopAct">' + oShoppingCompose.chooseActivity.ActName + '</i>'
+			$('.act_' + oShoppingCompose.chooseActivity.Id).addClass('checked')
 		}
 
 		if (actHtml == '') {
 			if (hasShopAcivity) {
-				$(".order-select").html('请选择优惠活动')
+				$(".consumeActivity").html('请选择优惠活动')
 			}
 			else {
-				$(".order-select").html('暂无优惠活动')
+				$(".consumeActivity").html('暂无优惠活动')
 			}
 		}
 		else {
-			$(".order-select").html(actHtml)
+			$(".consumeActivity").html(actHtml)
 		}
 
 		//购物车
-		let pageGoodsSelector = 'goodsTmp'
-		let pageGoodsTempleteId = '.order-list'
-		//var data={ name:'yxtic', age:'0' };
-		let html = template(pageGoodsSelector, oPayCompose.result.goods);
-		$(pageGoodsTempleteId).html(html)
+		let html = template('goodsTmp', oShoppingCompose.result.goods);
+		$('.order-list').html(html)
 
 		//金额面板
-		let pageGoodsAmountTempleteId = 'goodsAmountTmp'
-		let pageGoodsAmountTmpSelector = '.order-Pay'
-
 		let dataResult = {
-			num: oPayCompose.result.goodsNum,
-			point: (oPayCompose.result.amountPoint - 0).toFixed(2),
-			cutPrice: (oPayCompose.result.amountDiscountMoney - 0).toFixed(2),
-			price: (oPayCompose.result.amountMoney - 0).toFixed(2),
-			activityPrice: (oPayCompose.result.amountActivityMoney).toFixed(2),
+			num: oShoppingCompose.result.goodsNum,
+			point: (oShoppingCompose.result.amountPoint - 0).toFixed(2),
+			cutPrice: (oShoppingCompose.result.amountDiscountMoney - 0).toFixed(2),
+			price: (oShoppingCompose.result.amountMoney - 0).toFixed(2),
+			activityPrice: (oShoppingCompose.result.amountActivityMoney).toFixed(2),
 		}
-
-		let html2 = template(pageGoodsAmountTempleteId, dataResult);
-		$(pageGoodsAmountTmpSelector).html(html2)
-	}
-	//支付相关参数计算完成函数回调
-	oPayCompose.finishCallback = function () {
-		console.log("支付相关参数计算完成函数回调")
-
-		console.log('oPayCompose.result', oPayCompose.result)
-
-		let amountDiscountMoney = parseFloat(oPayCompose.result.amountDiscountMoney)
-		let amountActivityMoney = parseFloat(oPayCompose.result.amountActivityMoney)
-		let amountModifyMoney = parseFloat(oPayCompose.result.amountModifyMoney)
-		let allPayMoney = parseFloat(oPayCompose.result.allPayMoney)
-		let zeroAmount = parseFloat(oPayCompose.result.zeroAmount)
-
-		
-
-		let paid = math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(zeroAmount).subtract(allPayMoney).done().toFixed(2)
-		//01.payInfoTmp 渲染
-		dataResult = {
-			isZero: oPayCompose.result.isZeroAmount,
-			isOpenZero: oPayCompose.config.IsAllowModifyOrderTotal,
-			amount: amountDiscountMoney.toFixed(2),	//应收
-			paid: paid >= 0 ? paid : 0.00,			//待收
-			discount: math.chain(amountActivityMoney).add(amountModifyMoney).add(zeroAmount).done().toFixed(2),				   //优惠
-			payItem: oPayCompose.payItem,				   //支付列表
-			curPayItem: oPayCompose.curPayItem				   //当前选中支付方式
-		}
-		let html = template('payInfoTmp', dataResult);
-		$('#cashier-num').html(html)
-
-		$('.pay_item').removeClass('border-red')
-
-		$.each(oPayCompose.payItem, function (index, item) {
-			$('#pay_item_' + item.code).addClass('border-red')
-		})
-
-		if (oPayCompose.curPayItem != 999) {
-			let oInput = $("#pay_input_" + oPayCompose.curPayItem)
-			let value = oInput.val()
-			oInput.val('').focus().val(value)
-		}
+		let html2 = template('goodsAmountTmp', dataResult);
+		$('.order-Pay').html(html2)
 	}
 
 
@@ -111,17 +64,18 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 	var keySwitch = true;    //小、全键盘
 	var overall = false; //需要esc关闭的界面是否打开
 	var hasShopAcivity = false;//是否有店铺活动
+	var hasTopUpAcivity = false;//是否有充值有礼活动
 	var maskCashier = ".lomo-mask-cashier";
 	var memId = '';//会员ID
 	var proboxHeight = $(".lomo-mian-right").height();
 	var proboxWidth = $(".lomo-mian-right").width();
 	var X = '', Y = Math.floor(proboxHeight / 226);
-	var BirthdayValidRule = 3;//1-生日优先、2-系统活动优先、3-系统活动上叠加
-	var totleMoney = 0;//当前消费总金额--折前
-	var shopActivityAry = [];//当前店铺优惠券活动
-	var shopMemberActAry = [];//会员所有店铺优惠
 	
-	window.pageMethod={
+	var staffMode = 1 //购物车提成员工类型
+
+	pageMethod={
+		StaffClassList: [],//员工分类
+		StaffList: [],//提成员工
 		pageIndex: 1,
 		pageSize: 10,
 		key: '',//商品条码
@@ -131,37 +85,99 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 		parent: [],//一级菜单
 		children: [],//二级菜单		
 		choosedStaffAry: [],//商品提成员工信息
-		resetPage:function(){
-			pageMethod.getGoodsListPageList()
-			pageMethod.removeChooseMember()
-			oPayCompose.clearShoppingCar()
+		//初始化员工提成
+		initStaffList:function(){
+			let that = this
+		
+			//员工分类
+			let p1 = new Promise(function(resolve, reject){						
+				$.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
+					if (res.status == 1) {										
+						resolve(res.data)
+					}
+				});
+			})
+			p1.then(function(res){
+				that.StaffClassList = res;
+				//提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 1, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.QuickConsume = res.data;					
+					}
+				});
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.GoodsConsume  = res.data;					
+					}
+				});
+				$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 3, StaffName: "" }, user.token, function (res) {
+					if (res.status == 1) {
+						that.StaffList.RechargeCount = res.data;					
+					}
+				});			
+			})
+
+			pageMethod.chooseMembergetCommission()
+			return true
 		},
 		//选会员
 		changeMember:function(member){		
 			if(member.Id!=undefined){
 				http.cashierEnd.RechargeSetMembers(member, user.information.ImageServerPath, '.lomo-mian-left .vipInfo')		
-				memId = member.Id;
-				oPayCompose.changeMember(member)
+				memId = member.Id;		
+				oShoppingCompose.changeMember(member)
 				pageMethod.getShopActivity()
 				$(".timescount").show();
 				$(".lomo-order").css({"top":"110px","margin-top":"11px"});			
 			}
 			else{
-				oPayCompose.changeMember({})
+				oShoppingCompose.changeMember({})
 			}
 		},
 		//清除页面会员信息
 		removeChooseMember: function (){
 			shopMemberActAry = [];
 			member = null;
-			http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');
-			//$(".check-box-list .birthday").remove();
+			http.cashierEnd.delMembers('.lomo-mian-left .vipInfo', 'member');		
 			$(".timescount").hide();
 			$(".lomo-order").css({ "top": "0", "margin-top": "0" });
-			oPayCompose.changeMember({},'')
+			oShoppingCompose.changeMember({},'')
 			memId = ''
 			pageMethod.getShopActivity()
-			//pageMethod.checkSystemActivity();//重新选择系统优惠活动
+		},
+		resetPage:function(){
+			//pageMethod.getGoodsListPageList()
+			pageMethod.GetRechargeCountGoodsListPage(0);
+			pageMethod.removeChooseMember()
+			oShoppingCompose.clearShoppingCar()
+		},
+		//快速收银活动变化
+		topUpActivity:function(){
+			//活动判断
+			$('.act_item').removeClass('checked')
+			let actHtml = ''
+			if (oPayCompose.chooseBirthdayActivity.Id != undefined) {
+				actHtml += '<i class="shopAct">' + oPayCompose.chooseBirthdayActivity.ActName + '</i>'
+				$('.act_' + oPayCompose.chooseBirthdayActivity.Id).addClass('checked')
+			}
+
+			if (oPayCompose.chooseActivity.Id != undefined) {			
+				actHtml += '<i class="shopAct">' + oPayCompose.chooseActivity.ActName + '</i>'
+				$('.act_' + oPayCompose.chooseActivity.Id).addClass('checked')
+			}
+			console.log('actHtml',actHtml ,oPayCompose.topUpInfo)
+
+			if (actHtml == '') {
+				if (hasTopUpAcivity) {
+					$(".topUpActivity").html('请选择优惠活动')
+				}
+				else {
+					$(".topUpActivity").html('暂无优惠活动')
+				}
+			}
+			else {
+				$(".topUpActivity").html(actHtml)
+			}
 		},
 		init:function () {
 			var _this=this;
@@ -180,11 +196,25 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 			//_this.chooseMembergetCommission();//提成员工
 
 			//获取提成员工
-			new Promise(_this.GetStaffClassList.bind(_this)).then(function (res) {
-				return new Promise(_this.GetStaffList.bind(_this))
-			}).then(function (res) {
-				_this.chooseMembergetCommission()
-			});
+			_this.initStaffList();	
+
+			$("#goPay").on('click', function () {
+				if (oShoppingCompose.result.goodsNum > 0) {
+					if(oShoppingCompose.chooseMember.Id ==undefined){
+						$.luck.error('请选择一个会员')
+						return false
+					}
+					console.log('oPayCompose.result',oShoppingCompose.result ,oShoppingCompose.chooseMember)					
+					//挑起父窗口支付页面		
+					oShoppingCompose.result.mode = 12 	//订单类型
+					oShoppingCompose.result.shopId = user.information.ShopID //店铺号
+					oShoppingCompose.result.staffMode = 3	//3->充值充次
+					window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result)
+				}
+				else {
+					$.luck.error('当前购物车没有商品')
+				}
+            });
 		},
 		//点击事件
 		initClick:function () {
@@ -254,68 +284,10 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 					$(".back-product").show();
 				}
 				_this.countProductNum();
-			})
-			//选择优惠活动
-			$("body").on("click", ".order-select", function () {
-				if (hasShopAcivity) {
-					$(this).parents(".order-page").find(".activity-list").toggle();
-				}
-				if (BirthdayValidRule == 3) {//可叠加
-					$("body").on("click", ".check-box-list li.other", function () {
-						var state = $(this).attr("class");
-						$(".check-box-list li.other").removeClass("checked");
-						if (state.indexOf("checked") >= 0) {
-							$(".order-select").find("i.shopAct").remove();
-							if ($(".order-select").html() == '') {
-								$(".order-select").html("请选择优惠活动")
-							}
-						} else {
-							$(this).addClass("checked");
-							if ($(".order-select").html().indexOf("请选择优惠活动") >= 0) {
-								$(".order-select").html("")
-							}
-							if ($(".order-select .shopAct").length > 0) {
-								$(".order-select .shopAct").html($(this).find('h3').text());
-							} else {
-								$(".order-select").append("<i class='shopAct'>" + $(this).find('h3').text() + "</i>");
-							}
-						}
-					})
-					$("body").on("click", ".check-box-list li.birthday", function () {
-						var state = $(this).attr("class");
-						$(".check-box-list li.birthday").removeClass("checked");
-						if (state.indexOf("checked") >= 0) {
-							$(".order-select").find("i.birthAct").remove();
-							if ($(".order-select").html() == '') {
-								$(".order-select").html("请选择优惠活动")
-							}
-						} else {
-							$(this).addClass("checked");
-							if ($(".order-select").html().indexOf("请选择优惠活动") >= 0) {
-								$(".order-select").html("")
-							}
-							if ($(".order-select .birthAct").length > 0) {
-								$(".order-select .birthAct").html($(this).find('h3').text());
-							} else {
-								$(".order-select").append("<i class='birthAct'>" + $(this).find('h3').text() + "</i>");
-							}
-						}
-					})
-				} else {//单选
-					$("body").on("click", ".check-box-list li", function () {
-						$(this).toggleClass("checked").siblings().removeClass("checked");
-						var state = $(this).attr("class");
-						if (state.indexOf("checked") >= 0) {
-							$(".order-select").html('<i>' + $(this).find('h3').text() + '</i>');
-						} else {
-							$(".order-select").html("请选择优惠活动");
-						}
-					})
-				}
-			})
+			})		
 			/*清除获取的会员*/
 			$("body").on("click", '.vip-delete img', function (e) {			
-				oPayCompose.clearShoppingCar()				
+				//oShoppingCompose.clearShoppingCar()				
 				pageMethod.removeChooseMember()
 			})
 			$('.shop-type-button').click(function(){
@@ -774,27 +746,65 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				    skin: "lomo-ordinary",
 				    content:$(".lomo-wcpsy2"),
 					success:function(){
-						
+						//清除活动
+						// oPayCompose.clearActivity()
+						// //清除结构
+						// oPayCompose.clearTopUpInfo()
+						// //获取充值有礼
+						// pageMethod.getTopUpActivity()
+						oShoppingCompose.clearActivity()	
+
+						$("#topUpGiftMoney").val('0.00') 
+						$("#topUpMoney").val('0.00') 	
+						$("#topUpPoint").val('0.00') 	
 					},
 					yes:function(){
-						layer.open({
-							type: 1,
-							id: "orderPay",
-							title: '收银结账',
-							closeBtn: 1,
-							shadeClose: false,
-							shade: 0.3,
-							maxmin: false,//禁用最大化，最小化按钮
-							resize: false,//禁用调整大小
-							area: ['90%', '80%'],
-							skin: "lomo-ordinary",
-							content: $(".lomo-cashier"),
-						})
+						let chargeMoney = $("#chargeMoney").val()
+						if(chargeMoney>0)
+						{
+							
+						}
+						oShoppingCompose.result.mode = 11
+						window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result,staffMode)
+						// chargeMoney = parseFloat(chargeMoney).toFixed(2)
+						// if (oPayCompose.chargeInfo.amount > 0) {
+						// 	 oPayCompose.goPayTopUp(function () {
+						// 		 pageMethod.goPayCallBack()
+						// 	 })
+						//  }
+						//  else {
+						// 	 $.luck.error('请填写消费金额')
+						//  }
 					},
-				})
-				
+					btn2:function(){						
+						$('.activity-list').hide()
+						oShoppingCompose.clearActivity()		
+					},
+					cancel:function(){					
+						$('.activity-list').hide()
+						oShoppingCompose.clearActivity()		
+					}
+				})				
 			})
-			
+			//充值金额
+			$("#topUpMoney").on('change', function () {	
+				let val = $(this).val()
+				console.log('val',val)				
+				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
+					$.luck.error('只能输入数字，小数点后只能保留两位');
+					$(this).val('');
+					return false
+				}			
+		
+				if(oPayCompose.settingTopUpMoney(val)){			
+				console.log('oPayCompose.topUpInfo',oPayCompose.topUpInfo)		
+					$("#topUpGiftMoney").val(oPayCompose.topUpInfo.giftamount) 
+					$("#topUpMoney").val(oPayCompose.topUpInfo.amount) 	
+					$("#topUpPoint").val(oPayCompose.topUpInfo.point) 
+					//渲染
+					pageMethod.topUpActivity()					
+				}
+			})
 		},
 		//获取店铺优惠活动 (有会员时会返回会员可用)
 		getShopActivity: function () {
@@ -808,49 +818,25 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				{
 					if (res.data.length > 0) {					
 						hasShopAcivity = true;
-						$(".order-select").html("请选择优惠活动").next().removeClass("gray")
+						$(".consumeActivity").html("请选择优惠活动").next().removeClass("gray")
 						let html = template("activityTmp", res.data);
-						$('.check-box-list').html(html)
-						$(".activity-list").hide();
+						$('.consumeActList').html(html)
+						$(".consumeActBox").hide();
 					
 						//选择优惠活动
-						$(".order-select").unbind().bind('click', function () {	
-							var curActlist = $(this).parents(".order-page").find(".activity-list");
-							curActlist.toggle()
-							console.log(curActlist)
-							//普通商品消费
-							if (hasShopAcivity) {
-								console.log('res.data',hasShopAcivity,res.data)			
-								$(".activity-list").toggle();
+						$(".consumeActivity").unbind().bind('click', function () {							
+							var curActlist = $(this).parents(".order-page").find(".consumeActBox");						
+							if (hasShopAcivity) {								
+								curActlist.toggle();
 							}
 						})
 
 						//选择项
-						$(".check-box-list li").unbind().bind('click', function () {					
+						$(".consumeActList li").unbind().bind('click', function () {					
 							var act = $(this).attr("data-obj");
-
-
-
-							//快速收银选项处理						
-							// if($(this).parent().attr("class").indexOf("rechargeCheckItem")>-1){ 
-							// 	console.log('rechargeCheckItem')
-							// 	if(oPayCompose.selectChargeActivity(act)){
-							// 		$(this).addClass("checked");					
-							// 		pageMethod.chargeActivity();
-							// 		$(this).parents(".activity-list").hide();
-							// 	}		
-							// 	else{
-							// 		$.luck.error("未达到活动规则")
-							// 	}					
-							// 	return false
-							// }
-
-							//商品消费
-							let result = oPayCompose.selectActivity(act)  // .chooseActivity(act)
-
-							console.log('result',result)
+							let result = oShoppingCompose.selectActivity(act)  // .chooseActivity(act)
 							if (result) {
-								$(this).parents(".activity-list").hide();
+								$(this).parents(".consumeActBox").hide();
 							}
 							else {
 								$.luck.error("未达到活动规则")
@@ -858,7 +844,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 						})
 					} else {
 						hasShopAcivity = false;
-						$(".order-select").html("暂无优惠活动")
+						$(".consumeActBox").html("暂无优惠活动")
 						$(".activity-list").hide();
 					}
 				}
@@ -869,59 +855,114 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 
 			})
 		},
+		//获取充值活动
+		getTopUpActivity:function()
+		{
+			// var _this = this;
+			// var param = {
+			// 	ActType: 2,	//1-消费返利、2-充值有礼
+			// 	MemID: memId,
+			// }
+			// $.http.post(LuckVipsoft.api.getActivityList, param, user.token, function (res) {
+			// 	if(res.status ==1)
+			// 	{
+			// 		if (res.data.length > 0) {					
+			// 			hasTopUpAcivity = true;
+			// 			$(".topUpActivity").html("请选择优惠活动").next().removeClass("gray")
+			// 			let html = template("activityTmp", res.data);
+			// 			$('.topUpActList').html(html)
+			// 			$(".topUpActBox").hide();
+					
+			// 			//选择优惠活动
+			// 			$(".topUpActivity").unbind().bind('click', function () {							
+			// 				var curActlist = $(this).parents(".order-page").find(".activity-list");						
+			// 				if (hasTopUpAcivity) {								
+			// 					curActlist.toggle();
+			// 				}
+			// 			})
+
+			// 			//选择项
+			// 			$(".topUpActList li").unbind().bind('click', function () {					
+			// 				var act = $(this).attr("data-obj");
+			// 				let result = oPayCompose.selectTopUpActivity(act)  // .chooseActivity(act)
+						
+			// 				if (result) {				
+			// 					//渲染							
+			// 					pageMethod.topUpActivity();
+			// 					$(this).parents(".topUpActBox").hide();
+			// 				}
+			// 				else {
+			// 					$.luck.error("未达到活动规则")
+			// 				}
+			// 			})
+			// 		} else {
+			// 			hasTopUpAcivity = false;
+			// 			$(".order-select").html("暂无优惠活动")
+			// 			$(".activity-list").hide();
+			// 		}
+			// 	}
+			// 	else{
+			// 		hasTopUpAcivity = false
+			// 		$.luck.error('优惠券获取异常')
+			// 	}
+			// })
+		},
 
 		//系统默认选中的优惠活动
-		checkSystemActivity: function () {
-			
+		checkSystemActivity: function () {			
 		},
+		//选中员工树形列表根据收银类型初始化员工
+		StaffTree:function(mode){
+			var _this = this;
+			var html = '';
+			let staffList = []
 
-		//获取员工分类
-		GetStaffClassList: function (resolve, reject) {
-			let that = this
-			//员工分类
-			$.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
-				if (res.status == 1) {
-					that.StaffClassList = res.data;
-					return resolve();
-				}
-			});
+			switch(mode)
+			{
+				case 1:
+					staffList = _this.StaffList.QuickConsume
+				break;
+				case 2:
+					staffList = _this.StaffList.GoodsConsume
+				break;
+				case 3:
+					staffList = _this.StaffList.RechargeCount
+				break;
+				default:
+					staffList = _this.StaffList.GoodsConsume
+				break;
+			}
+
+			console.log('staffList',staffList)
+
+			if (_this.StaffClassList.length > 0) {
+                $.each(_this.StaffClassList, function (index, item) {
+                    html += '<div class="layui-collapse">'
+                    html += '<div class="layui-colla-item">'
+                    html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
+                    html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
+                    if (staffList.length > 0) {
+                        $.each(staffList, function (n, items) {
+                            if (items.StaffClassId == item.Id) {
+                                html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
+                            }
+                        })
+                    }
+                    html += '</div>'
+                    html += '</div>'
+                    html += '</div>'
+                })
+            }
+            $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
 		},
-		//获取提成员工
-		GetStaffList: function (resolve, reject) {
-			let that = this
-			//提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
-			$.http.post(LuckVipsoft.api.getStaffList, { StaffType: 3, StaffName: "" }, user.token, function (res) {
-				if (res.status == 1) {
-					that.StaffList = res.data;
-					return resolve();
-				}
-			});
-		},
-		
 		//选择提成员工
 		chooseMembergetCommission: function () {
 			var _this = this;
 			var html = '';
 			let chooseStaff =[]
-			//员工树形列表
-			if (_this.StaffClassList.length > 0) {
-				$.each(_this.StaffClassList, function (index, item) {
-					html += '<div class="layui-collapse">'
-					html += '<div class="layui-colla-item">'
-					html += '<h2 class="layui-colla-title">' + item.ClassName + '</h2>'
-					html += '<div class="layui-colla-content layui-show"><ul class="staff-list">'
-					if (_this.StaffList.length > 0) {
-						$.each(_this.StaffList, function (n, items) {
-							if (items.StaffClassId == item.Id) {
-								html += '<li data-id="' + items.Id + '" data-name="' + items.StaffName + '">' + items.StaffName + '</li>'
-							}
-						})
-					}
-					html += '</div>'
-					html += '</div>'
-					html += '</div>'
-				})
-			}
+
+			//员工树形列表 ->StaffTree
+
 			$('.lomo-xztcyg .lomo-xztcyg-left').html(html);
 			//已选择员工列表
 			tab_staff = table.render({
@@ -975,8 +1016,21 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				})
 			});
 			//整单提成
-
 			$("body").on("click", ".choose-order-member", function () {
+				let mode = oPayCompose.result.mode
+				if(mode ==1){
+					//快速消费1
+					_this.StaffTree(1)
+				}				
+				else if(mode ==11 || mode == 12){
+					//充值11冲次12
+					_this.StaffTree(3)
+				}
+				else{
+					//商品消费
+					_this.StaffTree(2)
+				}
+			
 				layer.open({
 					type: 1,
 					id: "searchMemCard",
@@ -1022,7 +1076,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 
 			//单品提成
 			$("body").on("click", ".choose-member", function () {
-				console.log('123')
+				_this.StaffTree(staffMode)
 				layer.open({
 					type: 1,
 					id: "searchMemCard",
@@ -1125,7 +1179,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				}
 				$(".left-arrow-white").show();
 
-				let result =oPayCompose.goodsStaffs(uuid)
+				let result =oShoppingCompose.goodsStaffs(uuid)
 				console.log(result)
 				goodsStaffs	= Object.assign({},result)
 				_this.choosedStaffAry = Object.assign([],goodsStaffs.staffs)
@@ -1142,8 +1196,8 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				let customPrice = $(this).parent().parent().find(".change-price").html();
 				customPrice = parseFloat(customPrice).toFixed(2)			
 				var goodsMode = $(this).parent().attr("data-mode");	
-				 if(oPayCompose.changeGoodsStaff(uuid,_this.choosedStaffAry)){
-					oPayCompose.changePrice(uuid,customPrice)
+				 if(oShoppingCompose.changeGoodsStaff(uuid,_this.choosedStaffAry)){
+					oShoppingCompose.changePrice(uuid,customPrice)
 				 }
 				var box = $(this).parents('.fadeIn');
 				cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
@@ -1199,9 +1253,8 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 			//加入购物车
 			$("body").on("click", ".goods-info", function () {
 				var stocknum = $(this).attr("data-stocknum");//库存
-				//var oldPrice = '';//产品原价，有会员价时使用
 				var chooseData = JSON.parse($(this).attr("data-obj"));
-				var res = oPayCompose.selectItem(chooseData)
+				var res = oShoppingCompose.selectItem(chooseData)
 				if (!res) {
 					$.luck.error("产品库存不足")
 				}
@@ -1212,8 +1265,8 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				var goodId = $(dl).attr("data-id");
 				var stocknum = $(dl).attr("data-stocknum");
 				var mode = $(dl).attr("data-mode");
-
 				var num = $(dl).attr("data-num");
+
 				var val = $(this).val();
 				if (!/^[0-9]*[1-9][0-9]*$/.test(val)) {
 					$(this).val("1");
@@ -1223,7 +1276,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 					$(this).val(stocknum);
 					val = stocknum;
 				}
-				let res =oPayCompose.changeItemNum(uuid,val)
+				let res =oShoppingCompose.changeItemNum(uuid,val)
 				if (!res) {
 					$.luck.error("产品库存不足")
 				}
@@ -1237,7 +1290,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				var mode = $(dl).attr("data-mode");
 				var num = $(dl).attr("data-num");
 				console.log(uuid)
-				let res = oPayCompose.changeItemNum(uuid,  parseInt(num) + 1)
+				let res = oShoppingCompose.changeItemNum(uuid,  parseInt(num) + 1)
 				if (!res) {
 					$.luck.error("产品库存不足")
 				}
@@ -1251,633 +1304,19 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 				var mode = $(dl).attr("data-mode");
 				var num = $(dl).attr("data-num");
 				console.log(uuid)
-				let res = oPayCompose.changeItemNum(uuid, parseInt(num) - 1)
+				let res = oShoppingCompose.changeItemNum(uuid, parseInt(num) - 1)
 				if (!res) {
 					$.luck.error("产品库存不足")
 				}
 			});
 			//清空购物车
 			$("#btnClearCar").on("click", function () {
-				oPayCompose.clearShoppingCar()
+				oShoppingCompose.clearShoppingCar()
 			});
-		},	
-		//挑起支付页面会员
-		goPayCallBack:function()
-		{
-			let mdata = {}
-			$('.pay_item').removeClass('border-red')	
-			//会员信息
-			if (oPayCompose.chooseMember.Id == undefined) {
-				mdata.mid = 0
-				//散客默认支付方式
-				//oPayCompose.selectPay(sysArgument.SankeDefaultPayment)
-				//$('#pay_item_'+sysArgument.SankeDefaultPayment).addClass('border-red');
-			}
-			else {
-				//会员默认支付方式
-				//oPayCompose.selectPay(sysArgument.MemberDefaultPayment)
-				//$('#pay_item_'+sysArgument.MemberDefaultPayment).addClass('border-red');
-				//会员信息
-				mdata.mid = oPayCompose.chooseMember.Id
-				mdata.cardname = oPayCompose.chooseMember.CardName
-				mdata.mobile = oPayCompose.chooseMember.Mobile
-				mdata.levelname = oPayCompose.chooseMember.LevelName
-				mdata.point = oPayCompose.chooseMember.Point
-				mdata.money = oPayCompose.chooseMember.Money
-				if (oPayCompose.chooseMember.Avatar == '' || oPayCompose.chooseMember.Avatar == undefined) {
-					mdata.avatar = '../../../Theme/images/morentouxiang.svg'
-				}
-				else {
-					mdata.avatar = user.information.ImageServerPath + oPayCompose.chooseMember.Avatar
-				}
-			}
-
-			let html = template('memberTmp', mdata);
-			$('#pb_vipInfo').html(html)
-
-			layer.open({
-				type: 1,
-				id: "orderPay",
-				title: '收银结账',
-				closeBtn: 1,
-				shadeClose: false,
-				shade: 0.3,
-				maxmin: false,//禁用最大化，最小化按钮
-				resize: false,//禁用调整大小
-				area: ['90%', '80%'],
-				skin: "lomo-ordinary",
-				content: $(".lomo-cashier"),
-			})
-			$("body").find(".cashier-num-b[class='active'] input").focus();
-		},
+		},		
 	}
 	pageMethod.init();
 
-
-	//支付
-    var pay = {
-        init:function(){
-            var _this=this;
-            _this.payPopArea();
-            _this.initPayItem();
-            //立即结账
-            $("body").on("click", "#goPay", function () {
-				if (oPayCompose.result.goodsNum > 0) {
-					oPayCompose.goPayRechargeCount(function () {
-						pageMethod.goPayCallBack()
-					})
-				}
-				else {
-					$.luck.error('当前购物车没有商品')
-				}
-            });
-		},
-		//挑起支付页面会员
-		goPayCallBack:function()
-		{
-			let mdata = {}
-			$('.pay_item').removeClass('border-red')	
-			//会员信息
-			if (oPayCompose.chooseMember.Id == undefined) {
-				mdata.mid = 0
-				//散客默认支付方式
-				//oPayCompose.selectPay(sysArgument.SankeDefaultPayment)
-				//$('#pay_item_'+sysArgument.SankeDefaultPayment).addClass('border-red');
-			}
-			else {
-				//会员默认支付方式
-				//oPayCompose.selectPay(sysArgument.MemberDefaultPayment)
-				//$('#pay_item_'+sysArgument.MemberDefaultPayment).addClass('border-red');
-				//会员信息
-				mdata.mid = oPayCompose.chooseMember.Id
-				mdata.cardname = oPayCompose.chooseMember.CardName
-				mdata.mobile = oPayCompose.chooseMember.Mobile
-				mdata.levelname = oPayCompose.chooseMember.LevelName
-				mdata.point = oPayCompose.chooseMember.Point
-				mdata.money = oPayCompose.chooseMember.Money
-				if (oPayCompose.chooseMember.Avatar == '' || oPayCompose.chooseMember.Avatar == undefined) {
-					mdata.avatar = '../../../Theme/images/morentouxiang.svg'
-				}
-				else {
-					mdata.avatar = user.information.ImageServerPath + oPayCompose.chooseMember.Avatar
-				}
-			}
-
-			let html = template('memberTmp', mdata);
-			$('#pb_vipInfo').html(html)
-
-			layer.open({
-				type: 1,
-				id: "orderPay",
-				title: '充值冲次',
-				closeBtn: 1,
-				shadeClose: false,
-				shade: 0.3,
-				maxmin: false,//禁用最大化，最小化按钮
-				resize: false,//禁用调整大小
-				area: ['90%', '80%'],
-				skin: "lomo-ordinary",
-				content: $(".lomo-cashier"),
-			})
-			$("body").find(".cashier-num-b[class='active'] input").focus();
-		},     
-        //初始化支付项
-        initPayItem: function () {
-            var html = ''
-            $.each(user.sysArgument.PaymentConfig, function (index, item) {
-                html += '<li data-code="' + item.code + '" id="pay_item_' + item.code + '" class="pay_item"><a style="background: url(../../../Theme/images/pay/' + item.icon + ') no-repeat center 10px;" href="#">' + item.name + '</a></li>'
-            });
-            $("#pay").html(html)
-            $(".pay_item").bind("click", function () {
-                var code = $(this).attr('data-code')
-                if (oPayCompose.chooseMember.Id == undefined && (code == '002' || code == '003' || code == '999')) {
-                    $.luck.error('会员才可用 积分、余额、优惠券 支付')
-                    return false
-                }
-
-                if (oPayCompose.payMaxCount(code, 3)) {
-                    $.luck.error('最多只能选择3中支付方式')
-                    return false
-                }
-
-                var result = oPayCompose.selectPay(code)
-                //重新渲染 -> cashier-num
-
-                if (!result) {
-                    $.luck.error(code)
-                }
-            });
-        },
-        //收银结账相关弹层
-        payPopArea: function () {
-            var _this = this;
-            var curEditMoneyDom = null;
-            //整单优惠
-            $(".cashier-way .way7").on("click", function () {
-                //应收 ，最大金额			
-                var maxMoney = (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
-                $('#single_amount').html(maxMoney)
-                if (oPayCompose.result.amountModifyMoney > 0) {
-                    console.log('oPayCompose.modificationInfo', oPayCompose.result.modificationInfo)
-                    $('#single_discount_val').val(oPayCompose.result.modificationInfo.val)
-                    $('#single_discount_mode').val(oPayCompose.result.modificationInfo.mode)
-                    $('#single_discount_money').val(oPayCompose.result.modificationInfo.money)
-                }
-                else {
-                    $('#single_discount_val').val('0.00')
-                    $('#single_discount_mode').val(2)
-                    $('#single_discount_money').val('0.00')
-                }
-                form.render()
-
-                layer.open({
-                    type: 1,
-                    id: "singleDiscount",
-                    title: '整单优惠',
-                    closeBtn: 1,
-                    shadeClose: false,
-                    shade: 0.3,
-                    maxmin: false,//禁用最大化，最小化按钮
-                    resize: false,//禁用调整大小
-                    area: ['500px', 'auto'],
-                    btn: ['确认', '取消'],
-                    skin: "lomo-ordinary",
-                    content: $(".single-discount"),
-                    yes: function (index) {
-                        var diffVal = $('#single_discount_money').val()
-                        var val = $('#single_discount_val').val()
-                        var mode = $('#single_discount_mode').val()
-                        var dis = math.chain(oPayCompose.result.amountDiscountMoney).subtract(oPayCompose.result.amountActivityMoney).subtract(parseFloat(diffVal)).done().toFixed(2)
-
-                        var info = { val: val, mode: mode, money: diffVal }
-                        oPayCompose.settingModify(dis, info)
-                        layer.close(index)
-                    },
-                    btn2: function () {
-                    }
-                })
-            });
-
-            //整单金额输入框
-            $("#single_discount_val").on('change', function () {
-                var val = $(this).val()
-                if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
-                    $.luck.error('只能输入数字，小数点后只能保留两位');
-                    $(this).val('');
-                    return false
-                }
-                var maxMoney = (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
-                val = parseFloat(val)
-
-                var mode = $('#single_discount_mode').val()
-                console.log('mode', mode)
-
-                if (mode == 2) {
-                    if (val > maxMoney) {
-                        $('#single_discount_val').val(maxMoney)
-                        $('#single_discount_money').val('0.00')
-                        return false
-                    }
-                    else {
-                        var newVal = (maxMoney - val).toFixed(2)
-                        $('#single_discount_money').val(newVal)
-                    }
-                }
-                else {
-                    console.log('val', val)
-                    if (val < 0 || val > 10) {
-                        $.luck.error('比例只能时0-10内的数字');
-                        $(this).val('');
-                        $('#single_discount_money').val('0.00')
-                        return false
-                    }
-                    val = val.toFixed(1)
-                    console.log(val)
-                    $(this).val(val);
-                    var newVal = (maxMoney * (val / 10)).toFixed(2)
-                    $('#single_discount_money').val(newVal)
-                }
-            });
-
-            //取消整单优惠
-            $("#single_cancel").on('click', function () {
-                $('#single_discount_val').val('0.00')
-                $('#single_discount_money').val('0.00')
-                oPayCompose.cancelModify()
-            });
-
-            //整单提成单位选中
-            form.on('select(single_discount_money)', function (data) {
-                $('#single_discount_val').val('0.00')
-                $('#single_discount_money').val('0.00')
-                //重置
-                oPayCompose.cancelModify()
-            });
-
-            //整单提成
-            $(".cashier-way .way8").on("click", function () {
-                layer.open({
-                    type: 1,
-                    id: "billLading",
-                    title: '整单提成',
-                    closeBtn: 1,
-                    shadeClose: false,
-                    shade: 0.3,
-                    maxmin: false,//禁用最大化，最小化按钮
-                    resize: false,//禁用调整大小
-                    area: ['80%', 'auto'],
-                    btn: ['确认', '取消'],
-                    skin: "lomo-ordinary",
-                    content: $(".bill-lading"),
-                    success: function () {	
-                        chooseStaff  = Object.assign([],oPayCompose.result.staffs)
-                        $("body").find('.staff-list li').removeAttr("class");
-                        $.each( chooseStaff, function (index, item) {
-                            $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
-                        })
-                        tab_staff.reload({
-                            data: chooseStaff
-                        });
-						
-                        //初始
-                        var html = '';				
-                        $(".staffname").remove(); 	
-                        _this.choosedStaffAry = Object.assign([],chooseStaff)					  
-                        $.each(chooseStaff, function (index, item) {
-                            html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
-                        })
-                        $(".lomo-tcyg-add .nameTitle").after(html);
-						
-                        element.render();
-                    },
-                    yes: function (index) {							
-                        oPayCompose.settingOrderStaffs(_this.choosedStaffAry)
-                        console.log('_this.choosedStaffAry',_this.choosedStaffAry)						
-                        layer.close(index)						
-                    },
-                    btn2: function () {
-
-                    }
-                })
-            });
-
-            //备注
-            $(".cashier-way .way9").on("click", function () {
-                layer.open({
-                    type: 1,
-                    id: "billLading",
-                    title: '备注',
-                    closeBtn: 1,
-                    shadeClose: false,
-                    shade: 0.3,
-                    maxmin: false,//禁用最大化，最小化按钮
-                    resize: false,//禁用调整大小
-                    area: ['500px', 'auto'],
-                    btn: ['确认', '取消'],
-                    skin: "lomo-ordinary",
-                    content: '<div class="pd20"><textarea placeholder="收银备注" id ="pay_remark" class="layui-textarea" name="" cols="" rows="3">' + oPayCompose.remark + '</textarea></div>',
-                    yes: function (index) {
-                        var remark = $("#pay_remark").val()
-                        oPayCompose.remark = remark
-                        layer.close(index)
-                    },
-                    btn2: function () {
-                    }
-                })
-            });
-
-            //重新选择优惠券
-            $("body").on("click", ".paySelectCoupon", function () {
-                layer.open({
-                    type: 1,
-                    id: "chooseCounpon",
-                    title: '重选优惠券',
-                    closeBtn: 1,
-                    shadeClose: false,
-                    shade: 0.3,
-                    maxmin: false,//禁用最大化，最小化按钮
-                    resize: false,//禁用调整大小
-                    area: ['80%', '80%'],
-                    btn: ['确认', '取消'],
-                    skin: "lomo-ordinary",
-                    content: $(".lomo-yhq"),
-                    success: function () {
-                        var couponTable = table.render({
-                            elem: '#coupoonList',
-                            page: true,
-                            data: coupoonListAry,
-                            cellMinWidth: 95,
-                            cols: [
-								[
-									{type:'checkbox'},
-									{ field: 'Title', title: '名称', align: 'center' },
-									{ field: 'ConponCode', title: '券号',  align: 'center' },
-									{ field: 'ValidType', title: '券类型',  align: 'center' },
-									{ field: 'Quota', title: '优惠金额',  align: 'center' },
-									{ field: 'WithUseAmount', title: '最低消费',  align: 'center' },
-								]
-                            ]
-                        }); 
-                    },
-                    yes: function (index, layero) {
-                        console.log('chooseAry',oPayCompose.pageChooseConpon)
-                        if(oPayCompose.pageChooseConpon.length>0){
-                            var postData = oPayCompose.postCouponData() //获取优惠券提交数据
-                            console.log('postData',JSON.stringify(postData))
-                            $.http.post(LuckVipsoft.api.CalculateConponAmount, postData, user.token, function (res) {
-                                if(res.status ==1){
-                                    if(oPayCompose.settingCoupon(res.data)){
-                                        layer.close(index)
-                                    }
-                                    else{
-                                        $.luck.error('优惠卷计算错误')
-                                    }
-                                }
-                                else{
-                                    $.luck.error(res.msg)
-                                }
-                            })
-                        }
-                        return false
-                    }
-                })
-                //var chooseAry = [];
-                table.on('checkbox(coupoonList)', function (obj) {	
-                    var paidMoney = parseFloat(oPayCompose.paidMoney())		
-					
-                    var checkStatus = table.checkStatus('coupoonList');
-                    if (obj.type=="one") {
-                        if (obj.checked == true) {
-                            if(obj.data.WithUseAmount >	paidMoney){
-                                $.luck.error('当前优惠券不满足使用条件');
-                                $(this).prop("checked",false);
-                                form.render('checkbox')
-                                return false
-                            }else{						
-                                oPayCompose.pageChooseConpon.push(obj.data);
-                            }
-                        }else {
-                            $.each(oPayCompose.pageChooseConpon, function (index, item) {
-                                if (item.Id == obj.data.Id) {
-                                    oPayCompose.pageChooseConpon.splice(index, 1)
-                                    return
-                                }
-                            })
-                        }
-                        console.log(oPayCompose.pageChooseConpon)
-                    }else { // 表示全选
-                        if (obj.checked == true) {
-                            var data = checkStatus.data;
-                            layer.alert(JSON.stringify(data));
-                        }else {
-							
-                        }
-                    }
-					
-                })
-            });
-
-            //点击结算：微信或支付宝付款时用
-            $("body").on("click", "#finishPayBtn", function () {
-                if (oPayCompose.validPayMoney() < 0) {
-                    console.log('oPayCompose.validPayMoney()', oPayCompose.validPayMoney())
-                    $.luck.error('付款金额不足,无法完成支付')
-                    return false
-                }
-                var pwd = $("#pay_pwd").val()	
-
-                var item = Enumerable.From(oPayCompose.payItem).Where(function (x) {
-                    if (x.code == '020' || x.code == '010') {
-                        return true;
-                    }
-                    return false;
-                }).FirstOrDefault();
-                if (item != undefined) {
-                    $('#paymentCode').val('')
-                    $('#onlinePayMoney').html(item.amount)
-                    //item.amount
-                    layer.open({
-                        type: 1,
-                        id: "payBox",
-                        title: '支付',
-                        closeBtn: 1,
-                        shadeClose: false,
-                        shade: 0.3,
-                        maxmin: false,//禁用最大化，最小化按钮
-                        resize: false,//禁用调整大小
-                        area: ['500px', '300px'],
-                        btn: ['确认', '取消'],
-                        skin: "lomo-ordinary inherit",
-                        content: $(".paybox"),
-                        yes: function (index, layero) {
-                            if ($('#paymentCode').val() == '') {
-                                $.luck.error('请输入付款码')
-                                return false
-                            }
-                            else {
-                                var payCode = $('#paymentCode').val()
-                                var result = onlinePay(item.amount, item.code, payCode, user.token).then(
-									function (res) {
-									    console.log('res->then', res)
-									    if (res.status == 1) {
-									        var postData = oPayCompose.postPayData(pwd, '')
-									        $.http.post2(LuckVipsoft.api.VenueConsume, postData, user.token, function (res2) {
-									            if (res2.status == 1) {
-									                //打印小票
-									                TicketPrint(JSON.stringify(res.data), 5);
-									                layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) {
-									                    venue.countProductNum(1);
-									                    venue.clearData();
-									                });
-									            }
-									            else {
-									                layer.alert(res2.msg, { icon: 2, closeBtn: 0 }, function (index) {
-									                    layer.close(index)
-									                });
-									            }
-									        })
-									    }
-									    else if (res.status == 3) {
-									        //let queryResult = setTimeout(queryPay(outTradeNo,payType,token), 2000); 																		 
-									    }
-									    else {
-									        layer.alert(res.return_msg, { icon: 2, closeBtn: 0 }, function (index) {
-									            layer.close(index)
-									        });
-									    }
-									}
-								)
-                            }
-                        },
-                        btn2: function (index, layero) {
-                            layer.close(index);
-                            return false;
-                        }
-                    })
-                }
-                else {
-                    //格式化代码
-                    var postData = oPayCompose.postVenueData(pwd, venue.MainID)
-                    debugger
-                    $.http.post(LuckVipsoft.api.VenueConsume, postData, user.token, function (res) {
-                        if (res.status == 1) {
-                            //打印小票
-                            TicketPrint(JSON.stringify(res.data), 5);
-                            layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) {
-                                venue.countProductNum(1);
-                                venue.clearData();
-                            });
-                        }
-                        else {
-                            layer.alert(res.msg, { icon: 2, closeBtn: 0 }, function (index) {
-                                layer.close(index)
-                            });
-                        }
-                    })
-                }
-            });
-
-            //输入框选中
-            $("body").on("click", ".cashier-num-b li", function () {
-                curEditMoneyDom = $(this);
-                curPayCode = $(this).attr('data-code') //选中的支付输入框
-                var result = oPayCompose.selectPayInput(curPayCode)
-            });
-
-            //金额输入框
-            $("body").on("input", ".moneyInput", function (event) {
-                console.log(event)
-                var val = $(this).val()
-                var oldVal = $(this).attr('data-old')
-
-                if (val == '') {
-                    val = 0
-                    $(this).val(0)
-                }
-
-                if (isNaN(val)) {
-                    val = 0
-                    $(this).val(0)
-                }
-                console.log('val', val)
-                if (val.length!= undefined) {				
-                    if (val.charAt(val.length - 1) == '.') { return false }
-                }
-			
-                // if(patch('.',val) >2){
-                // 	//截断后面的小数点
-                // 	//$(this).val(new)	
-                // 	return false
-                // }
-				
-                val = parseFloat(val)
-                oldVal = parseFloat(oldVal)
-                if (!/(^[1-9]([0-9]+)?(\.[0-9]{0,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
-                    $(this).val(oldVal)
-                    $.luck.error('金额只能时2位小数')
-                    return false
-                }
-
-                if (val != oldVal) {
-                    var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, val)
-                }
-            });
-
-            //抹零设置
-            $("body").on("click", ".settingZero", function () {
-                oPayCompose.settingZeroAmount();
-            });
-
-            //小键盘及金额计算
-            $(".cashier-keyboard li").on("click", function () {
-                var val = $(this).text();
-                if (oPayCompose.curPayItem == '') {
-                    $.luck.error('请选中支付输入框')
-                    return false;
-                }
-
-                if (oPayCompose.curPayItem == '999') {
-                    $.luck.error('请选择优惠券')
-                    return false;
-                }
-
-                var oldVal = $("#pay_input_" + oPayCompose.curPayItem).val()
-                if (val == '.') {
-                    oldVal += val
-                    $("#pay_input_" + oPayCompose.curPayItem).val(oldVal)
-                    return false;
-                }
-
-                if (val == '←') {
-                    if (oldVal.length <= 1) {
-                        oldVal = 0
-                    }
-                    else {
-                        oldVal = oldVal.substr(0, oldVal.length - 1);
-                    }
-                }
-                else if (val == '100.00' || val == '200.00' || val == '500.00') {
-                    oldVal = val
-                }
-                else {
-                    oldVal += val
-                }
-
-                oldVal = parseFloat(oldVal)
-                if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(oldVal)) {
-                    $.luck.error('金额只能是2位小数')
-                    return false
-                }
-
-                if (oldVal == '') { oldVal = 0 }
-                var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, oldVal)
-            });
-
-        },		
-	}
-	
-	pay.init();//支付
-	
 });
 //刷卡获取卡号后续处理
 function getIccardNumber(parameter){

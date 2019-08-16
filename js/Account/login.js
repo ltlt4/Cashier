@@ -234,192 +234,6 @@ layui.use(['layer', 'jquery', "form"], function () {
             }, 1000)
         }
     }
-    //登录
-    function login() {
-        var enterprise = $("#enterprise").val() //企业号
-        var username = $("#username").val()//账号
-        var pwd = $("#pwd").val() //密码
-        //验证企业号
-        if (enterprise == '') {
-            layer.msg(LuckVipsoft.lan.ER0015);
-            $('#enterprise').focus();
-            return false;
-        }
-        //验证账号
-        if (username == "") {
-            layer.msg(LuckVipsoft.lan.ER0002);
-            $("#username").focus();
-            return false;
-
-        }
-        //验证密码
-        if (pwd == '') {
-            layer.msg(LuckVipsoft.lan.ER0003);
-            $('#pwd').focus();
-            return false;
-        }
-        var param = {
-            CompCode: enterprise,
-            MasterAccount: username,
-            Password: pwd,
-            LoginSource: 2
-        }
-        if(loginType==2){
-            param={
-                CompCode: enterprise,
-                MasterAccount: username,
-                Password: pwd,
-                InterfaceKey:LuckVipsoft.InterfaceKey,
-                Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
-            };
-            GoToBackstage(JSON.stringify(params));
-            return;
-        }
-        $.http.register(LuckVipsoft.api.login, param, function (res) {
-            if (res.status == 1) {
-                layer.msg(res.msg);
-                if ($('.login-form-other  label').eq(0).prev().hasClass("choice")) {
-                    var base = new cashier.Base64();
-                    var Record = {
-                        a: base.encode(enterprise),
-                        b: base.encode(username),
-                        c: base.encode(pwd)
-                    }
-                    $.local.set('Record', Record);
-                }
-                if ($('.login-form-other  label').eq(1).prev().hasClass("choice")) {
-                    $.local.set('flag', true);
-                }
-                $.session.set('LoginMsg', param);
-                $.session.set('Cashier_Token', res.data.Token)
-                $.session.set('Cashier_User', res.data);
-                //数据初始化
-                var MemberMethod = {
-                    start: function () {
-                        var _this = this
-                        Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(), _this.sysArgument()])
-                            .then(function (res) {
-                                // var staffInf={
-                                //     staffInfCard:res[0],
-                                //     staffInfConsump:res[1],
-                                //     staffInfcommodity:res[2],
-                                //     staffInfRecharge:res[3]
-                                // }
-                                // $.session.set('staffInf', staffInf);
-                                window.location.href = "../../Views/home/index.html";
-                            })
-                    },
-                    /*获取所属店铺信息*/
-                    belongShop: function () {
-                        return new Promise(function (resolve, reject) {
-                            $.http.post(LuckVipsoft.api.getShopList, {}, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    $.session.set('belongShop', res.data);
-                                    resolve(true);
-                                }
-                            });
-                        });
-                    },
-                    /*获取员工分类数据*/
-                    staffClass: function () {
-                        return new Promise(function (resolve, reject) {
-                            $.http.post(LuckVipsoft.api.getStaffClassList, {}, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    $.session.set('staffClass', res.data);
-                                    resolve(true);
-                                }
-                            });
-                        });
-                    },
-                    /*获取售卡提成员工*/
-                    staffInfCard: function () {
-                        return new Promise(function (resolve, reject) {
-                            var param = {
-                                StaffType: 0,
-                                StaffName: '',
-                            }
-                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    resolve(res.data);
-                                }
-                            });
-                        });
-                    },
-                    /*快速消费提成*/
-                    staffInfConsump: function () {
-                        return new Promise(function (resolve, reject) {
-                            var param = {
-                                StaffType: 1,
-                                StaffName: '',
-                            }
-                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    resolve(res.data);
-                                }
-                            });
-                        });
-                    },
-                    /*商品消费提成*/
-                    staffInfcommodity: function () {
-                        return new Promise(function (resolve, reject) {
-                            var param = {
-                                StaffType: 2,
-                                StaffName: '',
-                            }
-                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    resolve(res.data);
-                                }
-                            });
-                        });
-                    },
-                    /*充值充次提成*/
-                    staffInfRecharge: function () {
-                        return new Promise(function (resolve, reject) {
-                            var param = {
-                                StaffType: 3,
-                                StaffName: '',
-                            }
-                            $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
-                                if (res.status == 1) {
-
-                                    resolve(res.data);
-                                }
-                            });
-                        });
-                    },
-                    /*获取等级信息*/
-                    levelList: function () {
-                        return new Promise(function (resolve, reject) {
-                            $.http.post(LuckVipsoft.api.BindMemLevelList, {}, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    $.session.set('levelList', res.data);
-                                    resolve(true);
-                                }
-                            });
-                        });
-                    },
-
-                    /*获取系统参数*/
-                    sysArgument: function () {
-                        return new Promise(function (resolve, reject) {
-                            $.http.post(LuckVipsoft.api.GetSysArgument, {}, res.data.Token, function (res) {
-                                if (res.status == 1) {
-                                    $.session.set('sysArgument', res.data);
-                                    resolve(true);
-                                }
-                            });
-                        });
-                    }
-                };
-                MemberMethod.start();
-
-            } else {
-                layer.msg(res.msg);
-            }
-        })
-    }
-
     //网络设置
     $(".tool-web").on("click", function () {
         netWork = new Array();
@@ -578,4 +392,198 @@ function initData(){
             }
         });
     }
+}
+
+//进前前台
+function doLogin() {
+    loginType=1;
+    login();
+}
+//登录
+function login() {
+    var enterprise = $("#enterprise").val() //企业号
+    var username = $("#username").val()//账号
+    var pwd = $("#pwd").val() //密码
+    //验证企业号
+    if (enterprise == '') {
+        layer.msg(LuckVipsoft.lan.ER0015);
+        $('#enterprise').focus();
+        return false;
+    }
+    //验证账号
+    if (username == "") {
+        layer.msg(LuckVipsoft.lan.ER0002);
+        $("#username").focus();
+        return false;
+
+    }
+    //验证密码
+    if (pwd == '') {
+        layer.msg(LuckVipsoft.lan.ER0003);
+        $('#pwd').focus();
+        return false;
+    }
+    var param = {
+        CompCode: enterprise,
+        MasterAccount: username,
+        Password: pwd,
+        LoginSource: 2
+    }
+    
+    $.http.register(LuckVipsoft.api.login, param, function (res) {
+        if (res.status == 1) {
+            layer.msg(res.msg);
+            if(loginType==2){
+                param={
+                    CompCode: enterprise,
+                    Account: username,
+                    Password: pwd,
+                    InterfaceKey:LuckVipsoft.InterfaceKey,
+                    Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
+                };
+                if (GoToBackstage) {
+                    GoToBackstage(JSON.stringify(param));
+                }      
+                return;
+            }
+            if ($('.login-form-other  label').eq(0).prev().hasClass("choice")) {
+                var base = new cashier.Base64();
+                var Record = {
+                    a: base.encode(enterprise),
+                    b: base.encode(username),
+                    c: base.encode(pwd)
+                }
+                $.local.set('Record', Record);
+            }
+            if ($('.login-form-other  label').eq(1).prev().hasClass("choice")) {
+                $.local.set('flag', true);
+            }
+            $.session.set('LoginMsg', param);
+            $.session.set('Cashier_Token', res.data.Token)
+            $.session.set('Cashier_User', res.data);
+            //数据初始化
+            var MemberMethod = {
+                start: function () {
+                    var _this = this
+                    Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(), _this.sysArgument()])
+                        .then(function (res) {
+                            // var staffInf={
+                            //     staffInfCard:res[0],
+                            //     staffInfConsump:res[1],
+                            //     staffInfcommodity:res[2],
+                            //     staffInfRecharge:res[3]
+                            // }
+                            // $.session.set('staffInf', staffInf);
+                            window.location.href = "../../Views/home/index.html";
+                        })
+                },
+                /*获取所属店铺信息*/
+                belongShop: function () {
+                    return new Promise(function (resolve, reject) {
+                        $.http.post(LuckVipsoft.api.getShopList, {}, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                $.session.set('belongShop', res.data);
+                                resolve(true);
+                            }
+                        });
+                    });
+                },
+                /*获取员工分类数据*/
+                staffClass: function () {
+                    return new Promise(function (resolve, reject) {
+                        $.http.post(LuckVipsoft.api.getStaffClassList, {}, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                $.session.set('staffClass', res.data);
+                                resolve(true);
+                            }
+                        });
+                    });
+                },
+                /*获取售卡提成员工*/
+                staffInfCard: function () {
+                    return new Promise(function (resolve, reject) {
+                        var param = {
+                            StaffType: 0,
+                            StaffName: '',
+                        }
+                        $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                resolve(res.data);
+                            }
+                        });
+                    });
+                },
+                /*快速消费提成*/
+                staffInfConsump: function () {
+                    return new Promise(function (resolve, reject) {
+                        var param = {
+                            StaffType: 1,
+                            StaffName: '',
+                        }
+                        $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                resolve(res.data);
+                            }
+                        });
+                    });
+                },
+                /*商品消费提成*/
+                staffInfcommodity: function () {
+                    return new Promise(function (resolve, reject) {
+                        var param = {
+                            StaffType: 2,
+                            StaffName: '',
+                        }
+                        $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                resolve(res.data);
+                            }
+                        });
+                    });
+                },
+                /*充值充次提成*/
+                staffInfRecharge: function () {
+                    return new Promise(function (resolve, reject) {
+                        var param = {
+                            StaffType: 3,
+                            StaffName: '',
+                        }
+                        $.http.post(LuckVipsoft.api.getStaffList, param, res.data.Token, function (res) {
+                            if (res.status == 1) {
+
+                                resolve(res.data);
+                            }
+                        });
+                    });
+                },
+                /*获取等级信息*/
+                levelList: function () {
+                    return new Promise(function (resolve, reject) {
+                        $.http.post(LuckVipsoft.api.BindMemLevelList, {}, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                $.session.set('levelList', res.data);
+                                resolve(true);
+                            }
+                        });
+                    });
+                },
+
+                /*获取系统参数*/
+                sysArgument: function () {
+                    return new Promise(function (resolve, reject) {
+                        $.http.post(LuckVipsoft.api.GetSysArgument, {}, res.data.Token, function (res) {
+                            if (res.status == 1) {
+                                $.session.set('sysArgument', res.data);
+                                resolve(true);
+                            }
+                        });
+                    });
+                }
+            };
+            MemberMethod.start();
+
+        } else {
+            layer.msg(res.msg);
+        }
+    })
 }
