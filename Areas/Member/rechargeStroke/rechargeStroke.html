@@ -106,7 +106,7 @@
                             <div class="order-page-down"><span></span></div>
                             <div class="order-page-up"><span></span></div>
                         </dd>
-                        <div class="activity-list  consumeActBox">
+                        <div class="activity-list hide consumeActBox">
                             <ul class="check-box-list consumeActList">
                             </ul>
                         </div>
@@ -132,7 +132,7 @@
             <dl class="goods-page">
                 <dt>
                     <span class="graph">开启无图模式</span>
-                    <span class="setmeal change-product-nav" data-type="setmeal">套餐商品</span>
+                    <span class="setmeal change-product-nav hide" data-type="setmeal">套餐商品</span>
                     <span class="timescount change-product-nav" data-type="timescount"
                         style="display: none;">已有计次项目</span>
                 </dt>
@@ -182,19 +182,19 @@
             </div>
             <!--无产品收银 end-->
         </div>
-        <!--充值 start-->
-        <div class="lomo-gd lomo-wcpsy2 hide">
+      	<!--充值 start-->
+		<div id='wcpsy2' class="lomo-gd lomo-wcpsy2 hide">
 			<div class="layui-form">
 				<div class="layui-form-item">
 					<label class="layui-form-label">优惠活动</label>
 					<div class="layui-input-block">
 						<dl class="order-page">
-						    <dt>
-						        <p class="order-select topUpActivity">
+							<dt>
+								<p class="order-select topUpActivity" id="topUpActivity">
 									暂无优惠活动
 								</p>
 								<span class="triangle_border_right gray"></span>
-						    </dt>
+							</dt>
 							<div class="activity-list topUpActBox hide">
 								<ul class="check-box-list topUpActList">									
 								</ul>
@@ -206,8 +206,8 @@
 					<label class="layui-form-label">充值金额</label>
 					<div class="layui-input-block">
 						<input type="text" id="topUpMoney" placeholder="请输入" autocomplete="off" class="layui-input">
-                        <a href="javascript:void(0);" class="card-num-up" style="position:absolute;top:5px;right:10px;" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
-                    </div>
+						<a href="javascript:void(0);" class="card-num-up" style="position:absolute;top:5px;right:10px;" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
+					</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">赠送金额</label>
@@ -222,7 +222,8 @@
 					</div>
 				</div>
 			</div>
-        </div>
+		</div>
+		<!--充值 end-->
         <!--充值 end-->
         <!--提成员工 start-->
 		<p class="left-arrow-white"></p>

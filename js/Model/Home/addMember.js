@@ -455,12 +455,12 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             CardID: data.field.addCardID ? data.field.addCardID : "",
             CardName: data.field.addCardName ? data.field.addCardName : "",
             Mobile: data.field.addMobile ? data.field.addMobile : "",
-            LevelID: data.field.addLevelID ? data.field.addLevelID : "",
+            LevelID: data.field.addLevelID ? data.field.addLevelID : 0,
             ShopID: shopID,
             PassWord: data.field.addPassWord ? data.field.addPassWord : "",
             Sex: data.field.addSex ? data.field.addSex : "",
             IdentityCode: data.field.addIdentityCode ? data.field.addIdentityCode : "",
-            BirthdayType: BirthdayType,
+            BirthdayType: BirthdayType?BirthdayType:"",
             BirthdayYear: BirthdayYear,
             BirthdayMonth: BirthdayMonth,
             BirthdayDay: BirthdayDay,
@@ -475,7 +475,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             OutCardID: data.field.addOutCardID ? data.field.addOutCardID : "",
             WeChatCode: "",
             Money: data.field.addMoney ? data.field.addMoney : 0.0,
-            CustomFields: customFieldsJson ? JSON.stringify(customFieldsJson) : ""
+            CustomFields: customFieldsJson.length>0 ? JSON.stringify(customFieldsJson) : ""
         }
 
         $.http.post(LuckVipsoft.api.SaveMemberData, param, user.token, function (res) {

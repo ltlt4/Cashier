@@ -79,7 +79,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 	var X = '', Y = Math.floor(proboxHeight / 226);
 
 	 var staffMode = 2 ;//购物车提成员工类型
-	 
+
+	 var hasTopUpAcivity = false;//是否有店铺活动 充值有礼
 	 var shopActivity = [] ; //当前的店铺活动
 	 var shopTopUpActivity = [] ; //当前的店铺活动
 	pageMethod = {
@@ -145,7 +146,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				oShoppingCompose.changeMember(member,billCode)
 				pageMethod.getShopActivity()
 				$(".timescount").show();
-				$(".lomo-order").css({ "top": "84px", "margin-top": "11px" });
+				$(".lomo-order").css({ "top": "110px", "margin-top": "11px" });
 				// var param = {
 				// 	Page:1,
 				// 	Rows:10000,
@@ -265,6 +266,11 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				}
 				_this.countProductNum();
 			})
+			$(window).resize(function(){
+			    proboxHeight = $(".lomo-mian-right").height();
+			    proboxWidth = $(".lomo-mian-right").width();
+			    _this.countProductNum();
+			})
 			//产品翻页
 			$(".page-prev").on("click", function () {
 				if (_this.pageIndex == 1) {
@@ -378,6 +384,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			} else if (proboxWidth < 492 && proboxWidth >= 246) {
 				X = 1;
 			}
+			this.pageIndex = 1;
 			this.pageSize = X * Y;
 			this.getGoodsListPageList(proboxWidth, X);
 		},
@@ -593,7 +600,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 							html += `<tr><td>${item.GoodsCode}</td><td>${item.GoodsName}</td><td>${item.Price}</td><td>${item.StockNum}</td><td>${item.PassDate}</td></tr>`
 							html += `</table>`
 							html += `<div class="info-box-bt"><button type="button" class="submit-bt-clear hide">取消</button>`
-							html += `<button type="button" class="submit-bt close-goodsinfo">确认</button></div></dd></dl></div>`
+							html += `<button type="button" class="submit-bt hide close-goodsinfo">确认</button></div></dd></dl></div>`
 						}
 						//html += `<em>234</em>`
 						html += `</div>`;
@@ -664,7 +671,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 								oShoppingCompose.changeMember(member)
 								pageMethod.getShopActivity()
 								$(".timescount").show();
-								$(".lomo-order").css({ "top": "84px", "margin-top": "11px" });							
+								$(".lomo-order").css({ "top": "110px", "margin-top": "11px" });							
 							} else {
 								layer.open({
 									type: 1,
@@ -692,7 +699,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 													memId = res.data[_index].Id;
 													oShoppingCompose.changeMember(member)
 													pageMethod.getShopActivity()
-													$(".lomo-order").css({ "top": "84px", "margin-top": "11px" });
+													$(".lomo-order").css({ "top": "110px", "margin-top": "11px" });
 												}
 											});
 											$(".timescount").show();
@@ -1184,48 +1191,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			});
 		},
 		//挑起支付页面会员
-		goPayCallBack:function()
-		{
-			let mdata = {}
-			$('.pay_item').removeClass('border-red')	
-			//会员信息
-			if (oPayCompose.chooseMember.Id == undefined) {
-				mdata.mid = 0			
-			}
-			else {		
-				//会员信息
-				mdata.mid = oPayCompose.chooseMember.Id
-				mdata.cardname = oPayCompose.chooseMember.CardName
-				mdata.mobile = oPayCompose.chooseMember.Mobile
-				mdata.levelname = oPayCompose.chooseMember.LevelName
-				mdata.point = oPayCompose.chooseMember.Point
-				mdata.money = oPayCompose.chooseMember.Money
-				if (oPayCompose.chooseMember.Avatar == '' || oPayCompose.chooseMember.Avatar == undefined) {
-					mdata.avatar = '../../../Theme/images/morentouxiang.svg'
-				}
-				else {
-					mdata.avatar = user.information.ImageServerPath + oPayCompose.chooseMember.Avatar
-				}
-			}
-
-			let html = template('memberTmp', mdata);
-			$('#pb_vipInfo').html(html)
-
-			layer.open({
-				type: 1,
-				id: "orderPay",
-				title: '收银结账',
-				closeBtn: 1,
-				shadeClose: false,
-				shade: 0.3,
-				maxmin: false,//禁用最大化，最小化按钮
-				resize: false,//禁用调整大小
-				area: ['90%', '80%'],
-				skin: "lomo-ordinary",
-				content: $(".lomo-cashier"),
-			})
-			$("body").find(".cashier-num-b[class='active'] input").focus();
-		},
+		
 		//挂单，取单，结账，清空
 		orderManage: function () {
 			var _this = this;
@@ -1367,7 +1333,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				}
 			})
 		},
-			//获取店铺优惠活动 (有会员时会返回会员可用)//1-消费返利
+		//获取店铺优惠活动 (有会员时会返回会员可用)//1-消费返利
 		getShopActivity: function () {
 			var _this = this;
 			var param = {
@@ -1740,32 +1706,6 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 		}
 	})
 
-
-	//计次产品详情
-	$(".goods-list h1").click(function (e) {
-		let box = $(this).nextAll(".goods-info-box");
-		let html = "";
-		html += '<tr>'
-		html += ' <th width="20%">产品编码</th>'
-		html += '<th width="30%">产品名称</th>'
-		html += '<th width="15%">产品单价 </th>'
-		html += '<th width="15%">剩余次数</th>'
-		html += '<th width="20%">过期时间</th>'
-		html += '</tr>'
-		html += '<tr>'
-		html += '<td>465126456151</td>'
-		html += '<td>洗发+烫发吹+剪发+美容+养颜套餐</td>'
-		html += '<td>2442.00</td>'
-		html += '<td>9</td>'
-		html += '<td>2018-09-09</td>'
-		html += '</tr>'
-		box.find("table").html(html)
-		cashier.open(box, 'fadeIn', 'fadeOut', maskBody);
-	});
-	$(".goods-list  .submit-bt-clear").on("click", function () {
-		let box = $(this).parents(".goods-info-box")
-		cashier.close(box, 'fadeIn', 'fadeOut', maskBody);
-	});
 	//ESC关闭页面
 	$(document).keydown(function (e) {
 		if (e.keyCode == 27 && overall) {
@@ -1880,3 +1820,11 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 })
 
 
+//刷卡获取卡号后续处理
+function getIccardNumber(parameter){
+	pageMethod.searchMemCard(parameter)
+}
+//客显type类型0-清屏1-单价2-总价3-收款4-找零
+function backGuestShowMoney(money,type){
+	ShowCustomerDisplay(money,type)
+}

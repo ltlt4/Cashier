@@ -175,6 +175,8 @@ LuckVipsoft.lan = {
     ER0023: "未找到符号条件的订单",
     ER0024: "请输入正确的快递公司",
     ER0025: "请打开摄像头",
+    ER0026: "请输入企业号",
+
 }
 LuckVipsoft.network = new Array()
 LuckVipsoft.InterfaceKey = ''

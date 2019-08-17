@@ -93,7 +93,7 @@
 							<div class="order-page-down"><span></span></div>
 							<div class="order-page-up"><span></span></div>
 						</dd>
-						<div class="activity-list  consumeActBox">
+						<div class="activity-list hide consumeActBox">
 							<ul class="check-box-list consumeActList">
 							</ul>
 						</div>
@@ -122,7 +122,7 @@
                 <dt> <span class="wcpsy" id='quickConsumed'>快速收银</span><span class="graph">开启无图模式</span>
         		<span class="setmeal change-product-nav" data-type="setmeal">套餐商品</span>
         		<span class="timescount change-product-nav" data-type="timescount" style="display: none;">已有计次项目</span> </dt>
-                <dd> <button class="page-prev">上一页</button><span class="numb">2/17</span><button class="page-next next">下一页</button> </dd>
+                <dd> <button class="page-prev">上一页</button><span class="numb">0/0</span><button class="page-next next">下一页</button> </dd>
             </dl>
         </div>
 		<!-- 功能弹出框 start-->
@@ -336,8 +336,7 @@
 		                <th>积分</th>
 		                <th>余额</th>
 		            </tr>
-		            <tbody id="memList">
-					                
+		            <tbody id="memList">					                
 		            </tbody>
 		        </table>
 		    </div>
@@ -350,18 +349,16 @@
         <div class="lomo-mask-body5 hide"></div>
 	</div>
 
-
 	<div class="lomo-xztcyg hide" style="padding: 10px;">
-			<div class="layui-row layui-col-space10">
-				<div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
-					
-				</div>
-				<div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
-					<table id="StaffList" lay-filter="StaffList"></table>
-				</div>
+		<div class="layui-row layui-col-space10">
+			<div class="lomo-xztcyg-left layui-col-lg2 layui-col-md3 layui-col-sm4 layui-col-xs4" style="margin-top: 10px;">
+				
 			</div>
+			<div class="lomo-xztcyg-right layui-col-lg10 layui-col-md9 layui-col-sm8 layui-col-xs8">
+				<table id="StaffList" lay-filter="StaffList"></table>
+			</div>
+		</div>
 	</div>
-
 </body>
 <script src="../../../Theme/script/jquery3.4.1.min.js"></script>
 <script src="../../../Theme/plugins/layui/layui.js"></script>
@@ -548,5 +545,4 @@
 		{{/each}}	
 	</ul>
 </script>
-
 </html>

@@ -11,7 +11,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 	
 	var sysArgument = $.session.get('Cashier_User').SysArguments
-	var oShoppingCompose = new shoppingCompose(sysArgument)
+	var oShoppingCompose = new shoppingCompose(sysArgument,12)
 
 	//计算完成后回调，页面执行渲染
 	oShoppingCompose.processCallback = function () {
@@ -71,6 +71,9 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 	var proboxWidth = $(".lomo-mian-right").width();
 	var X = '', Y = Math.floor(proboxHeight / 226);
 	
+	var shopActivity = [] ; //当前的店铺活动
+	var shopTopUpActivity = [] ; //当前的店铺活动
+
 	var staffMode = 1 //购物车提成员工类型
 
 	pageMethod={
@@ -85,6 +88,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 		parent: [],//一级菜单
 		children: [],//二级菜单		
 		choosedStaffAry: [],//商品提成员工信息
+
 		//初始化员工提成
 		initStaffList:function(){
 			let that = this
@@ -145,11 +149,12 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			memId = ''
 			pageMethod.getShopActivity()
 		},
-		resetPage:function(){
+		resetPage:function(){		
 			//pageMethod.getGoodsListPageList()
 			pageMethod.GetRechargeCountGoodsListPage(0);
 			pageMethod.removeChooseMember()
 			oShoppingCompose.clearShoppingCar()
+			layer.closeAll()
 		},
 		//快速收银活动变化
 		topUpActivity:function(){
@@ -234,6 +239,11 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			    }
 			    _this.countProductNum();
 			});
+			$(window).resize(function(){
+			    proboxHeight = $(".lomo-mian-right").height();
+			    proboxWidth = $(".lomo-mian-right").width();
+			    _this.countProductNum();
+			})
 			 //产品翻页 上一页
 			$(".page-prev").on("click",function(){
 			    if(_this.pageIndex==1){
@@ -728,84 +738,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				})
 			}
 		},		
-		//储值卡充值
-		storageCardRecharge:function(){
-			var _this = this;
-			$("body").on("click","#rechargeCard",function(){
-				layer.open({
-				    type: 1,
-				    id: "cardRecharge",
-				    title: '储值卡充值',
-				    closeBtn: 1,
-				    shadeClose: false,
-				    shade: 0.3,
-				    maxmin: false,//禁用最大化，最小化按钮
-				    resize: false,//禁用调整大小
-				    area: ['600px', '400px'],
-				    btn: ['结账', '取消'],
-				    skin: "lomo-ordinary",
-				    content:$(".lomo-wcpsy2"),
-					success:function(){
-						//清除活动
-						// oPayCompose.clearActivity()
-						// //清除结构
-						// oPayCompose.clearTopUpInfo()
-						// //获取充值有礼
-						// pageMethod.getTopUpActivity()
-						oShoppingCompose.clearActivity()	
-
-						$("#topUpGiftMoney").val('0.00') 
-						$("#topUpMoney").val('0.00') 	
-						$("#topUpPoint").val('0.00') 	
-					},
-					yes:function(){
-						let chargeMoney = $("#chargeMoney").val()
-						if(chargeMoney>0)
-						{
-							
-						}
-						oShoppingCompose.result.mode = 11
-						window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result,staffMode)
-						// chargeMoney = parseFloat(chargeMoney).toFixed(2)
-						// if (oPayCompose.chargeInfo.amount > 0) {
-						// 	 oPayCompose.goPayTopUp(function () {
-						// 		 pageMethod.goPayCallBack()
-						// 	 })
-						//  }
-						//  else {
-						// 	 $.luck.error('请填写消费金额')
-						//  }
-					},
-					btn2:function(){						
-						$('.activity-list').hide()
-						oShoppingCompose.clearActivity()		
-					},
-					cancel:function(){					
-						$('.activity-list').hide()
-						oShoppingCompose.clearActivity()		
-					}
-				})				
-			})
-			//充值金额
-			$("#topUpMoney").on('change', function () {	
-				let val = $(this).val()
-				console.log('val',val)				
-				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
-					$.luck.error('只能输入数字，小数点后只能保留两位');
-					$(this).val('');
-					return false
-				}			
-		
-				if(oPayCompose.settingTopUpMoney(val)){			
-				console.log('oPayCompose.topUpInfo',oPayCompose.topUpInfo)		
-					$("#topUpGiftMoney").val(oPayCompose.topUpInfo.giftamount) 
-					$("#topUpMoney").val(oPayCompose.topUpInfo.amount) 	
-					$("#topUpPoint").val(oPayCompose.topUpInfo.point) 
-					//渲染
-					pageMethod.topUpActivity()					
-				}
-			})
-		},
+	
 		//获取店铺优惠活动 (有会员时会返回会员可用)
 		getShopActivity: function () {
 			var _this = this;
@@ -855,59 +788,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 
 			})
 		},
-		//获取充值活动
-		getTopUpActivity:function()
-		{
-			// var _this = this;
-			// var param = {
-			// 	ActType: 2,	//1-消费返利、2-充值有礼
-			// 	MemID: memId,
-			// }
-			// $.http.post(LuckVipsoft.api.getActivityList, param, user.token, function (res) {
-			// 	if(res.status ==1)
-			// 	{
-			// 		if (res.data.length > 0) {					
-			// 			hasTopUpAcivity = true;
-			// 			$(".topUpActivity").html("请选择优惠活动").next().removeClass("gray")
-			// 			let html = template("activityTmp", res.data);
-			// 			$('.topUpActList').html(html)
-			// 			$(".topUpActBox").hide();
-					
-			// 			//选择优惠活动
-			// 			$(".topUpActivity").unbind().bind('click', function () {							
-			// 				var curActlist = $(this).parents(".order-page").find(".activity-list");						
-			// 				if (hasTopUpAcivity) {								
-			// 					curActlist.toggle();
-			// 				}
-			// 			})
-
-			// 			//选择项
-			// 			$(".topUpActList li").unbind().bind('click', function () {					
-			// 				var act = $(this).attr("data-obj");
-			// 				let result = oPayCompose.selectTopUpActivity(act)  // .chooseActivity(act)
-						
-			// 				if (result) {				
-			// 					//渲染							
-			// 					pageMethod.topUpActivity();
-			// 					$(this).parents(".topUpActBox").hide();
-			// 				}
-			// 				else {
-			// 					$.luck.error("未达到活动规则")
-			// 				}
-			// 			})
-			// 		} else {
-			// 			hasTopUpAcivity = false;
-			// 			$(".order-select").html("暂无优惠活动")
-			// 			$(".activity-list").hide();
-			// 		}
-			// 	}
-			// 	else{
-			// 		hasTopUpAcivity = false
-			// 		$.luck.error('优惠券获取异常')
-			// 	}
-			// })
-		},
-
+	
 		//系统默认选中的优惠活动
 		checkSystemActivity: function () {			
 		},
@@ -1314,6 +1195,181 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				oShoppingCompose.clearShoppingCar()
 			});
 		},		
+		//充值有礼活动
+		getTopUpActivity:function()
+		{
+			var _this = this;
+			var param = {
+				ActType: 2,	//1-消费返利、2-充值有礼
+				MemID: memId,
+			}
+			$.http.post(LuckVipsoft.api.getActivityList, param, user.token, function (res) {
+				if(res.status ==1)
+				{
+					_this.shopTopUpActivity = res.data
+					if (res.data.length > 0) {					
+						hasTopUpAcivity = true;
+						$(".topUpActivity").html("请选择优惠活动").next().removeClass("gray")
+						let html = template("activityTmp", res.data);
+						$('.topUpActList').html(html)
+						$(".topUpActBox").hide();
+					
+						//选择优惠活动
+						$(".topUpActivity").unbind().bind('click', function () {							
+							var curActlist = $(this).parents(".order-page").find(".activity-list");						
+							if (hasTopUpAcivity) {								
+								curActlist.toggle();
+							}
+						})
+
+						//选择项
+						$(".topUpActList li").unbind().bind('click', function () {					
+							var act = $(this).attr("data-obj");
+							if(oShoppingCompose.selectTopUpActivity(act)){
+								$("#chargeDiscountMoney").val( accSub(oShoppingCompose.result.amountDiscountMoney,oShoppingCompose.result.amountActivityMoney) )
+								$("#chargeMoney").val(oShoppingCompose.result.amountMoney) 
+								$("#chargePoint").val(oShoppingCompose.result.amountActivityPoint ) 
+			
+								$('.act_item').removeClass('checked')
+			
+								let actHtml = ''
+								$.each(oShoppingCompose.result.activity,function(index,item){					
+									actHtml += '<i class="shopAct">' + item.ActName + '</i>'
+									$('.act_' + item.Id).addClass('checked')
+								})
+								
+								if (actHtml == '') {						
+									if (hasShopAcivity) {										
+										$("#topUpActivity").html('请选择优惠活动')
+									}
+									else {
+										$("#topUpActivity").html('暂无优惠活动')
+									}
+								}
+								else {
+									$("#topUpActivity").html(actHtml) 
+								}			
+							}
+							else
+							{
+								$.luck.error("未达到活动规则")
+							}
+							return false
+						})
+					} else {
+						hasTopUpAcivity = false;
+						$("#topUpActivity").html("暂无优惠活动")
+						$(".activity-list").hide();
+					}
+				}
+				else{
+					hasTopUpAcivity = false
+					$.luck.error('优惠券获取异常')
+				}
+			})
+		},
+		//储值卡充值
+		storageCardRecharge:function(){
+			var _this = this;
+			$("body").on("click","#rechargeCard",function(){
+				layer.open({
+					type: 1,
+					id: "cardRecharge",
+					title: '储值卡充值',
+					closeBtn: 1,
+					shadeClose: false,
+					shade: 0.3,
+					maxmin: false,//禁用最大化，最小化按钮
+					resize: false,//禁用调整大小
+					area: ['600px', '400px'],
+					btn: ['结账', '取消'],
+					skin: "lomo-ordinary",
+					content:$("#wcpsy2"),
+					success:function(){
+						_this.getTopUpActivity()
+						oShoppingCompose.clearActivity()	
+
+						$("#topUpGiftMoney").val('0.00') 
+						$("#topUpMoney").val('0.00') 	
+						$("#topUpPoint").val('0.00') 	
+						oShoppingCompose.settingTopUpMoney(0,_this.shopActivity)
+					},
+					yes:function(){					
+						//判断金额
+						let m = $('#topUpGiftMoney').val()
+						if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(m)) {
+							$.luck.error('只能输入数字，小数点后只能保留两位');						
+							return false
+						}
+						let isModify = 0
+					
+						if(parseFloat(m)<=0){
+							$.luck.error('请正确填写赠送金额')
+							return false
+						}					
+						if(parseFloat(oShoppingCompose.result.giveMoney) == parseFloat(m)){
+						}
+						else{
+							isModify = 1
+							that.result.giveMoney = parseFloat(m).toFixed(2) //后面写个方法修改
+						}	
+						
+						oShoppingCompose.result.mode = 11
+						oShoppingCompose.result.staffMode =3 //充值充次提成
+						window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result)					
+					},
+					btn2:function(){						
+						$('.activity-list').hide()
+						oShoppingCompose.clearActivity()		
+					},
+					cancel:function(){					
+						$('.activity-list').hide()
+						oShoppingCompose.clearActivity()		
+					}
+				})				
+			})
+			//充值金额
+			$("#topUpMoney").on('change', function () {	
+				let val = $(this).val()
+							
+				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
+					$.luck.error('只能输入数字，小数点后只能保留两位');
+					$(this).val('');
+					return false
+				}		
+				
+				val = parseFloat(val)
+		
+				if(oShoppingCompose.settingTopUpMoney(val,_this.shopTopUpActivity)){			
+			
+					$("#topUpGiftMoney").val(oShoppingCompose.result.giveMoney) 
+					$("#topUpMoney").val(oShoppingCompose.result.amountMoney) 	
+					$("#topUpPoint").val(oShoppingCompose.result.amountActivityPoint ) 
+					
+					//渲染
+					$('.act_item').removeClass('checked')
+
+					let actHtml = ''
+					$.each(oShoppingCompose.result.activity,function(index,item){					
+						actHtml += '<i class="shopAct">' + item.ActName + '</i>'
+						$('.act_' + item.Id).addClass('checked')
+					})
+					
+					if (actHtml == '') {						
+						if (hasShopAcivity) {							
+							$("#topUpActivity").html('请选择优惠活动')
+						}
+						else {
+							$("#topUpActivity").html('暂无优惠活动')
+						}
+					}
+					else {
+						$("#topUpActivity").html(actHtml) 
+					}	
+
+				}
+			})
+		},	
 	}
 	pageMethod.init();
 
@@ -1322,7 +1378,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 function getIccardNumber(parameter){
 	pageMethod.searchMemCard(parameter)
 }
-//客显
+//客显type类型0-清屏1-单价2-总价3-收款4-找零
 function backGuestShowMoney(money,type){
 	ShowCustomerDisplay(money,type)
 }

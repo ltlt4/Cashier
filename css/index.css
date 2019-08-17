@@ -1,4 +1,4 @@
-﻿@charset "utf-8";
+@charset "utf-8";
 
 /* CSS Document */
 
@@ -284,7 +284,7 @@ body .card-num-form dd button.bt {
 }
 
 .vipInfo dd small:nth-child(2) {
-	margin-left: 100px;
+	margin-left: 10px;
 }
 
 .vipInfo dd small:nth-child(3) {

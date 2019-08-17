@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html
+<!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -60,15 +60,15 @@
 <body>
     <!-- 头部 -->
     <div id="page">
-        <div class="lomo-top" onmousemove="if(event.button == 0){ MoveWindow()}" ondblclick=" Command_MaxOrNor();">
+        <div class="lomo-top indexWrap">
             <div class="lomo-top-head">
                 <div class="lomo-top-logo"><a href="javascript:void(0);"></a></div>
                 <dl class="lomo-top-tool">
                     <dd>
-                        <div class="tool-min" onclick="Command_Min();" onmousemove="event.stopPropagation()">
+                        <div class="tool-min hide" onmousemove="event.stopPropagation()">
                             <img src="../../Theme/images/icon06.png" alt="">
                         </div>
-                        <div class="tool-max" onclick="Command_MaxOrNor()" onmousemove="event.stopPropagation()">
+                        <div class="tool-max hide" onmousemove="event.stopPropagation()">
                             <img src="../../Theme/images/icon06-2.png" alt="" class="hide">
                             <img src="../../Theme/images/icon06-2-1.png" alt="">
                         </div>
@@ -195,19 +195,19 @@
                     <label class="layui-form-label">问题描述</label>
                     <div class="layui-input-inline" style="width: 280px">
                         <textarea id="Feedback_Message" name="describe" required="" placeholder="请输入内容"
-                            class="layui-textarea" lay-verify="required"></textarea>
+                            class="layui-textarea" lay-verify="required" maxlength="400"></textarea>
                     </div>
                 </dd>
                 <dd class="layui-form-item">
                     <label class="layui-form-label">联系人</label>
                     <div class="layui-input-inline" style="width: 280px">
-                        <input name="contacts" type="text" class="layui-input" lay-verify="required|name" />
+                        <input name="contacts" type="text" class="layui-input" lay-verify="required|name" maxlength="20"/>
                     </div>
                 </dd>
                 <dd class="layui-form-item">
                     <label class="layui-form-label">联系方式</label>
                     <div class="layui-input-inline" style="width: 280px">
-                        <input name="contactInf" type="text" class="layui-input" lay-verify="required|phone" />
+                        <input name="contactInf" type="text" class="layui-input" lay-verify="required|phone" maxlength="13"/>
                     </div>
                 </dd>
                 <dd class="gd-form-bt">
@@ -502,4 +502,5 @@
 <script src="../../Scripts/math.min.js"></script>
 <script src="../../Scripts/template-web.js"></script>
 <script src="../../Theme/script/PayCompose.js"></script>
+<script src="../../js/Pay/init.js"></script>
 <script src="../../js/index.js"></script>

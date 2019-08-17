@@ -127,40 +127,44 @@ class payCompose {
     //setp->05  计算活动优惠和整单优惠分摊 （已合并其他方法内部的计算，方法名暂时不修改）
     setpModify(resolve, reject) {
         let that = this
-        //优惠总价 活动+整单+ 抹零
+        //优惠总价 (活动+整单+ 抹零)
         let disMoney = math.chain(that.result.amountActivityMoney).add(that.result.amountModifyMoney).add(that.result.zeroAmount).done()
-        //剩余的金额 ，可能面单处理则不处理
+        //剩余的金额 ，可能免单处理则不处理( -活动-整单-摸零)
         let maxMoney = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done()
+        //可用或剩余分摊金额
+ 
         if (disMoney > 0) {
-            let diffModifyMoney = 0.00 //折扣当前循环总价金额
-
-
+            let diffModifyMoney = 0.00 //(累加值)折扣当前循环总价金额
             if (maxMoney > 0) {
                 $.each(that.result.goods, function (index, item) {
-                    let rate = (item.amount / that.result.amountDiscountMoney).toFixed(2)  //比例
-                    let p = (disMoney * rate).toFixed(2)  //当前折扣价比率分摊价格        
-                    let m = math.chain(disMoney).subtract(diffModifyMoney).done() //当前可用的分摊金额      
-
-                    console.log("rate", rate, p, m)
-                    if (m > p) {
-                        if (item.memberPrice < p) { //商品价格小于折扣价格 使用单凭总价
-                            item.modifyMoney = item.memberPrice
-                            diffModifyMoney = math.chain(diffModifyMoney).add(item.memberPrice).done()
-                            // diffModifyMoney += item.memberPrice
+                    let rate = (item.amount / that.result.amountDiscountMoney).toFixed(2)  //比例      
+                    //当前折扣价比率分摊价格  
+                    let pMoney = (disMoney * rate).toFixed(2)               
+                    //折扣大于0时计算
+                    if(rate > 0 &&  pMoney>0){
+                        //当前可用的分摊金额   
+                        let  allowMoney = accSub(disMoney ,diffModifyMoney) // math.chain(disMoney).subtract(diffModifyMoney).done()                          
+                        if(allowMoney >= pMoney){
+                            //正常处理
+                            item.modifyMoney = pMoney
+                            diffModifyMoney =  accAdd(diffModifyMoney,pMoney)
                         }
-                        else {
-                            item.modifyMoney = p
-                            diffModifyMoney = math.chain(diffModifyMoney).add(p).done()
-                            //diffModifyMoney += p
-                        }
-                    }
-                    else {
-                        m = m.toFixed(2)
-                        item.modifyMoney = m
-                        diffModifyMoney = math.chain(diffModifyMoney).add(m).done()
-                        //diffModifyMoney +=  m
+                        else{
+                            //当分摊价格不够用时，全部给当前商品
+                            item.modifyMoney = allowMoney
+                            diffModifyMoney =  accAdd(diffModifyMoney,allowMoney)
+                        }                       
                     }
                 })
+                 console.log("剩余",diffModifyMoney,disMoney)
+                // 累加值未到达优惠价格，剩余金额计入（分摊）最高的商品
+                if(diffModifyMoney < disMoney)
+                {
+                    let m = accSub(disMoney,diffModifyMoney) //剩余为分摊
+                    console.log('allowMoney',allowMoney)
+                    let goods = Enumerable.From(that.result.goods).OrderByDescending(x => x.amount).FirstOrDefault(); 
+                    goods.modifyMoney = accAdd(goods.modifyMoney , m)  
+                }
             }
             else if (maxMoney == 0) {
                 //免单
@@ -168,7 +172,7 @@ class payCompose {
                     item.modifyMoney = item.amount
                 })
             }
-            else {
+            else {                
                 console.log('整单优惠输入价格无效')
             }
         }
@@ -378,8 +382,9 @@ class payCompose {
     }
 
     //选择支付方式
-    selectPay(code) {
+    selectPay(code) {      
         let that = this
+        console.log('that.result.mode',that.result.mode)
         let item = Enumerable.From(that.payItem).Where(x => x.code == code).FirstOrDefault();
 
         if (item == undefined) {
@@ -636,8 +641,100 @@ class payCompose {
     }
 
     //场馆数据组合
-    postVenueData(pwd) {
-        return {}
+    //pwd,mainId, mode,staffMode
+    postVenueData(pwd) {        
+        let that = this    
+        let orderType = 9 //桌台消费
+        //01.检测支付方式金额
+        if (that.validPayMoney() < 0) {
+            return false
+        }
+
+        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
+
+        let postData = {}
+        postData.Order = {
+            ActivityAmount: that.result.amountActivityMoney, //优惠活动优惠金额,
+            CouponAmount: that.result.amountCouponMoney, //优惠券优惠金额,
+            ZeroAmount: that.result.zeroAmount, //抹零金额,
+            SingleAmount: that.result.amountModifyMoney, //整单优惠金额,
+            Source: 1, //消费来源：0-PC、1-前台收银、2-收银机、3-APP 4 公众号 5 小程序
+            BillCode: '',
+            OrderType: that.result.mode,
+            MemID: mid,
+            TotalMoney: that.result.amountMoney, //订单总金额,
+            DiscountMoney: that.result.amountDiscountMoney, //折后总金额,
+            TotalPoint:  math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() , //获得积分,
+            Remark: that.remark
+        }
+        // {"PaymentCode":"支付方式编码","PayAmount":支付金额,"PayContent":"积分支付扣除数量或者在线支付流水号"}      
+        postData.Payments = []   
+        $.each(that.payItem, function (index, item) {
+            if(parseFloat(item.amount)>0){
+                if (item.code == '001') {                
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)          
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: m,
+                        PayContent: (item.smallChangePrice == undefined) ?'':item.smallChangePrice
+                    })
+                }
+                else {
+                    postData.Payments.push({
+                        PaymentCode: item.code,
+                        PayAmount: item.amount,
+                        PayContent: (item.PayContent == undefined) ?'':item.PayContent
+                    })
+                }
+            }          
+        })
+
+        
+        //{"StaffId":"员工ID","CommissionMoney":自定义提成金额,"Remark":"提成备注"}
+        postData.Staffs = that.result.staffs
+        
+        //{"ActId":"优惠活动ID","ActName":"活动名称","ActivityAmount":优惠金额}
+        postData.Activities = []        
+        $.each(that.result.activity,function(index,item){
+            postData.Activities.push({
+                ActId: item.Id,
+                ActivityAmount: item.ReduceAmount,
+                ActName: item.ActName
+            })
+        })        
+
+        postData.Conpons = that.result.conpon
+
+        postData.Details = []
+        //{"DiscountAmount":优惠活动、整单优惠、抹零优惠之和,"CouponAmount":优惠券优惠,"Staffs":提成员工,"BatchCode":计次批次好,
+        //"GoodsID":商品ID,"GoodsType":商品类型,"GoodsCode":商品编号,"GoodsName":商品名称,"DiscountPrice":折扣价,
+        //"Number":数量,"TotalMoney":总金额}
+        $.each(that.result.goods, function (index, item) {
+            postData.Details.push({
+                IsModify :item.isCustomPrice,
+                // GID :item.uuid,
+                DiscountAmount: item.modifyMoney,
+                CouponAmount: item.conponMoney,
+                Staffs: item.staffs,
+                BatchCode: (item.BatchCode == undefined) ? '' : item.BatchCode,
+                GoodsID: item.goodsId,
+                GoodsType: item.goodsMode,
+                GoodsCode: item.goodsCode,
+                GoodsName: item.goodsName,
+                DiscountPrice: item.memberPrice,
+                Number: item.num,
+                TotalMoney: item.amount,
+                IndustryObjectID: item.industryObjectID,
+                StartTime:item.startTime,
+                EndTime:item.endTime
+            })
+        })
+
+        postData.MemberPwd = pwd
+        postData.MainID = that.result.mainId
+
+        console.log('场馆数据', JSON.stringify(postData))
+        return postData
     }
     //商品数据
     postPayData(pwd) {
@@ -671,22 +768,23 @@ class payCompose {
         $.each(that.payItem, function (index, item) {
             if(parseFloat(item.amount)>0){
                 if (item.code == '001') {                
-                    let  m = (item.smallChangePrice == undefined) ? item.amount : math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)          
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: m,
-                        PayContent: ''
+                        PayContent: (item.smallChangePrice == undefined) ?'':item.smallChangePrice
                     })
                 }
                 else {
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: item.amount,
-                        PayContent: ''
+                        PayContent: (item.PayContent == undefined) ?'':item.PayContent
                     })
                 }
             }          
         })
+
         postData.Staffs = that.result.staffs// []//{"StaffId":"员工ID","CommissionMoney":自定义提成金额,"Remark":"提成备注"}
 
         postData.Activities = []     //{"ActId":"优惠活动ID","ActName":"活动名称","ActivityAmount":优惠金额}             
@@ -753,18 +851,18 @@ class payCompose {
         $.each(that.payItem, function (index, item) {
             if(parseFloat(item.amount)>0){
                 if (item.code == '001') {                
-                    let  m = (item.smallChangePrice == undefined) ? item.amount : math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)          
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: m,
-                        PayContent: ''
+                        PayContent: (item.smallChangePrice == undefined) ?'':item.smallChangePrice
                     })
                 }
                 else {
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: item.amount,
-                        PayContent: ''
+                        PayContent: (item.PayContent == undefined) ?'':item.PayContent
                     })
                 }
             }          
@@ -832,19 +930,18 @@ class payCompose {
         $.each(that.payItem, function (index, item) {
             if(parseFloat(item.amount)>0){
                 if (item.code == '001') {                
-                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)                    
-                    //math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)          
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: m,
-                        PayContent: ''
+                        PayContent: (item.smallChangePrice == undefined) ?'':item.smallChangePrice
                     })
                 }
                 else {
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: item.amount,
-                        PayContent: ''
+                        PayContent: (item.PayContent == undefined) ?'':item.PayContent
                     })
                 }
             }          
@@ -889,19 +986,18 @@ class payCompose {
         $.each(that.payItem, function (index, item) {
             if(parseFloat(item.amount)>0){
                 if (item.code == '001') {                
-                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)                    
-                    //math.chain(item.amount).subtract(item.smallChangePrice).done().toFixed(2)
+                    let  m = (item.smallChangePrice == undefined) ? item.amount : accSub(item.amount,item.smallChangePrice)          
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: m,
-                        PayContent: ''
+                        PayContent: (item.smallChangePrice == undefined) ?'':item.smallChangePrice
                     })
                 }
                 else {
                     postData.Payments.push({
                         PaymentCode: item.code,
                         PayAmount: item.amount,
-                        PayContent: ''
+                        PayContent: (item.PayContent == undefined) ?'':item.PayContent
                     })
                 }
             }          

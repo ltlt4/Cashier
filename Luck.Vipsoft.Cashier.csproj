@@ -96,6 +96,7 @@
     <Content Include="js\Order\onlineOrder\onlineOrder.js" />
     <Content Include="js\Order\reservation\reservation.js" />
     <Content Include="js\Order\writeOff\writeOff.js" />
+    <Content Include="js\Pay\init.js" />
     <Content Include="js\settings\settings.js" />
     <Content Include="Scripts\linq.min.js" />
     <Content Include="Scripts\math.min.js" />

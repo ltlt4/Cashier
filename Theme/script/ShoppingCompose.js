@@ -43,7 +43,7 @@ $(function () {
 //购物车数据
 class shoppingCompose
 {
-    constructor(config) {
+    constructor(config,mode) {
         this.billCode = ''              //订单号    
         this.shoppingCar = []           //购物车
         this.config = config            //配置
@@ -51,7 +51,7 @@ class shoppingCompose
         this.chooseMember = {}           //会员数据
         this.processCallback = function () { console.log("processCallback->未绑定回调方法") }
         this.init()
-        this.mode = 2                   //商品消费 1.快速消费 2.商品消费 9.桌台消费 11.会员充值 12.会员充次
+        this.mode = (mode==undefined) ? 2 :  mode                  //商品消费 1.快速消费 2.商品消费 9.桌台消费 11.会员充值 12.会员充次
     }
 
     init(){
@@ -291,7 +291,8 @@ class shoppingCompose
         else {  
             //商品库存
             if (item.goodsMode == 4) {
-                if (parseInt(num) > item.source.StockNum) {
+                let allNum = Enumerable.From(this.shoppingCar).Where(x => x.goodsId == item.goodsId && x.goodsMode == 4).Sum(x => x.num);
+                if (parseInt(allNum) > item.source.StockNum) {
                     item.num = item.source.StockNum
                     return false;
                 }
@@ -490,24 +491,32 @@ class shoppingCompose
                 }
             }
 
-            //积分计算
-            if (member.Id != undefined) {
-                if (element.source.IsPoint == 1) {
-                    goodsPoint = (element.source.PointType * element.num)
-                    amountPoint = math.chain(amountPoint).add(goodsPoint).done() // amountPoint + goodsPoint
-                }
-                else if (member.PointPercent > 0) {
-                    goodsPoint = (memberPrice * element.num * member.PointPercent).toFixed(4)
-                    //(((price - memberPrice) * element.num )* member.PointPercent ).toFixed(4)
-                    amountPoint = math.chain(amountPoint).add(goodsPoint).done() // goodsPoint;// 按折后金额给积分
-                }
+            //当商品消费为计次时不计算积分
+            if(element.source.GoodsType ==4 && that.mode ==2){
+                goodsPoint = 0.00
             }
+            else{
+                //积分计算
+                if (member.Id != undefined) {
+                    if (element.source.IsPoint == 1) {
+                        goodsPoint = (element.source.PointType * element.num)
+                        amountPoint = math.chain(amountPoint).add(goodsPoint).done() // amountPoint + goodsPoint
+                    }
+                    else if (member.PointPercent > 0) {
+                        goodsPoint = (memberPrice * element.num * member.PointPercent).toFixed(4)
+                        //(((price - memberPrice) * element.num )* member.PointPercent ).toFixed(4)
+                        amountPoint = math.chain(amountPoint).add(goodsPoint).done() // goodsPoint;// 按折后金额给积分
+                    }
+                }
+            }         
 
             goodsItem.goodsPoint = goodsPoint
             goodsItem.memberPrice = memberPrice
             goodsItem.memberSchemes = memberSchemes
             goodsItem.memberDiscount = discount
             goodsItem.amount = (memberPrice * element.num).toFixed(2)
+
+            console.log("item",goodsItem,element)
 
             that.result.goods.push(goodsItem)
 
@@ -544,7 +553,7 @@ class shoppingCompose
                     that.result.amountActivityMoney = accAdd(that.result.amountActivityMoney, that.chooseActivity.ReduceAmount)                    
                 }
                 if (that.chooseActivity.IsGivePoint == 1) {
-                    that.result.amountActivityPoint = accAdd(that.result.amountActivityMoney, that.chooseActivity.ReduceAmount)                 
+                    that.result.amountActivityPoint = accAdd(that.result.amountActivityPoint, that.chooseActivity.GivePoint)                 
                 }
             }
             else {

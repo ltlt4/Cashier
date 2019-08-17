@@ -406,7 +406,7 @@ function login() {
     var pwd = $("#pwd").val() //密码
     //验证企业号
     if (enterprise == '') {
-        layer.msg(LuckVipsoft.lan.ER0015);
+        layer.msg(LuckVipsoft.lan.ER0026);
         $('#enterprise').focus();
         return false;
     }
@@ -432,20 +432,7 @@ function login() {
     
     $.http.register(LuckVipsoft.api.login, param, function (res) {
         if (res.status == 1) {
-            layer.msg(res.msg);
-            if(loginType==2){
-                param={
-                    CompCode: enterprise,
-                    Account: username,
-                    Password: pwd,
-                    InterfaceKey:LuckVipsoft.InterfaceKey,
-                    Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
-                };
-                if (GoToBackstage) {
-                    GoToBackstage(JSON.stringify(param));
-                }      
-                return;
-            }
+            layer.msg(res.msg);            
             if ($('.login-form-other  label').eq(0).prev().hasClass("choice")) {
                 var base = new cashier.Base64();
                 var Record = {
@@ -461,6 +448,19 @@ function login() {
             $.session.set('LoginMsg', param);
             $.session.set('Cashier_Token', res.data.Token)
             $.session.set('Cashier_User', res.data);
+            if(loginType==2){
+                param={
+                    CompCode: enterprise,
+                    Account: username,
+                    Password: pwd,
+                    InterfaceKey:LuckVipsoft.InterfaceKey,
+                    Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
+                };
+                if (GoToBackstage) {
+                    GoToBackstage(JSON.stringify(param));
+                }      
+                return;
+            }
             //数据初始化
             var MemberMethod = {
                 start: function () {

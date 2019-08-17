@@ -72,6 +72,11 @@ layui.use(['layer', 'jquery', "form", 'table'], function () {
                 }
                 _this.countProductNum();
             });
+			$(window).resize(function(){
+			    proboxHeight = $(".lomo-mian-right").height();
+			    proboxWidth = $(".lomo-mian-right").width();
+			    _this.countProductNum();
+			})
             //产品翻页 上一页
             $(".page-prev").on("click",function(){
                 if(_this.pageIndex==1){
