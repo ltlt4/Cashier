@@ -1,6 +1,6 @@
 var LuckVipsoft = {}
 LuckVipsoft.http = "http://192.168.0.13:8088"
-//LuckVipsoft.http = "http://192.168.0.111"
+//LuckVipsoft.http = "http://localhost:3645"
 LuckVipsoft.api = {
     /* 登录、注册*/
     retrievePasswordSendCode: '/api/GeneralInterface/RetrievePasswordSendCode', //发送验证码
@@ -147,6 +147,9 @@ LuckVipsoft.api = {
     GetRestingOrderData: '/api/GeneralInterface/GetRestingOrderData',//取单
     QuickConsume: '/api/GeneralInterface/QuickConsume', //快速消费
     RechargeCount: '/api/GeneralInterface/RechargeCount',//  会员充次 
+
+    //预约取单
+    GetReservationOpenOrder :'/api/GeneralInterface/GetReservationOpenOrder',//取单
 }
 LuckVipsoft.lan = {
     ER0000: '系统登录失败',

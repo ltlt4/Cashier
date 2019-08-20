@@ -1,22 +1,23 @@
 var sysArgument = $.session.get('Cashier_User').SysArguments
 var oPayCompose = new payCompose(sysArgument)
-layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
-    var $ = layui.jquery,layer = layui.layer,form = layui.form,element = layui.element,table = layui.table; 
+var StaffList  =[]
+var StaffClassList =[]
+layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
+    var $ = layui.jquery, layer = layui.layer, form = layui.form, element = layui.element, table = layui.table;
     var user = {
         token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
-        information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null, 
+        information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null,
     };
 
-
     var pay = {
-        StaffList:[],
-        StaffClassList:[],
-        choosedStaffAry:[],
+        StaffList: [],
+        StaffClassList: [],
+        choosedStaffAry: [],
         init: function () {
             var _this = this;
             _this.payPopArea();
             _this.initPayItem();
-            _this.initStaffList();     
+            _this.initStaffList();
         },
         //初始化支付项
         initPayItem: function () {
@@ -25,26 +26,30 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 html += '<li data-code="' + item.code + '" id="pay_item_' + item.code + '" class="pay_item"><a style="background: url(../../../Theme/images/pay/' + item.icon + ') no-repeat center 10px;" href="#">' + item.name + '</a></li>'
             });
             $("#pay").html(html)
-            $(".pay_item").bind("click", function () {
+            $(".pay_item").bind("click", function (event) {
+        
                 var code = $(this).attr('data-code')
-                if (oPayCompose.chooseMember.Id == undefined  && (code == '002' || code == '003' || code == '999')) {
-               
+                if (oPayCompose.chooseMember.Id == undefined && (code == '002' || code == '003' || code == '999')) {
                     $.luck.error('会员才可用 积分、余额、优惠券 支付')
+                    event.preventDefault();
                     return false
                 }
-                if(oPayCompose.result.mode==11  && (code == '002' || code == '003' || code == '999')){
+                if (oPayCompose.result.mode == 11 && (code == '002' || code == '003' || code == '999')) {
                     $.luck.error('会员充值不能使用 积分、余额、优惠券 支付')
-                    return false                    
+                    event.preventDefault();
+                    return false
                 }
-    
+
                 if (oPayCompose.payMaxCount(code, 3)) {
                     $.luck.error('最多只能选择3中支付方式')
+                    event.preventDefault();
                     return false
                 }
-    
+
+                console.log(' oPayCompose.selectPay(code)=======>',code)
                 var result = oPayCompose.selectPay(code)
                 //重新渲染 -> cashier-num
-    
+
                 if (!result) {
                     $.luck.error(code)
                 }
@@ -71,7 +76,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     $('#single_discount_money').val('0.00')
                 }
                 form.render()
-    
+
                 layer.open({
                     type: 1,
                     id: "singleDiscount",
@@ -90,7 +95,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                         var val = $('#single_discount_val').val()
                         var mode = $('#single_discount_mode').val()
                         var dis = math.chain(oPayCompose.result.amountDiscountMoney).subtract(oPayCompose.result.amountActivityMoney).subtract(parseFloat(diffVal)).done().toFixed(2)
-    
+
                         var info = { val: val, mode: mode, money: diffVal }
                         oPayCompose.settingModify(dis, info)
                         layer.close(index)
@@ -99,7 +104,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     }
                 })
             });
-    
+
             //整单金额输入框
             $("#single_discount_val").on('change', function () {
                 var val = $(this).val()
@@ -110,10 +115,10 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 }
                 var maxMoney = (oPayCompose.result.amountDiscountMoney - oPayCompose.result.amountActivityMoney).toFixed(2)
                 val = parseFloat(val)
-    
+
                 var mode = $('#single_discount_mode').val()
                 console.log('mode', mode)
-    
+
                 if (mode == 2) {
                     if (val > maxMoney) {
                         $('#single_discount_val').val(maxMoney)
@@ -140,14 +145,14 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     $('#single_discount_money').val(newVal)
                 }
             });
-    
+
             //取消整单优惠
             $("#single_cancel").on('click', function () {
                 $('#single_discount_val').val('0.00')
                 $('#single_discount_money').val('0.00')
                 oPayCompose.cancelModify()
             });
-    
+
             //整单提成单位选中
             form.on('select(single_discount_money)', function (data) {
                 $('#single_discount_val').val('0.00')
@@ -155,7 +160,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 //重置
                 oPayCompose.cancelModify()
             });
-    
+
             //整单提成
             $(".cashier-way .way8").on("click", function () {
                 layer.open({
@@ -180,7 +185,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                         tab_staff.reload({
                             data: chooseStaff
                         });
-    
+
                         //初始
                         var html = '';
                         $(".staffname").remove();
@@ -189,7 +194,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                             html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
                         })
                         $(".lomo-tcyg-add .nameTitle").after(html);
-    
+
                         element.render();
                     },
                     yes: function (index) {
@@ -198,11 +203,11 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                         layer.close(index)
                     },
                     btn2: function () {
-    
+
                     }
                 })
             });
-    
+
             //备注
             $(".cashier-way .way9").on("click", function () {
                 layer.open({
@@ -227,7 +232,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     }
                 })
             });
-    
+
             //重新选择优惠券
             $("body").on("click", ".paySelectCoupon", function () {
                 layer.open({
@@ -286,7 +291,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 //var chooseAry = [];
                 table.on('checkbox(coupoonList)', function (obj) {
                     var paidMoney = parseFloat(oPayCompose.paidMoney())
-    
+
                     var checkStatus = table.checkStatus('coupoonList');
                     if (obj.type == "one") {
                         if (obj.checked == true) {
@@ -312,46 +317,40 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                             var data = checkStatus.data;
                             layer.alert(JSON.stringify(data));
                         } else {
-    
+
                         }
                     }
-    
+
                 })
             });
-    
+
             //输入框选中
-            $("body").on("click", ".cashier-num-b li", function () {
+            $("body").on("click", ".cashier-num-b li", function () {              
                 curEditMoneyDom = $(this);
-                curPayCode = $(this).attr('data-code') //选中的支付输入框
+                let  curPayCode = $(this).attr('data-code') //选中的支付输入框
                 var result = oPayCompose.selectPayInput(curPayCode)
             });
-    
+
             //金额输入框
-            $("body").on("input", ".moneyInput", function (event) {
-                console.log(event)
-                var val = $(this).val()
-                var oldVal = $(this).attr('data-old')
-    
+            $("body").on("input", ".moneyInput", function (event) {    
+                let val = $(this).val()
+                var reg = $(this).val().match(/\d+\.?\d{0,2}/);               
+                if (reg != null) {
+                    val = reg[0];
+                }
+                $(this).val(val)
+
+                let oldVal = $(this).attr('data-old')
                 if (val == '') {
-                    val = 0
+                    val = 0 
                     $(this).val(0)
                 }
-    
+
                 if (isNaN(val)) {
-                    val = 0
+                     val = 0
                     $(this).val(0)
-                }
-                console.log('val', val)
-                if (val.length != undefined) {
-                    if (val.charAt(val.length - 1) == '.') { return false }
-                }
-    
-                // if(patch('.',val) >2){
-                // 	//截断后面的小数点
-                // 	//$(this).val(new)	
-                // 	return false
-                // }
-    
+                }         
+
                 val = parseFloat(val)
                 oldVal = parseFloat(oldVal)
                 if (!/(^[1-9]([0-9]+)?(\.[0-9]{0,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
@@ -359,37 +358,38 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     $.luck.error('金额只能时2位小数')
                     return false
                 }
-    
+
                 if (val != oldVal) {
+                    console.log( ' oPayCompose.curPayItem->moneyInput' ,oPayCompose.curPayItem)
                     var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, val)
                 }
             });
-    
+
             //抹零设置
             $("body").on("click", ".settingZero", function () {
                 oPayCompose.settingZeroAmount();
             });
-    
+
             //小键盘及金额计算
             $(".cashier-keyboard li").on("click", function () {
-                var val = $(this).text();
+                var val = $(this).text(); 
                 if (oPayCompose.curPayItem == '') {
                     $.luck.error('请选中支付输入框')
                     return false;
                 }
-    
+
                 if (oPayCompose.curPayItem == '999') {
                     $.luck.error('请选择优惠券')
                     return false;
                 }
-    
+
                 var oldVal = $("#pay_input_" + oPayCompose.curPayItem).val()
                 if (val == '.') {
                     oldVal += val
                     $("#pay_input_" + oPayCompose.curPayItem).val(oldVal)
                     return false;
                 }
-    
+
                 if (val == '←') {
                     if (oldVal.length <= 1) {
                         oldVal = 0
@@ -404,69 +404,70 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 else {
                     oldVal += val
                 }
-    
+
                 oldVal = parseFloat(oldVal)
                 if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(oldVal)) {
                     $.luck.error('金额只能是2位小数')
                     return false
                 }
-    
+
                 if (oldVal == '') { oldVal = 0 }
                 var result = oPayCompose.changePayMoney(oPayCompose.curPayItem, oldVal)
             });
 
             //点击结算：微信或支付宝付款时用
             $("body").on("click", "#finishPayBtn", function () {
+                 console.log('PayCompose.payItem ->finishPayBtn ',oPayCompose.curPayItem ,oPayCompose.payItem)
+
                 if (oPayCompose.validPayMoney() < 0) {
                     $.luck.error('付款金额不足,无法完成支付')
                     return false
                 }
                 //请求接口
-                let postUrl =''    
+                let postUrl = ''
                 let printMode = 0
-                    
-                console.log('oPayCompose.result.mode',oPayCompose.result.mode)
-                switch(oPayCompose.result.mode)
-                {
+
+                console.log('oPayCompose.result.mode', oPayCompose.result.mode)
+                switch (oPayCompose.result.mode) {
                     case 1:
-                        postUrl =  LuckVipsoft.api.QuickConsume   
-                        printMode =1                              
+                        postUrl = LuckVipsoft.api.QuickConsume
+                        printMode = 1
                         break;
-                    case 2:                                   
+                    case 2:
                         postUrl = LuckVipsoft.api.GoodsConsume
-                        printMode =2
+                        printMode = 2
                         break;
-                    case 9:                                 
+                    case 9:
                         postUrl = LuckVipsoft.api.VenueConsume
-                        printMode =5
+                        printMode = 5
                         break;
-                    case 11:                                
+                    case 11:
                         postUrl = LuckVipsoft.api.TopUp
-                        printMode =7
+                        printMode = 7
                         break;
-                    case 12:                                   
-                        postUrl =  LuckVipsoft.api.RechargeCount
-                        printMode =8
-                        break;                                                    
+                    case 12:
+                        postUrl = LuckVipsoft.api.RechargeCount
+                        printMode = 8
+                        break;
                 }
-    
-                let hasPwd = Enumerable.From(oPayCompose.payItem).Where(x=>x.code='003' || x.code=='002').FirstOrDefault();
-              
+
+                //支付密码
+                let hasPwd = Enumerable.From(oPayCompose.payItem).Where(x => x.code == '003' || x.code == '002').FirstOrDefault();
                 var pwd = $("#pay_pwd").val()
-                if((hasPwd != undefined) && sysArgument.IsEnableSecurityPwd ==1 && pwd =='')
-                {   
+                if ((hasPwd != undefined) && sysArgument.IsEnableSecurityPwd == 1 && pwd == '' && parseFloat( hasPwd.amount > 0 )) {
                     $.luck.error('请输入支付密码')
                     return false
-                }             
+                }
 
+                //微信或支付宝付款时用
                 let item = Enumerable.From(oPayCompose.payItem).Where(function (x) {
                     if (x.code == '020' || x.code == '010') {
                         return true;
                     }
                     return false;
                 }).FirstOrDefault();
-    
-                if (item != undefined) {
+
+                if (item != undefined  && parseFloat( item.amount > 0 )) {
                     $('#paymentCode').val('')
                     $('#onlinePayMoney').html(item.amount)
                     //item.amount
@@ -504,26 +505,26 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                             else {
                                 var payCode = $('#paymentCode').val()
                                 //在线支付
-                                onlinePay(item.amount, item.code, payCode, user.token).then( 
-                                    function(res){
-                                        console.log('onlinePay',res)      
+                                onlinePay(item.amount, item.code, payCode, user.token).then(
+                                    function (res) {
+                                        console.log('onlinePay', res)
                                         item.PayContent = res.out_trade_no
-                                        console.log('oPayCompose.payItem->',oPayCompose.payItem)      
-                                        if(res.status==1){
+                                        console.log('oPayCompose.payItem->', oPayCompose.payItem)
+                                        if (res.status == 1) {
                                             //支付
-                                            postPay(pwd,postUrl,printMode,user.token)   
+                                            postPay(pwd, postUrl, printMode, user.token)
                                         }
-                                        else if(res.status ==3){
-                                            console.log('onlinePay->3',res)
-                                            setTimeout(queryPay(res.out_trade_no,item.code,user.token,pwd,postUrl,printMode),3000)
+                                        else if (res.status == 3) {
+                                            console.log('onlinePay->3', res)
+                                            setTimeout(queryPay(res.out_trade_no, item.code, user.token, pwd, postUrl, printMode), 3000)
                                             // setTimeout(queryPay(outTradeNo,payType,token), 2000)
                                         }
-                                        else{
+                                        else {
                                             layer.alert(res.return_msg, { icon: 1, closeBtn: 0 }, function (index2) {
-                                                layer.close(index2)                                                  
+                                                layer.close(index2)
                                             });
                                         }
-                            })
+                                    })
                             }
                         },
                         btn2: function (index, layero) {
@@ -533,67 +534,70 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     })
                 }
                 else {
-                    postPay(pwd,postUrl,printMode,user.token)      
+                    postPay(pwd, postUrl, printMode, user.token)
                 }
             });
         },
         //初始化员工提成
-        initStaffList:function(){
+        initStaffList: function () {
             let that = this
-        
+
             //员工分类
-            let p1 = new Promise(function(resolve, reject){						
+            let p1 = new Promise(function (resolve, reject) {
                 $.http.post(LuckVipsoft.api.getStaffClassList, {}, user.token, function (res) {
-                    if (res.status == 1) {										
+                    if (res.status == 1) {
                         resolve(res.data)
                     }
                 });
             })
-            p1.then(function(res){
+            p1.then(function (res) {
                 that.StaffClassList = res;
+                StaffClassList = res
                 //提成员工 StaffType必填0-售卡提成1-快速消费提成2-商品消费提成3-充值充次提成
                 $.http.post(LuckVipsoft.api.getStaffList, { StaffType: 1, StaffName: "" }, user.token, function (res) {
                     if (res.status == 1) {
-                        that.StaffList.QuickConsume = res.data;					
+                        that.StaffList.QuickConsume = res.data;
+                        StaffList.QuickConsume= res.data;
                     }
                 });
                 $.http.post(LuckVipsoft.api.getStaffList, { StaffType: 2, StaffName: "" }, user.token, function (res) {
                     if (res.status == 1) {
-                        that.StaffList.GoodsConsume  = res.data;					
+                        that.StaffList.GoodsConsume = res.data;
+                        StaffList.GoodsConsume= res.data;
                     }
                 });
                 $.http.post(LuckVipsoft.api.getStaffList, { StaffType: 3, StaffName: "" }, user.token, function (res) {
                     if (res.status == 1) {
-                        that.StaffList.RechargeCount = res.data;					
+                        that.StaffList.RechargeCount = res.data;
+                        StaffList.RechargeCount= res.data;
                     }
-                });			
+                });
             })
-    
+
             pay.chooseMembergetCommission()
             return true
         },
         //选中员工树形列表根据收银类型初始化员工
-        StaffTree:function(mode){
+        StaffTree: function (mode) {
             var _this = this;
             var html = '';
             let staffList = []
-    
-            switch(mode)
-            {
+
+            switch (mode) {
                 case 1:
                     staffList = _this.StaffList.QuickConsume
-                break;
+                    break;
                 case 2:
                     staffList = _this.StaffList.GoodsConsume
-                break;
+                    break;
                 case 3:
                     staffList = _this.StaffList.RechargeCount
-                break;
+                    break;
                 default:
                     staffList = _this.StaffList.GoodsConsume
-                break;
+                    break;
             }
-    
+
             if (_this.StaffClassList.length > 0) {
                 $.each(_this.StaffClassList, function (index, item) {
                     html += '<div class="layui-collapse">'
@@ -618,19 +622,19 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
         chooseMembergetCommission: function () {
             var _this = this;
             var html = '';
-            let chooseStaff =[]
+            let chooseStaff = []
             //员工树形列表 ->StaffTree
-          
+
             $('.lomo-xztcyg .lomo-xztcyg-left').html(html);
             //已选择员工列表
             tab_staff = table.render({
                 elem: '#StaffList',
-                   //data: _this.choosedStaffAry,
+                //data: _this.choosedStaffAry,
                 cellMinWidth: 95,
                 cols: [
                     [
                         { field: 'StaffName', title: '姓名', align: 'center' },
-                        { field: 'CommissionMoney', title: '自定义提成金额', edit: 'text', align: 'center',event: "money" },
+                        { field: 'CommissionMoney', title: '自定义提成金额', edit: 'text', align: 'center', event: "money" },
                         { field: 'Remark', title: '备注', edit: 'text', align: 'center' },
                         {
                             title: '操作', align: 'center', templet: function (d) {
@@ -674,7 +678,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                 })
             });
             //整单提成
-            $("body").on("click", ".choose-order-member", function () {		
+            $("body").on("click", ".choose-order-member", function () {
                 _this.StaffTree(oPayCompose.result.staffMode)
                 layer.open({
                     type: 1,
@@ -690,9 +694,9 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     skin: "lomo-ordinary",
                     content: $(".lomo-xztcyg"),
                     success: function () {
-                        chooseStaff  = Object.assign([],_this.choosedStaffAry)
+                        chooseStaff = Object.assign([], _this.choosedStaffAry)
                         $("body").find('.staff-list li').removeAttr("class");
-                        $.each( chooseStaff, function (index, item) {
+                        $.each(chooseStaff, function (index, item) {
                             $("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
                         })
                         tab_staff.reload({
@@ -704,21 +708,21 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                         layer.close(index)
                         var html = '';
                         $(".staffname").remove();
-                        _this.choosedStaffAry = Object.assign([],chooseStaff)
+                        _this.choosedStaffAry = Object.assign([], chooseStaff)
                         $.each(chooseStaff, function (index, item) {
                             html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
                         })
                         $(".lomo-tcyg-add .nameTitle").after(html);
                     },
-                    btn2:function (index) {
+                    btn2: function (index) {
                         layer.close(index)
-                        chooseStaff =[]
-                        _this.choosedStaffAry=[]
+                        chooseStaff = []
+                        _this.choosedStaffAry = []
                         $(".staffname").remove();
                     }
                 })
             });
-            
+
             //商品页面删除提成员工
             $("body").on("click", ".deletStaff", function () {
                 var id = $(this).parent(".name").attr("data-id");
@@ -752,7 +756,7 @@ layui.use(['layer','element', 'jquery', 'form', 'table'], function () {
                     })
                 }
                 tab_staff.reload({
-                    data:chooseStaff
+                    data: chooseStaff
                 });
             })
         },
@@ -773,14 +777,14 @@ oPayCompose.finishCallback = function () {
     let zeroAmount = parseFloat(oPayCompose.result.zeroAmount)
 
     let paid = math.chain(amountDiscountMoney).subtract(amountActivityMoney).subtract(amountModifyMoney).subtract(zeroAmount).subtract(allPayMoney).done().toFixed(2)
-    //01.payInfoTmp 渲染
+    //01.payInfoTmp 渲染   
     dataResult = {
         isZero: oPayCompose.result.isZeroAmount,
         isOpenZero: oPayCompose.config.IsAllowModifyOrderTotal,
         amount: amountDiscountMoney.toFixed(2),	//应收
         paid: paid >= 0 ? paid : 0.00,			//待收
         discount: math.chain(amountActivityMoney).add(amountModifyMoney).add(zeroAmount).done().toFixed(2),				   //优惠
-        payItem: oPayCompose.payItem,				   //支付列表
+        payItem: Object.assign([],oPayCompose.payItem) ,				   //支付列表
         curPayItem: oPayCompose.curPayItem				   //当前选中支付方式
     }
     let html = template('payInfoTmp', dataResult);
@@ -799,8 +803,7 @@ oPayCompose.finishCallback = function () {
     }
 }
 
-function callPay (chooseMember, result) {
-    //console.log('123', chooseMember, result, staffMode)
+function callPay(chooseMember, result) {  
     let mdata = {}
     $('.pay_item').removeClass('border-red')
     //会员信息
@@ -839,11 +842,11 @@ function callPay (chooseMember, result) {
         area: ['90%', '80%'],
         skin: "lomo-ordinary",
         content: $(".lomo-cashier"),
-        success: function (layero, index) {           
+        success: function (layero, index) {
             //result.staffMode = staffMode   //员工提成方式      
-            chooseMember = Object.assign({},chooseMember)
-            result = Object.assign({},result)
-            oPayCompose.initShoppingData(chooseMember, result,function(){
+            chooseMember = Object.assign({}, chooseMember)
+            result = Object.assign({}, result)
+            oPayCompose.initShoppingData(chooseMember, result, function () {
                 oPayCompose.finishCallback()
             })
         },
@@ -853,7 +856,7 @@ function callPay (chooseMember, result) {
             $("#pay_pwd").val('')
         }
     })
-} 
+}
 
 //在线支付请求
 function onlinePay(amount, code, payCode, token) {
@@ -874,7 +877,7 @@ function onlinePay(amount, code, payCode, token) {
             $.http.post(LuckVipsoft.api.ComboBarcodePay, { PayMoney: amount, AuthNo: payCode }, token, function (res) {
                 console.log('LuckVipsoft.api.ComboBarcodePay', res)
                 let result = {
-                    status :0,
+                    status: 0,
                     return_msg: res.msg
                 }
                 if (res.status == 1) {
@@ -929,7 +932,7 @@ function onlinePay(amount, code, payCode, token) {
     });
 }
 
-function queryPay(outTradeNo, payType, token,pwd,postUrl,printMode) {
+function queryPay(outTradeNo, payType, token, pwd, postUrl, printMode) {
     if (token != null) {
         $.http.post(LuckVipsoft.api.QueryPay, { OutTradeNo: outTradeNo, PayType: payType }, token, function (res) {
             console.log('LuckVipsoft.api.QueryPay', res)
@@ -942,19 +945,19 @@ function queryPay(outTradeNo, payType, token,pwd,postUrl,printMode) {
                 if (res.data.return_code == '01') {
                     switch (res.data.result_code) {
                         case '01':
-                            postPay(pwd,postUrl,printMode,token)
-                            break ;
+                            postPay(pwd, postUrl, printMode, token)
+                            break;
                         case '02':
-                            console.log('res.data.result_code->02',res)
+                            console.log('res.data.result_code->02', res)
                             break;
                         case '03':
-                            console.log('res.data.result_code->03',res)
-                            setTimeout(queryPay(outTradeNo, payType, token,pwd,postUrl,printMode),5000)
+                            console.log('res.data.result_code->03', res)
+                            setTimeout(queryPay(outTradeNo, payType, token, pwd, postUrl, printMode), 5000)
                             break;
                     }
                 }
                 else {
-                      //支付失败          
+                    //支付失败          
                 }
             }
             else {
@@ -964,24 +967,24 @@ function queryPay(outTradeNo, payType, token,pwd,postUrl,printMode) {
     }
 }
 
-function postPay(pwd,postUrl,printMode,token){
-    oPayCompose.payPostData(pwd).then(function(res){    
+function postPay(pwd, postUrl, printMode, token) { 
+    oPayCompose.payPostData(pwd).then(function (res) {
         $.http.post(postUrl, res, token, function (res) {
             if (res.status == 1) {
                 //打印小票
-                if(typeof(TicketPrintt)=="function"){ 
-                    console.log('执行打印函数',printMode)
+                if (typeof (TicketPrintt) == "function") {
+                    console.log('执行打印函数', printMode)
                     TicketPrint(JSON.stringify(res.data), printMode);
                 }
                 layer.alert('支付完成', { icon: 1, closeBtn: 0 }, function (index) {
-                    layer.closeAll()  
-                    if(printMode==5){
-                        $("#childframe")[0].contentWindow.venue.resetPage(); 
+                    layer.closeAll()
+                    if (printMode == 5) {
+                        $("#childframe")[0].contentWindow.venue.resetPage();
                     }
-                    else{
-                        $("#childframe")[0].contentWindow.pageMethod.resetPage(); 
+                    else {
+                        $("#childframe")[0].contentWindow.pageMethod.resetPage();
                     }
-                    return false   
+                    return false
                 });
             }
             else {
@@ -990,5 +993,5 @@ function postPay(pwd,postUrl,printMode,token){
                 });
             }
         })
-    })  
+    })
 }

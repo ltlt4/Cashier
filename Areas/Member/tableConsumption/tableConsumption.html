@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html
+<!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -19,6 +19,7 @@
                     <!--卡号搜索/新增 start-->
 				    <div class="card-num">
 					    <dl class="card-num-form">
+							<form action="">
 							<dd>
 							    <input id="barCode" type="text" placeholder="F2刷卡或输入卡号" class="input" />
 							    <a href="javascript:void(0);" class="card-num-up" onclick="luckKeyboard.showSmallkeyboard(this)"></a>
@@ -27,6 +28,7 @@
 							<dt>
 							    <button type="button" id="addnewMember" class="add-bt">+&nbsp;新增</button>
 							</dt>
+							</form>
 					    </dl>
 				    </div>
                     
@@ -369,12 +371,14 @@
             <!--会员搜索弹层-->
 		    <div id="lomo-members-search" class="lomo-members-search lomo-search hide">
 			    <dl class="members-search-form">
+					<form action="">
 			        <dt>
 			            <input name="" type="text" placeholder="请输入姓名/卡号/手机号码" class="input" />
 			        </dt>
 			        <dd>
 			            <button class="add-bt" id="memberSearch">搜索</button>
 			        </dd>
+					</form>
 			    </dl>
 			    <div class="members-search-list">
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="dataTable">

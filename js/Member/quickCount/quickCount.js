@@ -154,8 +154,7 @@ var childPage = layui.use(['layer', 'element', 'jquery', "form", 'table'], funct
 		},
 	}
 	
-	pageMethod.init()
-	
+	pageMethod.init();
 })
 //刷卡获取卡号后续处理
 function getIccardNumber(parameter){

@@ -175,11 +175,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                     $(this).html('开启无图模式');
                     graph = true;
                 }
+				_this.pageIndex = 1;
                 _this.countProductNum(2);
             });
 			$(window).resize(function(){
 			    proboxHeight = $(".lomo-mian-right").height();
 			    proboxWidth = $(".lomo-mian-right").width();
+				_this.pageIndex = 1;
 				_this.countProductNum(1);
 			    _this.countProductNum(2);
 			})
@@ -986,6 +988,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                                 $(".timescount").show();
                                 $(".lomo-order").css({"top":"84px","margin-top":"11px"});
                             } else {
+								var curMemList = res.data
                                 layer.open({
                                     type: 1,
                                     id: "searchMemCard",
@@ -1007,16 +1010,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                                             $tr.each(function () {
                                                 if ($(this).hasClass('lomo-mem-list')) {
                                                     var _index = $(this).index()
-                                                    console.log(res.data[_index])
-                                                    http.cashierEnd.seleMembers(res.data[_index], user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
-													
-                                                    member = res.data[_index];
+                                                    http.cashierEnd.seleMembers(curMemList[_index], user.information.ImageServerPath, '.lomo-mian-left .vipInfo')
+                                                    member = curMemList[_index];
                                                     _this.GetVenueOrderInfo(1);
                                                     $(".lomo-order").css({"top":"84px","margin-top":"11px"});
                                                 }
                                             });
                                             $(".timescount").show();
-                                            layer.msg('操作成功')
                                             layer.close(index)
                                         } else {
                                             layer.msg(LuckVipsoft.lan.ER0022)
@@ -1058,7 +1058,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                                                 $.http.post(LuckVipsoft.api.SearchMemCardList, param, $.session.get('Cashier_Token'), function (res) {
                                                     if (res.status == 1) {
                                                         var html = '';
-                                                        user.data = res.data
+                                                        //user.data = res.data
+														curMemList = res.data
                                                         for (i = 0; i < res.data.length; i++) {
                                                             if (i == 0) {
                                                                 html += '<tr class="lomo-mem-list">';

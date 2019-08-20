@@ -99,6 +99,7 @@
     <Content Include="js\Pay\init.js" />
     <Content Include="js\settings\settings.js" />
     <Content Include="Scripts\linq.min.js" />
+    <Content Include="Scripts\LunarCalendar.js" />
     <Content Include="Scripts\math.min.js" />
     <Content Include="Scripts\template-web.js" />
     <Content Include="Scripts\vue.js" />

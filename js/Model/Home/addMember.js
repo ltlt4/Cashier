@@ -33,128 +33,9 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
     })
     //拍摄照片
     $("#Photograph").on("click", function () {
-        var constraints = {
-            video: { width: 500, height: 500 },
-            audio: true
-        };
-        //获得video摄像头区域
-        var video = document.getElementById("video");
-        var promise = navigator.mediaDevices.getUserMedia(constraints);
-        promise.then(function (MediaStream) {
-            video.srcObject = MediaStream;
-            layer.open({
-                type: 1,
-                title: '拍摄照片',
-                closeBtn: 1,
-                shadeClose: false,
-                shade: 0.3,
-                maxmin: false,//禁用最大化，最小化按钮
-                resize: false,//禁用调整大小
-                area: ['800px', '680px'],
-                btn: ['点击拍摄', '取消'],
-                skin: "lomo-ordinary",
-                btnAlign: "r",
-                content: $(".video-shoot"),
-                yes: function (index, layero) {
-                    var videoCanvas = document.getElementById("videoCanvas");
-                    var ctx = videoCanvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0, 500, 500); //保存拍摄图片
-                    var url = videoCanvas.toDataURL("image/png", 1); //获取路径
-                    var imgName = user.information.CompCode + cashier.revDateFormat(cashier.curentTime(new Date()));
-                    tailoring(url, imgName);
-                    layer.close(index);
-                },
-                end: function () {
-                    MediaStream.getTracks()[1] && MediaStream.getTracks()[1].stop() //关闭摄像头 https://developer.mozilla.org/zh-CN/docs/Web/API/MediaStream/getTracks
-                }
-            })
-            video.play();
-        }).catch(function (err) {
-            layer.msg(LuckVipsoft.lan.ER0025)
-        })
+        OpenCamera();
     });
-    //裁剪图片并上传
-    function tailoring(url, imgName) {
-        var html = ''
-        html += '<div class="lomo-upload-ava">'
-        html += '<div class="lomo-upload-ava-body">'
-        html += '<div class="lomo-upload-ava-left">'
-        html += '<div>'
-        html += '<img src="" alt="" id="preview">'
-        html += '</div>'
-        html += '</div>'
-        html += '<div class="lomo-upload-ava-right">'
-        html += '<div class="lomo-upload-ava-preview">'
-        html += '</div>'
-        html += '<div class="lomo-upload-ava-span">'
-        html += '<span>头像预览</span>'
-        html += '</div>'
-        html += '</div>'
-        html += '</div>'
-        html += '<div class="lomo-upload-ava-footer"></div>'
-        html += '</div>'
-        layer.open({
-            type: 1,
-            title: '上传头像',
-            closeBtn: 1,
-            shadeClose: false,
-            shade: 0.3,
-            maxmin: false,//禁用最大化，最小化按钮
-            resize: false,//禁用调整大小
-            area: ['800px', '680px'],
-            btn: ['取消', '确认'],
-            skin: "lomo-ordinary",
-            btnAlign: "c",
-            anim: 5,
-            content: html,
-            yes: function (index, layero) {
-                layer.close(index);
-            },
-            btn2: function (index, layero) {
-                var cas = $('#preview').cropper('getCroppedCanvas');// 获取被裁剪后的canvas 
-                var base64 = cas.toDataURL('image/png');//转为base64
-                var param = {
-                    Type: 2,
-                    FileName: imgName,
-                    ImgData: base64.split(',')[1]
-                }
-                $.http.post(LuckVipsoft.api.UploadImg, param, user.token, function (res) {
-                    layer.msg(res.msg);
-                    if (res.status == 1) {
-                        layer.close(index);
-                        var html = ''
-                        html += '<img src="'
-                        html += user.information.ImageServerPath + res.data
-                        html += '" alt="">'
-                        $(".upload").html(html).css({ "padding": 0, "height": "100px" })
-                    }
-                })
-                return false;
-            }
-        })
-        $("#preview").attr("src", url);
-        $('#preview').cropper({
-            aspectRatio: 1 / 1,// 默认比例  
-            preview: '.lomo-upload-ava-preview',// 预览视图  
-            guides: true, // 裁剪框的虚线(九宫格) 
-            viewMode: 2,
-            autoCropArea: 0.5, // 0-1之间的数值，定义自动剪裁区域的大小，默认0.8  
-            movable: false, // 是否允许移动图片  
-            dragMode: 'crop', // 是否允许移除当前的剪裁框，并通过拖动来新建一个剪裁框区域  
-            movable: true, // 是否允许移动剪裁框  
-            resizable: true, // 是否允许改变裁剪框的大小  
-            zoomable: false, // 是否允许缩放图片大小  
-            mouseWheelZoom: false, // 是否允许通过鼠标滚轮来缩放图片  
-            touchDragZoom: true, // 是否允许通过触摸移动来缩放图片  
-            background: true, //是否在容器上显示网格背景。
-            modal: true, //是否在剪裁框上显示黑色的模态窗口
-            rotatable: false,//是否允许旋转图片
-            highlight: false,//在裁剪框上方显示白色模态
-            crop: function (e) {
-                // 输出结果数据裁剪图像。  
-            }
-        });
-    };
+
 
     //获取所属店铺信息            
     if ($.session.get('belongShop')) {
@@ -288,10 +169,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
                             }
                         }
                     }
-                    html += `<li style="text-align:right;width: 100%">
-                <button type="button" class="submit-bt-clear">取消</button>
-                <button  class="submit-bt" lay-submit="" lay-filter="addMem">保存</button></li>`
-
+                    html += '<li  style="position: absolute;top: 130%;left: 49%;width: 400px;text-align: right;"><button type="button" class="submit-bt-clear" id="close">取消</button><button  class="submit-bt" lay-submit="" lay-filter="addMem">保存</button></li>'
                     $('.layui-form').html(html);
                     if (html.indexOf('Birthday') != -1) {
                         laydate.render({
@@ -331,6 +209,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
                         });
                     }
                     form.render();//重新渲染表单
+                    $("#List").show();
                 }
             })
         })
@@ -460,7 +339,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             PassWord: data.field.addPassWord ? data.field.addPassWord : "",
             Sex: data.field.addSex ? data.field.addSex : "",
             IdentityCode: data.field.addIdentityCode ? data.field.addIdentityCode : "",
-            BirthdayType: BirthdayType?BirthdayType:"",
+            BirthdayType: BirthdayType ? BirthdayType : "",
             BirthdayYear: BirthdayYear,
             BirthdayMonth: BirthdayMonth,
             BirthdayDay: BirthdayDay,
@@ -475,7 +354,7 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
             OutCardID: data.field.addOutCardID ? data.field.addOutCardID : "",
             WeChatCode: "",
             Money: data.field.addMoney ? data.field.addMoney : 0.0,
-            CustomFields: customFieldsJson.length>0 ? JSON.stringify(customFieldsJson) : ""
+            CustomFields: customFieldsJson.length > 0 ? JSON.stringify(customFieldsJson) : ""
         }
 
         $.http.post(LuckVipsoft.api.SaveMemberData, param, user.token, function (res) {
@@ -483,6 +362,103 @@ layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
         })
         return false
     });
+    //关闭
+    $("#close").on('click', function () {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index); 
+
+    })
 })
-
-
+function Cashier_video(imgUrl) {
+    var imgName = cashier.revDateFormat(cashier.curentTime(new Date()));
+    imgUrl = 'data:image/png;base64,' + imgUrl;
+    tailoring(imgUrl, imgName)
+}
+//裁剪图片并上传
+function tailoring(url, imgName) {
+    layui.use(['layer', 'jquery', 'form', 'laydate'], function () {
+        var user = {
+            token: $.session.get('Cashier_Token') ? $.session.get('Cashier_Token') : null,
+            information: $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null
+        }
+        var html = ''
+        html += '<div class="lomo-upload-ava">'
+        html += '<div class="lomo-upload-ava-body">'
+        html += '<div class="lomo-upload-ava-left">'
+        html += '<div>'
+        html += '<img src="" alt="" id="preview">'
+        html += '</div>'
+        html += '</div>'
+        html += '<div class="lomo-upload-ava-right">'
+        html += '<div class="lomo-upload-ava-preview">'
+        html += '</div>'
+        html += '<div class="lomo-upload-ava-span">'
+        html += '<span>头像预览</span>'
+        html += '</div>'
+        html += '</div>'
+        html += '</div>'
+        html += '<div class="lomo-upload-ava-footer"></div>'
+        html += '</div>'
+        layer.open({
+            type: 1,
+            title: '上传头像',
+            closeBtn: 1,
+            shadeClose: false,
+            shade: 0.3,
+            maxmin: false,//禁用最大化，最小化按钮
+            resize: false,//禁用调整大小
+            area: ['90%', '90%'],
+            btn: ['取消', '确认'],
+            skin: "lomo-ordinary",
+            btnAlign: "c",
+            anim: 5,
+            content: html,
+            yes: function (index, layero) {
+                layer.close(index);
+            },
+            btn2: function (index, layero) {
+                var cas = $('#preview').cropper('getCroppedCanvas');// 获取被裁剪后的canvas 
+                var base64 = cas.toDataURL('image/png');//转为base64
+                var param = {
+                    Type: 2,
+                    FileName: imgName,
+                    ImgData: base64.split(',')[1]
+                }
+                $.http.post(LuckVipsoft.api.UploadImg, param, user.token, function (res) {
+                    layer.msg(res.msg);
+                    if (res.status == 1) {
+                        layer.close(index);
+                        var html = ''
+                        html += '<img src="'
+                        html += user.information.ImageServerPath + res.data
+                        html += '" alt="">'
+                        $(".upload").html(html).css({ "padding": 0, "height": "100px" })
+                    }
+                })
+                return false;
+            }
+        })
+        $("#preview").attr("src", url);
+        $('#preview').cropper({
+            aspectRatio: 1 / 1,// 默认比例  
+            preview: '.lomo-upload-ava-preview',// 预览视图  
+            guides: true, // 裁剪框的虚线(九宫格) 
+            viewMode: 2,
+            autoCropArea: 0.5, // 0-1之间的数值，定义自动剪裁区域的大小，默认0.8  
+            movable: false, // 是否允许移动图片  
+            dragMode: 'crop', // 是否允许移除当前的剪裁框，并通过拖动来新建一个剪裁框区域  
+            movable: true, // 是否允许移动剪裁框  
+            resizable: true, // 是否允许改变裁剪框的大小  
+            zoomable: false, // 是否允许缩放图片大小  
+            mouseWheelZoom: false, // 是否允许通过鼠标滚轮来缩放图片  
+            touchDragZoom: true, // 是否允许通过触摸移动来缩放图片  
+            background: true, //是否在容器上显示网格背景。
+            modal: true, //是否在剪裁框上显示黑色的模态窗口
+            rotatable: false,//是否允许旋转图片
+            highlight: false,//在裁剪框上方显示白色模态
+            crop: function (e) {
+                // 输出结果数据裁剪图像。  
+            }
+        });
+    })
+};

@@ -155,35 +155,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			pageMethod.removeChooseMember()
 			oShoppingCompose.clearShoppingCar()
 			layer.closeAll()
-		},
-		//快速收银活动变化
-		topUpActivity:function(){
-			//活动判断
-			$('.act_item').removeClass('checked')
-			let actHtml = ''
-			if (oPayCompose.chooseBirthdayActivity.Id != undefined) {
-				actHtml += '<i class="shopAct">' + oPayCompose.chooseBirthdayActivity.ActName + '</i>'
-				$('.act_' + oPayCompose.chooseBirthdayActivity.Id).addClass('checked')
-			}
-
-			if (oPayCompose.chooseActivity.Id != undefined) {			
-				actHtml += '<i class="shopAct">' + oPayCompose.chooseActivity.ActName + '</i>'
-				$('.act_' + oPayCompose.chooseActivity.Id).addClass('checked')
-			}
-			console.log('actHtml',actHtml ,oPayCompose.topUpInfo)
-
-			if (actHtml == '') {
-				if (hasTopUpAcivity) {
-					$(".topUpActivity").html('请选择优惠活动')
-				}
-				else {
-					$(".topUpActivity").html('暂无优惠活动')
-				}
-			}
-			else {
-				$(".topUpActivity").html(actHtml)
-			}
-		},
+		},	
 		init:function () {
 			var _this=this;
 			_this.initClick();
@@ -194,8 +166,10 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			_this.countProductNum();//一屏显示产品
 			_this.storageCardRecharge();//储值卡充值
 			$("#search").on("click", function (e) {
+				e.preventDefault()
 				_this.searchMemCard();//查询会员
 			})
+			
 			_this.editShopcarProduct();//编辑购物车产品
 			_this.checkProductIntoCar();//向购物车添加产品
 			//_this.chooseMembergetCommission();//提成员工
@@ -209,12 +183,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 						$.luck.error('请选择一个会员')
 						return false
 					}
-					console.log('oPayCompose.result',oShoppingCompose.result ,oShoppingCompose.chooseMember)					
+					console.log('oShoppingCompose.topUpActivity.result',oShoppingCompose.result ,oShoppingCompose.chooseMember)	
+					result = Object.assign({},oShoppingCompose.result)					
 					//挑起父窗口支付页面		
-					oShoppingCompose.result.mode = 12 	//订单类型
-					oShoppingCompose.result.shopId = user.information.ShopID //店铺号
-					oShoppingCompose.result.staffMode = 3	//3->充值充次
-					window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result)
+					result.mode = 12 	//订单类型
+					result.shopId = user.information.ShopID //店铺号
+					result.staffMode = 3	//3->充值充次
+					window.parent.callPay(oShoppingCompose.chooseMember,result)
 				}
 				else {
 					$.luck.error('当前购物车没有商品')
@@ -237,11 +212,13 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 			        $(this).html('开启无图模式');
 			        graph = true;
 			    }
+				_this.pageIndex = 1;
 			    _this.countProductNum();
 			});
 			$(window).resize(function(){
 			    proboxHeight = $(".lomo-mian-right").height();
 			    proboxWidth = $(".lomo-mian-right").width();
+				_this.pageIndex = 1;
 			    _this.countProductNum();
 			})
 			 //产品翻页 上一页
@@ -631,6 +608,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 							member = res.data[0];						
 							pageMethod.changeMember(member)
 						} else {
+							var curMemList = res.data;
 							layer.open({
 								type: 1,
 								id: "searchMemCard",
@@ -652,13 +630,12 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 										$tr.each(function () {
 											if ($(this).hasClass('lomo-mem-list')) {
 												var _index = $(this).index()												
-												member = res.data[_index];
+												member = curMemList[_index];
 												pageMethod.changeMember(member)											
 												return false
 											}
 										});
 										$(".timescount").show();
-										layer.msg('操作成功')
 										layer.close(index)
 									} else {
 										layer.msg(LuckVipsoft.lan.ER0022)
@@ -700,7 +677,8 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 											$.http.post(LuckVipsoft.api.SearchMemCardList, param,user.token, function (res) {
 												if (res.status == 1) {
 													var html = '';
-													user.data = res.data
+													//user.data = res.data
+													curMemList = res.data
 													for (i = 0; i < res.data.length; i++) {
 														if (i == 0) {
 															html += '<tr class="lomo-mem-list">';
@@ -896,64 +874,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					}
 				})
 			});
-			//整单提成
-			$("body").on("click", ".choose-order-member", function () {
-				let mode = oPayCompose.result.mode
-				if(mode ==1){
-					//快速消费1
-					_this.StaffTree(1)
-				}				
-				else if(mode ==11 || mode == 12){
-					//充值11冲次12
-					_this.StaffTree(3)
-				}
-				else{
-					//商品消费
-					_this.StaffTree(2)
-				}
-			
-				layer.open({
-					type: 1,
-					id: "searchMemCard",
-					title: '选择提成员工',
-					closeBtn: 1,
-					shadeClose: false,
-					shade: 0.3,
-					maxmin: false,//禁用最大化，最小化按钮
-					resize: false,//禁用调整大小
-					area: ['90%', '80%'],
-					btn: ['确认', '清除'],
-					skin: "lomo-ordinary",
-					content: $(".lomo-xztcyg"),
-					success: function () {
-						chooseStaff  = Object.assign([],_this.choosedStaffAry)
-						$("body").find('.staff-list li').removeAttr("class");
-						$.each( chooseStaff, function (index, item) {
-							$("body").find('.staff-list li[data-id="' + item.StaffId + '"]').toggleClass("active");
-						})
-						tab_staff.reload({
-							data: chooseStaff
-						});
-						element.render();
-					},
-					yes: function (index) {
-						layer.close(index)
-						var html = '';
-						$(".staffname").remove();
-						_this.choosedStaffAry = Object.assign([],chooseStaff)
-						$.each(chooseStaff, function (index, item) {
-							html += '<span class="name staffname" data-id="' + item.StaffId + '">' + item.StaffName + '<i class="deletStaff">x</i></span>'
-						})
-						$(".lomo-tcyg-add .nameTitle").after(html);
-					},
-					btn2:function (index) {
-						layer.close(index)
-						chooseStaff =[]
-						_this.choosedStaffAry=[]
-						$(".staffname").remove();
-					}
-				})
-			});
+		
 
 			//单品提成
 			$("body").on("click", ".choose-member", function () {
@@ -1095,7 +1016,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				}
 				
 				$.luck.confirm("是否确认赠送该商品？", function () {
-					oPayCompose.changePrice(uuid,'0.00')
+					oShoppingCompose.changePrice(uuid,'0.00')
 					var box = that.parents('.fadeIn');
 					cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
 				});
@@ -1105,7 +1026,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 				var that = $(this);
 				var uuid = $(this).parent().attr("data-uuid");
 				$.luck.confirm("是否确认删除该商品？", function () {
-					oPayCompose.changeItemNum(uuid,0)
+					oShoppingCompose.changeItemNum(uuid,0)
 					var box = that.parents('.fadeIn');
 					cashier.close(box, 'fadeIn', 'fadeOut', '.lomo-mask-left');
 				});
@@ -1296,7 +1217,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					},
 					yes:function(){					
 						//判断金额
-						let m = $('#topUpGiftMoney').val()
+						let m = $('#topUpMoney').val()
 						if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(m)) {
 							$.luck.error('只能输入数字，小数点后只能保留两位');						
 							return false
@@ -1304,19 +1225,20 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 						let isModify = 0
 					
 						if(parseFloat(m)<=0){
-							$.luck.error('请正确填写赠送金额')
+							$.luck.error('请正确填写金额')
 							return false
 						}					
+						let result = Object.assign({},oShoppingCompose.result)
 						if(parseFloat(oShoppingCompose.result.giveMoney) == parseFloat(m)){
 						}
 						else{
 							isModify = 1
-							that.result.giveMoney = parseFloat(m).toFixed(2) //后面写个方法修改
+							result.giveMoney = parseFloat(m).toFixed(2) //后面写个方法修改
 						}	
 						
-						oShoppingCompose.result.mode = 11
-						oShoppingCompose.result.staffMode =3 //充值充次提成
-						window.parent.callPay(oShoppingCompose.chooseMember,oShoppingCompose.result)					
+						result.mode = 11
+						result.staffMode =3 //充值充次提成
+						window.parent.callPay(oShoppingCompose.chooseMember,result)					
 					},
 					btn2:function(){						
 						$('.activity-list').hide()
@@ -1328,9 +1250,16 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
 					}
 				})				
 			})
+		
+	
 			//充值金额
 			$("#topUpMoney").on('change', function () {	
 				let val = $(this).val()
+                var reg = $(this).val().match(/\d+\.?\d{0,2}/);               
+                if (reg != null) {
+                    val = reg[0];
+                }
+                $(this).val(val)
 							
 				if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(val)) {
 					$.luck.error('只能输入数字，小数点后只能保留两位');

@@ -225,13 +225,13 @@ class shoppingCompose
         return false
     } 
     //选择提成员工
-    settingStaffs(uuid, staffs)
-    {
-        let item = Enumerable.From(this.shoppingCar).Where(x => x.uuid == uuid).FirstOrDefault();
-        item.staffs = staffs
-        //刷新
-        this.process()
-    } 
+    // settingStaffs(uuid, staffs)
+    // {
+    //     let item = Enumerable.From(this.shoppingCar).Where(x => x.uuid == uuid).FirstOrDefault();
+    //     item.staffs = staffs
+    //     //刷新
+    //     this.process()
+    // } 
     //获取已设置的提成员工
     goodsStaffs(uuid) {
         let that =this
@@ -313,6 +313,13 @@ class shoppingCompose
             }
             //商品库存
         }
+
+        //客显type类型0-清屏1-单价2-总价3-收款4-找零
+        if (typeof(ShowCustomerDisplay) == "function") {
+            ShowCustomerDisplay(1,goods.Price.toFixed(2))
+        }     
+ 
+        //重计算
         this.process()
         return true
     }
@@ -571,7 +578,7 @@ class shoppingCompose
                 }
 
                 if (that.chooseBirthdayActivity.IsGivePoint == 1) {                    
-                    that.result.amountActivityPoint = accAdd(that.result.amountActivityPoint,hat.chooseBirthdayActivity.GivePoint)                 
+                    that.result.amountActivityPoint = accAdd(that.result.amountActivityPoint,that.chooseBirthdayActivity.GivePoint)                 
                 }
             }
             else {
@@ -603,7 +610,7 @@ class shoppingCompose
             amountActivityPoint: 0.0000,	//活动获得积分
             amountCouponMoney: 0.00,		//优惠卷金额
             amountModifyMoney: 0.00,		//手动修改金额	
-            giveMoney: 0.00,                 //赠送金额，仅充值时用到 (11.会员充值)                
+            giveMoney: 0.00,                //赠送金额，仅充值时用到 (11.会员充值)                
             goods: [],                      //商品
             conpon: [],                     //优惠券
             staffs: [],                     //提成员工
@@ -635,7 +642,7 @@ class shoppingCompose
                     }    
                     resolve()
              })  
-        })     
+        })
     }
 
     ///////////////////////////////挂单取单////////////////////////////////
@@ -646,16 +653,16 @@ class shoppingCompose
         //if(res.MemberInfo == undefined ){ return false }
 
         if(res.Details.length >0){                     
-            that.billCode = res.BillCode      
+            that.billCode =(res.BillCode  == undefined )?'' : res.BillCode 
             // that.chooseMember = res.MemberInfo
             that.shoppingCar = []
         
-            $.each(res.Details,function(index,item){           
+            $.each(res.Details,function(index,item){   
                 // let price = goods.Price //其他类型可能不是Price
                 let uuid = that.dateFormat("yyyyMMddhhmmssS", new Date()) + Math.random().toString(36).substr(2);
                 let goods ={
                     uuid: uuid,
-                    isCustomPrice: item.IsModify,
+                    isCustomPrice: item.IsModify == undefined? 0 :item.IsModify,
                     customPrice: item.DiscountPrice,
                     price: item.UnitPrice,
                     goodsId: item.GoodsID,
@@ -678,6 +685,7 @@ class shoppingCompose
                 goods.source.PointType = item.PointPercent              
                 that.shoppingCar.push(goods)
             })        
+
 
             //that.process()  
             return true
@@ -915,6 +923,46 @@ class shoppingCompose
     }
     ////////////////////////////////////////////////////////////////////////////
 
+     //商品消费挂单数据
+     postRestingConsumeData(handCode, remark, billCode ){ 
+        let that = this
+        let orderType =2 //订单类型 2、 商品消费 5、 快速扣次,
+        let mid = that.chooseMember.Id == undefined ? '' : that.chooseMember.Id
+
+        let postData = {}
+
+        postData.Order ={
+            HandCode: handCode,
+            Source: 1 ,
+            BillCode:billCode,
+            OrderType: orderType,
+            MemID: mid,
+            TotalMoney:that.result.amountMoney,  
+            DiscountMoney:  that.result.amountDiscountMoney,  
+            TotalPoint: math.chain( that.result.amountPoint).add(that.result.amountActivityPoint).done() , 
+            Remark: remark
+        }
+        postData.Details =[]
+        $.each(that.result.goods, function (index, item) {
+            postData.Details.push({
+                GID : item.uuid,
+                IsModify : item.isCustomPrice,
+                DiscountAmount: item.modifyMoney,
+                CouponAmount: item.conponMoney,
+                Staffs: item.staffs,
+                BatchCode: (item.source.BatchCode == undefined) ? '' : item.source.BatchCode,
+                GoodsID: item.goodsId,
+                GoodsType: item.goodsMode,
+                GoodsCode: item.source.GoodsCode,
+                GoodsName: item.source.GoodsName,
+                DiscountPrice: item.memberPrice,
+                Number: item.num,
+                TotalMoney: item.amount
+            })
+        })
+        console.log('挂单数据', JSON.stringify(postData)) 
+        return postData
+    }
     /////////////////////////////////快速消费////////////////////////////////////
     settingChargeMoney(money,shopActivity){
         let that = this       
@@ -984,7 +1032,7 @@ class shoppingCompose
         that.chooseBirthdayActivity = {}
 
         //通过规则选中活动
-        if(that.config.BirthdayActivityRule == 3){             
+        if(that.config.BirthdayActivityRule == 3){  
             if(activity != null){
                 console.log('activity.Id',activity.Id,that.config.BirthdayActivityRule)
                 if (activity.IsReduceAmount == 1) {

@@ -31,10 +31,10 @@
             <form action="" method="POST" id="upload-form">
                 <input type="file" id="userUpload" class="hide">
             </form>
-            <button type="button" class="add-bt" id="Photograph">拍照</button>
+            <button type="button" class="add-bt" id="Photograph" >拍照</button>
         </div>
         <div class="order-cd-form vip-add-form">
-            <ul>
+            <ul class="hide" id="List" style="position: relative;">
                 <form action="" class="layui-form">
                     <li id="CardID" class="layui-form-item">
                         <em>会员卡号：</em>
@@ -180,7 +180,7 @@
                     <li id="Remark" style="width: 100%" class="layui-form-item"><em>备注：</em><span>
                             <textarea name="addRemark" class="cd-form-bz" maxlength="250"></textarea>
                         </span></li>
-                    <li style="text-align:right;width: 100%;margin-top: 30px;">
+                    <li style="position: absolute;top: 91%;left: 60%;">
                         <button type="button" class="submit-bt-clear">取消</button>
                         <button class="submit-bt" lay-submit="" lay-filter="addMem">保存</button>
                     </li>

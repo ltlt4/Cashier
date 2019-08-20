@@ -1,5 +1,5 @@
 var netWork = new Array();
-var loginType=1;//1收银端2后台
+var loginType = 1;//1收银端2后台
 layui.use(['layer', 'jquery', "form"], function () {
     var layer = layui.layer, $ = layui.$, form = layui.form;
     initData();
@@ -25,7 +25,7 @@ layui.use(['layer', 'jquery', "form"], function () {
         html += '</dd>'
         html += '<dt style="margin-bottom:10px;">手机号</dt>'
         html += '<dd>'
-        html += '<input  type="text" class="sph" placeholder="请输入手机号"  style="border:1px solid #ddd" id="1phone"/>'
+        html += '<input  type="text" class="sph" placeholder="请输入手机号"  style="border:1px solid #ddd" id="phone1"/>'
         html += '</dd>'
         html += ' <dt style="margin-bottom:10px;">验证码</dt>'
         html += '<dd style="display: flex;">'
@@ -60,12 +60,25 @@ layui.use(['layer', 'jquery', "form"], function () {
         layer.closeAll()
     });
     //是否启用记住密码，自动登陆
-    $(".login-form-other  label").on("click", function () {
-        var i = $(this).attr('data-id')
-        if (i == 1 && !$(this).prev().hasClass("choice")) {
-            $(".login-form-other  label").eq(0).prev().addClass("choice")
+    // $(".login-form-other  label").on("click", function () {
+    //     var i = $(this).attr('data-id')
+    //     if (i == 1 && !$(this).prev().hasClass("choice")) {
+    //         $(".login-form-other  label").eq(0).prev().addClass("choice")
+    //     }
+    //     $(this).prev().toggleClass("choice");
+    // });
+
+    form.on('checkbox(mind)', function (data) {
+        if (data.elem.checked == false) {
+            $('input[name="automatic"]').prop('checked', false);
         }
-        $(this).prev().toggleClass("choice");
+        form.render();
+    });
+    form.on('checkbox(automatic)', function (data) {
+        if (data.elem.checked == true) {
+            $('input[name="mind"]').prop('checked', true);
+        }
+        form.render();
     });
     //登陆 
     $("#login").on("click", function (e) {
@@ -78,19 +91,23 @@ layui.use(['layer', 'jquery', "form"], function () {
     //是否需要自动登录
     if (user.Record != null) {
         var base = new cashier.Base64();
-        $('.login-form-other  label').eq(0).prev().addClass("choice");
+        $('input[name="mind"]').prop('checked', true);
         $("#enterprise").val(base.decode(user.Record.a));
         $("#username").val(base.decode(user.Record.b));
         $("#pwd").val(base.decode(user.Record.c));
         if (user.flag != null) {
-            $('.login-form-other  label').eq(1).prev().addClass("choice");
-            login();
+            $('input[name="automatic"]').prop('checked', true);
+            if ($.session.get('signOut') != 'true') {
+                $.session.remove('signOut')
+                login();
+            }
         }
+        form.render();
     }
     //发送验证码
     $("body").on("click", "#sendCode", function () {
         if (!user.butTime) {
-            var phone = $("#phone").val()//手机号
+            var phone = $("#phone1").val()//手机号
             var enterprise2 = $("#enterprise2").val() //企业号
 
             if (enterprise2 == "") {
@@ -100,12 +117,12 @@ layui.use(['layer', 'jquery', "form"], function () {
             }
             if (phone == "") {
                 layer.msg(LuckVipsoft.lan.ER0014);
-                $('#phone').focus();
+                $('#phone1').focus();
                 return false;
             }
             if (!(/^[1][3,4,5,7,8][0-9]{9}$/.test(phone))) {
                 layer.msg(LuckVipsoft.lan.ER0015);
-                $('#phone').focus();
+                $('#phone1').focus();
                 return false;
             }
             var param = {
@@ -133,11 +150,11 @@ layui.use(['layer', 'jquery', "form"], function () {
     $("body").on("click", "#confirmVer", function (e) {
         e.preventDefault()
         var verCode = $("#verCode").val()
-        var phone = $("#phone").val()
+        var phone = $("#phone1").val()
         var enterprise2 = $("#enterprise2").val() //企业号
         if (!(/^[1][3,4,5,7,8][0-9]{9}$/.test(phone))) {
             layer.msg(LuckVipsoft.lan.ER0015);
-            $('#phone').focus();
+            $('#phone1').focus();
             return false;
         }
         if (!/^\d{4}$/.test(verCode)) {
@@ -270,8 +287,10 @@ layui.use(['layer', 'jquery', "form"], function () {
                 if (LuckVipsoft.network.NetworkName == item.NetworkName) {
                     html += '<td><span>当前线路</span></td>';
                 }
-                else {
+                else if (rTime > 0) {
                     html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
+                } else {
+                    html += '<td><span>该线路不可用</span></td>';
                 }
                 html += ' </tr>'
             });
@@ -283,11 +302,11 @@ layui.use(['layer', 'jquery', "form"], function () {
     $("#logintype a").on("click", function () {
         $(this).addClass("hover").siblings().removeClass("hover");
         var n = $(this).index();
-        if(n==0) {
-            loginType=1;
+        if (n == 0) {
+            loginType = 1;
         }
-        else{
-            loginType=2;
+        else {
+            loginType = 2;
         }
     });
 })
@@ -312,7 +331,7 @@ function setNetWork(data) {
             html += '<td><span>当前线路</span></td>';
         }
         else {
-            html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
+            html += ' <td><span>-</span></td>'
         }
         html += ' </tr>'
     });
@@ -372,9 +391,8 @@ function getResponseSpeed(time) {
     }
 }
 
-function initData(){
-    if(!LuckVipsoft.InterfaceKey)
-    {
+function initData() {
+    if (!LuckVipsoft.InterfaceKey) {
         var LoginMsg = $.session.get("Cashier_User") ? $.session.get("Cashier_User") : null;
         var compCode = LoginMsg != null ? LoginMsg.CompCode : "lucksoft";
         var param = {
@@ -385,7 +403,7 @@ function initData(){
             ContentType: 'application/json',
             type: "POST",
             data: JSON.stringify(param),
-            url:  LuckVipsoft.http + "/api/GeneralInterface/GetAuthorizeByCompCode",
+            url: LuckVipsoft.http + "/api/GeneralInterface/GetAuthorizeByCompCode",
             async: false,
             success: function (res) {
                 LuckVipsoft.InterfaceKey = res.data.InterfaceKey;
@@ -396,7 +414,7 @@ function initData(){
 
 //进前前台
 function doLogin() {
-    loginType=1;
+    loginType = 1;
     login();
 }
 //登录
@@ -429,11 +447,11 @@ function login() {
         Password: pwd,
         LoginSource: 2
     }
-    
+
     $.http.register(LuckVipsoft.api.login, param, function (res) {
         if (res.status == 1) {
-            layer.msg(res.msg);            
-            if ($('.login-form-other  label').eq(0).prev().hasClass("choice")) {
+            layer.msg(res.msg);
+            if ($('input[name="mind"]').prop('checked')==true) {
                 var base = new cashier.Base64();
                 var Record = {
                     a: base.encode(enterprise),
@@ -442,23 +460,23 @@ function login() {
                 }
                 $.local.set('Record', Record);
             }
-            if ($('.login-form-other  label').eq(1).prev().hasClass("choice")) {
+            if ($('input[name="automatic"]').prop('checked')==true) {
                 $.local.set('flag', true);
             }
             $.session.set('LoginMsg', param);
             $.session.set('Cashier_Token', res.data.Token)
             $.session.set('Cashier_User', res.data);
-            if(loginType==2){
-                param={
+            if (loginType == 2) {
+                param = {
                     CompCode: enterprise,
                     Account: username,
                     Password: pwd,
-                    InterfaceKey:LuckVipsoft.InterfaceKey,
+                    InterfaceKey: LuckVipsoft.InterfaceKey,
                     Url: LuckVipsoft.network.Address ? LuckVipsoft.network.Address : "http://192.168.0.13:84",
                 };
                 if (GoToBackstage) {
                     GoToBackstage(JSON.stringify(param));
-                }      
+                }
                 return;
             }
             //数据初始化
@@ -467,13 +485,6 @@ function login() {
                     var _this = this
                     Promise.all([_this.belongShop(), _this.staffClass(), _this.levelList(), _this.sysArgument()])
                         .then(function (res) {
-                            // var staffInf={
-                            //     staffInfCard:res[0],
-                            //     staffInfConsump:res[1],
-                            //     staffInfcommodity:res[2],
-                            //     staffInfRecharge:res[3]
-                            // }
-                            // $.session.set('staffInf', staffInf);
                             window.location.href = "../../Views/home/index.html";
                         })
                 },

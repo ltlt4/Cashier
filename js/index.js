@@ -6,6 +6,29 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
         form = layui.form,
         element = layui.element,
         table = layui.table;
+	if(typeof(MoveWindow)!='undefined'){
+		$(".indexWrap").mouseover(function(){
+			if(event.button == 0){ MoveWindow()}
+		})
+	}	
+	if(typeof(Command_MaxOrNor)!='undefined'){
+		$(".indexWrap").dblclick(function(){
+			Command_MaxOrNor();
+			setState();
+		})
+		$(".tool-max").show();
+		$(".tool-max").on("click",function(){
+			Command_MaxOrNor()
+			setState();
+		})
+	}	
+	if(typeof(Command_Min)!='undefined'){
+		$(".tool-min").show();
+		$(".tool-min").on("click",function(){
+			Command_Min()
+		})
+	}
+	
     var maskBody = ".lomo-mask-body";
     var mask1 = ".lomo-mask";
     var initial = {
@@ -152,71 +175,26 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
                         return '';
                     }
                 };
-                var html = `<div class="lomo-network-change"><dl class="network-change-form"><div class="change-form-address"><img src="../../Theme/images/guard002.svg" alt="">
-                <span>${$.session.get('Cashier_User').ShopName}</span>
-                </div><div class="change-form-person"><img src="../../Theme/images/guard001.svg" alt="">
-                <span>${$.session.get('Cashier_User').MasterName}</span>
-               </div><div class="change-form-time"><img src="../../Theme/images/guard003.svg" alt="">
-               <span>${cashier.dateFormat(res.data.StatisticalTime)}-${cashier.curentTime(new Date())}</span>
-               </div><div class="change-form-number"><img src="../../Theme/images/guard005.svg" alt="">
-               <span>新增会员人数：</span><span class="change-form-span">${res.data.OpenCardNum}</span>
-                 </div><div class="change-form-price"><img src="../../Theme/images/guard004.svg" alt="">
-                <span>售卡金额：</span><span class="change-form-span">${res.data.SaleCardAmount}</span></div></dl>
-                <div class="network-change-list"><ul>
-                <li>
-                <div>
-                <div class="change-list-left" style="background: #FFC542;"></div>
-               <div class="change-list-right">
-                 <div class="change-list-right-up">
-                <span>充值总额：</span><span class="change-form-span">￥${res.data.TopUpTotalAmount}</span>
-               </div>
-                <div class="change-list-right-down">
-                 ${revenue(res.data.RechargeCountDetail)}
-                </div></div></div></li>
-               <li>
-                <div>
-                <div class="change-list-left" style="background: #A461D8;"></div>
-                <div class="change-list-right">
-                 <div class="change-list-right-up">
-                <span>充次总额：</span><span class="change-form-span">￥${res.data.RechargeCountTotalAmount}</span>
-                </div>
-                <div class="change-list-right-down">
-               ${revenue(res.data.RechargeCountPreferentialDetail)}
-               </div></div></div></li>
-                <li>
-               <div>
-                <div class="change-list-left" style="background: #3BA2F2;"></div>
-                <div class="change-list-right">
-                <div class="change-list-right-up">
-                <span>退款货总额：</span><span class="change-form-span">￥${res.data.ReturnGoodsTotalAmount}</span>
-                </div>
-                <div class="change-list-right-down">
-                ${revenue(res.data.ReturnGoodsDetail)}
-                </div></div></div></li>
-                <li>
-                <div>
-                <div class="change-list-left" style="background: #41C060;"></div>
-                <div class="change-list-right">
-                 <div class="change-list-right-up">
-                <span>消费总额：</span><span class="change-form-span">￥${res.data.ConsumeTotalAmount}</span>
-               </div>
-                <div class="change-list-right-down">
-                ${revenue(res.data.ConsumeDetail)}
-                </div></div></div></li>
-                <li>
-               <div>
-                <div class="change-list-left" style="background: #FF7174;"></div>
-                <div class="change-list-right">
-                <div class="change-list-right-up">
-                <span>综合总收入：</span><span class="change-form-span">￥${res.data.TotalInCome}</span>
-                </div>
-               <div class="change-list-right-down">
-                ${revenue(res.data.TotalInComeDetail)}
-               </div></div></div></li>
-                </ul></div>
-                <div class="network-change-remark layui-form-item"><label for="">备注</label><input type="text" name="remarks" placeholder="请输入备注"></div>
-                <div class="network-change-Ticket layui-form-item"><input  type="checkbox" value="1" name="printing" lay-skin="primary" title="打印交班小票" /><span></span></div>
-                </div>`
+                $("#Chaddress").text($.session.get('Cashier_User').ShopName);
+                $("#Chperson").text($.session.get('Cashier_User').MasterName);
+                $("#Chtime").text(cashier.dateFormat(res.data.StatisticalTime) + '-' + cashier.curentTime(new Date()));
+                $("#Chnumber").text(res.data.OpenCardNum);
+                $("#Chprice").text(res.data.SaleCardAmount);
+
+                $("#ChTopUpTotal").text('￥' + res.data.TopUpTotalAmount);
+                $("#ChRechargeCount").html(revenue(res.data.RechargeCountDetail));
+
+                $("#ChRechargeCountTotal").text('￥' + res.data.RechargeCountTotalAmount);
+                $("#ChRechargeCountPreferential").html(revenue(res.data.RechargeCountPreferentialDetail));
+
+                $("#ChReturnGoodsTotal").text('￥' + res.data.ReturnGoodsTotalAmount);
+                $("#ChReturnGoods").html(revenue(res.data.ReturnGoodsDetail));
+
+                $("#ChConsumeTotal").text('￥' + res.data.ConsumeTotalAmount);
+                $("#ChConsume").html(revenue(res.data.ConsumeDetail));
+
+                $("#ChTotalInCome").text('￥' + res.data.ConsumeTotalAmount);
+                $("#ChTotalInComeDetail").html(revenue(res.data.ConsumeDetail));
                 layer.open({
                     type: 1,
                     title: '交班',
@@ -225,7 +203,7 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
                     shade: 0.4,
                     btn: ['取消', '退出并交班'],
                     btnAlign: "c",
-                    area: ['880px', '730px'],
+                    area: ['880px', '60%px'],
                     maxmin: false,
                     //禁用最大化，最小化按钮
                     resize: false,
@@ -233,7 +211,7 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
                     move: false,
                     //禁止拖拽
                     skin: "lomo-ordinary",
-                    content: html,
+                    content: $(".lomo-network-change"),
                     btn2: function btn2(index, layero) {
                         return false;
                     },
@@ -251,15 +229,12 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
                             };
                             $.http.post(LuckVipsoft.api.SaveShiftTurnOverData, param, user.token, function (res) {
                                 layer.msg(res.msg);
-
                                 if (res.status == 1) {
                                     layer.close(index);
-                                    $.session.clear();
-                                    $.local.clear();
+                                    $.session.set('signOut','true')
+                                    $.session.remove('Cashier_Token')
                                     window.location.href = "../../Views/Account/login.html";
-                                }
-
-                                ;
+                                };
                             });
                             return false;
                         });
@@ -295,7 +270,7 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
         var lock = $.md5($(this).prev().val());
         if (!lock.match(verify.empty[0])) {
             $.session.set('lock', lock);
-            layer.closeAll('page');
+            layer.closeAll();
             var html = '<div class="lomo-Unlock"><div class="lomo-Unlock-top"><img src="../../Theme/images/lock.svg" alt=""> </div><div class="lomo-Unlock-bottom"><div><form><input type="password"   placeholder="请输入解锁密码"><button type="submit" class="lomo-Unlock-img"></button><form></div></div></div>';
             layer.open({
                 type: 1,
@@ -327,7 +302,7 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
         var _unlock = $.session.get('lock');
         if ($.md5(unlock) == _unlock) {
             layer.msg('解锁成功');
-            layer.closeAll('page');
+            layer.closeAll();
             $.session.remove('lock');
         } else {
             layer.msg('解锁密码输入错误');
@@ -369,9 +344,11 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
                 if (LuckVipsoft.network.NetworkName == item.NetworkName) {
                     html += '<td><span>当前线路</span></td>';
                 }
-                else {
+                else if(rTime >0){
                     html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
-                }
+                    }else {
+                    html += '<td><span>该线路不可用</span></td>';
+                    }
                 html += ' </tr>'
             });
             $("#networklist").html(html);
@@ -408,75 +385,53 @@ layui.use(['layer', 'element', 'jquery', 'form', 'table'], function () {
         };
         GoToBackstage(JSON.stringify(params))
     })
-	//退出登录
-	$('.tool-close').on('click', function () {
-	    layer.open({
-	            type: 1,
-	                title: '提示',
-	                closeBtn: 1,
-	                shadeClose: false,
-	                shade: 0.2,
-	                btnAlign: "c",
-	                area: ['380px', '200px'],
-	                maxmin: false,
-	                //禁用最大化，最小化按钮
-	                resize: false,
-	        //禁用调整大小
-	                move: false,
-	        //禁止拖拽
-	                btn: ['关闭系统', '退出登录'],
-	                skin: "lomo-ordinary",
-	                content: '<div  class="lomo-signOut"><span >请选择退出登录或关闭系统</span></div>',
-	                yes: function yes(index) {
-	                    layer.close(index);
-	                    if (Command_Close) {
-	                        Command_Close();
-	            }
-	                    },
-	                btn2: function btn2(index) {
-	                    $.session.clear();
-	            $.local.clear();
-	                    window.location.href = "../../Views/Account/login.html";
-	                    return false;
-	        }
-		});
-	});
-	
-});
-//退出登录
-$('.tool-close').on('click', function () {
-    layer.open({
-        type: 1,
-        title: '提示',
-        closeBtn: 1,
-        shadeClose: false,
-        shade: 0.2,
-        btnAlign: "c",
-        area: ['380px', '200px'],
-        maxmin: false,
-        //禁用最大化，最小化按钮
-        resize: false,
-        //禁用调整大小
-        move: false,
-        //禁止拖拽
-        btn: ['关闭系统', '退出登录'],
-        skin: "lomo-ordinary",
-        content: '<div  class="lomo-signOut"><span >请选择退出登录或关闭系统</span></div>',
-        yes: function yes(index) {
-            layer.close(index);
-            if (Command_Close) {
-                Command_Close();
+    //退出登录
+    $('.tool-close').on('click', function () {
+        layer.open({
+            type: 1,
+            title: '提示',
+            closeBtn: 1,
+            shadeClose: false,
+            shade: 0.2,
+            btnAlign: "c",
+            area: ['380px', '200px'],
+            maxmin: false,
+            //禁用最大化，最小化按钮
+            resize: false,
+            //禁用调整大小
+            move: false,
+            //禁止拖拽
+            btn: ['关闭系统', '退出登录'],
+            skin: "lomo-ordinary",
+            content: '<div  class="lomo-signOut"><span >请选择退出登录或关闭系统</span></div>',
+            yes: function yes(index) {
+                layer.close(index);
+                if (Command_Close) {
+                    Command_Close();
+                }
+            },
+            btn2: function btn2(index) {
+                $.session.set('signOut','true');
+                $.session.remove('Cashier_Token');
+                window.location.href = "../../Views/Account/login.html";
+                return false;
             }
-        },
-        btn2: function btn2(index) {
-            $.session.clear();
-            $.local.clear();
-            window.location.href = "../../Views/Account/login.html";
-            return false;
-        }
+        });
     });
+
 });
 
+
+//窗口大小切换图标变动
+function setState() {
+	if (page.WindowState == "max") {//设置最大化和还原按钮状态和阴影显示
+		$(".tool-max img").hide();
+		$(".tool-max img").eq(0).show();
+	} else if (page.WindowState == "nor") {
+		$(".tool-max img").hide();
+		$(".tool-max img").eq(1).show();
+	}
+}
 //获取路线
 function getNetWorks() {
     $.getJSON("https://download.nakevip.com/NewNake/network.json", function (data) {
@@ -498,7 +453,7 @@ function setNetWork(data) {
             html += '<td><span>当前线路</span></td>';
         }
         else {
-            html += ' <td onclick="chooseNetWork(\'' + item.NetworkName + '\')">进入该线路</td>'
+            html += ' <td><span>-</span></td>'
         }
         html += ' </tr>'
     });

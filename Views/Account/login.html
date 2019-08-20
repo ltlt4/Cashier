@@ -30,7 +30,7 @@
             <dl class="login-form">
                 <dt id="logintype"><a href="#" class="hover">收银前台</a>|<a href="#">管理后台</a></dt>
                 <dd>
-                    <form>
+                    <form class="layui-form">
                         <ul>
                             <li>
                                 <input id="enterprise" type="text" placeholder="请输入企业号" class="login-form-input" />
@@ -42,15 +42,17 @@
                                 <input id="pwd" type="password" placeholder="请输入密码" class="login-form-input" />
                             </li>
                         </ul>
-                        <div class="login-form-other">
-                            <input name="" type="checkbox" value="" id="color-input-red" />
+                        <div class="layui-form-item" style="display: inline-block">
+                            <!-- <input name="" type="checkbox" value="" id="color-input-red" />
                             <label for="color-input-red" data-id="0"></label>
-                            <span>记住密码</span>
+                            <span>记住密码</span> -->
+                            <input type="checkbox" name="mind" lay-skin="primary" id="mind" title="记住密码" lay-filter="mind">
                         </div>
-                        <div class="login-form-other" style="float: right">
-                            <input name="" type="checkbox" value='' id="color-input-hs" />
+                        <div class="layui-form-item" style="float: right;display: inline-block;">
+                            <!-- <input name="" type="checkbox" value='' id="color-input-hs" />
                             <label for="color-input-hs" data-id="1"></label>
-                            <span>自动登录</span>
+                            <span>自动登录</span> -->
+                            <input type="checkbox" name="automatic" lay-skin="primary" title="自动登陆"  lay-filter="automatic">
                         </div>
                         <div class="login-form-bt">
                             <button type="submit" class="add-bt" id="login">马上登录</button>

@@ -54,6 +54,8 @@ class payCompose {
             if(that.result.mode ==11){
                 that.selectPay('001')
                 that.curPayItem = '001'
+                // that.selectPay(that.config.MemberDefaultPayment)
+                // that.curPayItem = that.config.MemberDefaultPayment
             }else{
                 //默认支付方式
                 if (that.chooseMember.Id == undefined) {
@@ -64,6 +66,12 @@ class payCompose {
                     that.selectPay(that.config.MemberDefaultPayment)
                     that.curPayItem = that.config.MemberDefaultPayment
                 }
+            }
+
+            //客显type类型0-清屏1-单价2-总价3-收款4-找零
+            if (typeof(ShowCustomerDisplay) == "function") {
+                //会员折后价格（总）
+                ShowCustomerDisplay(2,that.result.amountDiscountMoney.toFixed(2))
             }
 
             if (typeof callback === "function") {
@@ -133,7 +141,7 @@ class payCompose {
         let maxMoney = math.chain(that.result.amountDiscountMoney).subtract(that.result.amountActivityMoney).subtract(that.result.amountModifyMoney).subtract(that.result.zeroAmount).done()
         //可用或剩余分摊金额
  
-        if (disMoney > 0) {
+        if (disMoney > 0 && that.result.goods.length >0) {
             let diffModifyMoney = 0.00 //(累加值)折扣当前循环总价金额
             if (maxMoney > 0) {
                 $.each(that.result.goods, function (index, item) {
@@ -320,9 +328,8 @@ class payCompose {
                         //smallchange找零金额
                     }
                 }
-            }
-            console.log('that.payItem', m)
-            console.log('that.payItem', that.payItem)
+            }        
+            console.log('that.payItem->changePayMoney', m,that.payItem)
             that.finish()
             return true
         }
@@ -370,12 +377,6 @@ class payCompose {
                 }
             }
 
-            // if(code=='002'){ item.smallChangePrice =  that.chooseMember.Money }
-            // if(code=='003'){ 
-            //     item.smallChangePrice =  math.chain(that.chooseMember.Point).multiply(addPrice).done().toFixed(2) 
-            //     console.log('003', item.smallChangePrice)
-            // }
-
             that.finish()
             return true
         }
@@ -383,10 +384,9 @@ class payCompose {
 
     //选择支付方式
     selectPay(code) {      
-        let that = this
-        console.log('that.result.mode',that.result.mode)
+        let that = this      
         let item = Enumerable.From(that.payItem).Where(x => x.code == code).FirstOrDefault();
-
+        
         if (item == undefined) {
             let payConfigItem = Enumerable.From(that.config.PaymentConfig).Where(x => x.code == code).FirstOrDefault();
             if (payConfigItem == undefined) {
@@ -435,7 +435,7 @@ class payCompose {
                 })
             }
             else {
-                that.payItem.push({ code: payConfigItem.code, name: payConfigItem.name, amount: 0.00 })
+                that.payItem.push({ code: payConfigItem.code, name: payConfigItem.name, amount: 0.00  ,smallChangePrice:0})
             }
         }
         else {
@@ -455,6 +455,7 @@ class payCompose {
                 that.curPayItem = ''
             }
         }
+        console.log('that.payItem--->finsh',that.payItem)
         that.finish();
 
         return true
@@ -821,7 +822,7 @@ class payCompose {
         })
 
         postData.MemberPwd = pwd
-        postData.ReservationOrderID = ''
+        postData.ReservationOrderID = (that.result.reservationOrderID == undefined) ? '' : that.result.reservationOrderID
 
         console.log('支付数据', JSON.stringify(postData)) 
         return postData
