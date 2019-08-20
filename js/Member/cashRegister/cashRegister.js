@@ -456,7 +456,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 					$(".leaveltwo-nav-box").show();
 				}
 				$(".classify-nav-two a").each(function () { //计算菜单长度
-					length += parseFloat($(this).css("width").split('px')[0]) + 30;
+					length += parseFloat($(this).css("width").split('px')[0]) + 90;
 				});
 				if (length > 450) {
 					$(".scroll-view-two").css({ "width": 450 });
@@ -477,7 +477,6 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				_this.getGoodsListPageList();
 				$(".leaveltwo-nav-box").hide();
 			})
-			// })
 		},
 		//一级菜单滑动
 		classSlide: function () {
@@ -515,7 +514,6 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 			$(".leaveltwo-nav-box .triangle_border_right").on("click", cashier.throttle(function () {
 				var x = parseFloat($(".classify-nav-two").css("marginLeft").split('px')[0]);//当前位置
 				var width = parseFloat($(".classify-nav-two").css("width").split("px")[0]);//总长度
-				console.log($(".scroll-view-two").css("width"))
 				var viewport = parseFloat($(".scroll-view-two").css("width").split('px')[0]);//可视窗口宽度
 				if (width < viewport) { //当菜单长度小于可视宽度时，禁止向右移动
 					return false;
@@ -666,7 +664,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 									id: "searchMemCard",
 									title: '会员搜索',
 									closeBtn: 1,
-									shadeClose: false,
+									shadeClose: true,
 									shade: 0.3,
 									maxmin: false,//禁用最大化，最小化按钮
 									resize: false,//禁用调整大小
@@ -886,7 +884,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
                     id: "searchMemCard",
                     title: '选择提成员工',
                     closeBtn: 1,
-                    shadeClose: false,
+                    shadeClose: true,
                     shade: 0.3,
                     maxmin: false,//禁用最大化，最小化按钮
                     resize: false,//禁用调整大小
@@ -1152,7 +1150,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 					id: "getOrder",
 					title: '取单',
 					closeBtn: 1,
-					shadeClose: false,
+					shadeClose: true,
 					shade: 0.3,
 					maxmin: false,//禁用最大化，最小化按钮
 					resize: false,//禁用调整大小
@@ -1225,7 +1223,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 						id: "makeListOn",
 						title: '挂单',
 						closeBtn: 1,
-						shadeClose: false,
+						shadeClose: true,
 						shade: 0.3,
 						maxmin: false,//禁用最大化，最小化按钮
 						resize: false,//禁用调整大小
@@ -1438,7 +1436,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 					id: "cardRecharge",
 					title: '储值卡充值',
 					closeBtn: 1,
-					shadeClose: false,
+					shadeClose: true,
 					shade: 0.3,
 					maxmin: false,//禁用最大化，最小化按钮
 					resize: false,//禁用调整大小
@@ -1534,7 +1532,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 					id: "cardRecharge",
 					title: '储值卡充值',
 					closeBtn: 1,
-					shadeClose: false,
+					shadeClose: true,
 					shade: 0.3,
 					maxmin: false,//禁用最大化，最小化按钮
 					resize: false,//禁用调整大小
@@ -1697,7 +1695,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table','laypage',], function (
 				type: 1,
 				title: false,
 				closeBtn: 0,
-				shadeClose: false,
+				shadeClose: true,
 				shade: 0.3,
 				maxmin: false,//禁用最大化，最小化按钮
 				resize: false,//禁用调整大小

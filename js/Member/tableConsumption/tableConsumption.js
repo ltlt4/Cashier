@@ -994,7 +994,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                                     id: "searchMemCard",
                                     title: '会员搜索',
                                     closeBtn: 1,
-                                    shadeClose: false,
+                                    shadeClose: true,
                                     shade: 0.3,
                                     maxmin: false,//禁用最大化，最小化按钮
                                     resize: false,//禁用调整大小
@@ -1691,7 +1691,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                     id: "searchMemCard",
                     title: '选择提成员工',
                     closeBtn: 1,
-                    shadeClose: false,
+                    shadeClose: true,
                     shade: 0.3,
                     maxmin: false,//禁用最大化，最小化按钮
                     resize: false,//禁用调整大小
@@ -1737,7 +1737,7 @@ layui.use(['layer', 'element', 'jquery', "form", 'table'], function () {
                     id: "searchMemCard",
                     title: '选择提成员工',
                     closeBtn: 1,
-                    shadeClose: false,
+                    shadeClose: true,
                     shade: 0.3,
                     maxmin: false,//禁用最大化，最小化按钮
                     resize: false,//禁用调整大小

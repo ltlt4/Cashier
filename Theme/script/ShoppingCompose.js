@@ -631,7 +631,7 @@ class shoppingCompose
                             let cShoppingCart =[]
                            // [{"GoodsName":"商品名称","Qty":"消费数量","TotalMoney":"总金额"}]、
                             $.each(that.result.goods,function(index,item){
-                                c.push({
+                                cShoppingCart.push({
                                     GoodsName: item.source.GoodsName,
                                     Qty:item.num,
                                     TotalMoney:item.memberPrice

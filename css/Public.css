@@ -225,7 +225,6 @@ input:-ms-input-placeholder {
 
 .lomo-top-tool {
 	float: right;
-	width: 435px;
 }
 
 .lomo-top-tool dt {
@@ -731,7 +730,7 @@ input:-webkit-autofill {
 	color: #FFFFFF;
 }
 
-.lomo-details .layui-layer-btn .layui-layer-btn1:hover {
+/* .lomo-details .layui-layer-btn .layui-layer-btn1:hover {
 	background: #E43134;
 	color: #FFFFFF;
 }
@@ -745,7 +744,7 @@ input:-webkit-autofill {
 .lomo-ordinary .layui-layer-btn .layui-layer-btn0:hover {
 	background: rgba(65, 192, 96, .15);
 	color: #41c060
-}
+} */
 
 .lomo-details .layui-layer-title,
 .lomo-alone .layui-layer-title,

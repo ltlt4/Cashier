@@ -71,7 +71,7 @@ class payCompose {
             //客显type类型0-清屏1-单价2-总价3-收款4-找零
             if (typeof(ShowCustomerDisplay) == "function") {
                 //会员折后价格（总）
-                ShowCustomerDisplay(2,that.result.amountDiscountMoney.toFixed(2))
+                ShowCustomerDisplay(2, parseFloat(that.result.amountDiscountMoney).toFixed(2))
             }
 
             if (typeof callback === "function") {
@@ -847,6 +847,7 @@ class payCompose {
             TotalPoint: that.result.amountActivityPoint ,  
             Remark: that.remark == undefined ?'':that.result.remark
         }
+    
    
         postData.Payments = []   // {"PaymentCode":"支付方式编码","PayAmount":支付金额,"PayContent":"积分支付扣除数量或者在线支付流水号"}      
         $.each(that.payItem, function (index, item) {

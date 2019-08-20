@@ -10,6 +10,8 @@ layui.use(['layer', 'element', 'jquery', "form"], function () {
         if (index == 3) {
             updateInfo = '';
             downloadUrl = '';
+            $("#download").hide();
+            $("#setupdate").hide();
             getUpdateInfo();
         };
     });

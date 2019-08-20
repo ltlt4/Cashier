@@ -519,7 +519,7 @@ layui.use(['layer', 'jquery', "form", 'table'], function () {
 			                        id: "searchMemCard",
 			                        title: '会员搜索',
 			                        closeBtn: 1,
-			                        shadeClose: false,
+			                        shadeClose: true,
 			                        shade: 0.3,
 			                        maxmin: false,//禁用最大化，最小化按钮
 			                        resize: false,//禁用调整大小

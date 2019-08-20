@@ -490,7 +490,7 @@ layui.use(['layer', 'jquery', "form", 'laydate', 'laypage', 'table', 'element'],
                         },
                         success: function () {
                             $('body').on('click', '.lomo-commodities-hx', function () {
-                                var i = $(this).index();
+                                var i = $(this).index('.lomo-commodities-hx');
                                 _this.destruction(1, details[i].GoodsCode);
                             });
                         }
